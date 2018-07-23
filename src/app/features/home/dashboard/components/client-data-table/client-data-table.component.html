@@ -1,0 +1,184 @@
+<div #tableWrapper>
+    <strong>Sort By</strong>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <!--<app-multiselect [listData]="riskStatusDetails" defaultName="All Risk Status" [multiSelectIndex]="multiselectTwo" [planText]='stage_text'
+                [updatedData]="updatedStage" (selection)="onSelection($event)"></app-multiselect>-->
+            <app-dropdown id="role_sort" [ngClass]="{}" name="Role" [optionValueName]="'role_name'" [optionTextName]="'role_name'" [data]="gridData?.role_sort_list"
+                [(ngModel)]="griObject.role_name_search" (ngModelChange)="updateGridData()">
+            </app-dropdown>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+            <app-custom-check-box checkId="show_invited_client" checkLabel="Show Invited" (changed)="showParticipantChange()" [(ngModel)]="griObject.invited"></app-custom-check-box>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+            <app-custom-check-box checkId="show_disabled_client" checkLabel="Show Disabled" (changed)="showParticipantChange()" [(ngModel)]="griObject.disabled"></app-custom-check-box>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 search-patient-overflow">
+            <div class="input-group"><input type="text" [(ngModel)]="searchParticipant" (ngModelChange)='updateFilter(searchParticipant)' placeholder="Search patients"
+                    class="form-control">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+           <button class="btn btn-primary" (click)="openInviteUserModal()">Invite User</button>
+        </div>
+    </div>
+    <br>
+
+    <br>
+    <div class="table-to-card-view">
+        <ngx-datatable class="material expandable" #myTable [rows]="gridData?.care_team_user_list" [loadingIndicator]="loadingIndicator"
+            [columns]="columns" [columnMode]="'force'" [footerHeight]="50" [rowHeight]="'auto'" [limit]="10">
+            >
+            <!--Row Details Angular-->
+            <!--<ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
+                <ng-template let-row="row" ngx-datatable-row-detail-template>
+                    <div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b5">
+                            <label>VITALS</label>
+                            <div class="pull-right">
+                                <strong>Last Interaction: </strong>&nbsp;<i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;
+                                <small *ngIf="row.last_intervention_time">{{_dateUtilityService.getStringForTodayAndYesterday(row.last_intervention_time)}}</small>
+                                <small *ngIf="!row.last_intervention_time">-</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding">
+                            <ng-template ngFor let-vital [ngForOf]="row.vital_list">
+                                <app-vitals [vitalValue]="vital" [vitalClass]="getVitalComponentClass(vital.vital_status)"></app-vitals>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="hr-div-solid col-lg-12"></div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-8">
+                            <label class="pad-B5" *ngIf="row.diagnosis">CONDITIONS ({{row.diagnosis.length}})</label>
+                            <div>
+                                <app-chips [chips]="row.diagnosis"></app-chips>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <i class="fa fa-list-alt fa-lg nav-text-color" aria-hidden="true"></i> <label *ngIf="row.care_plan_names">&nbsp;CARE PLANS ({{row.care_plan_names.length}})</label>
+                            <ul class="care-plan-list">
+                                <template ngFor let-item [ngForOf]="row.care_plan_names">
+                                    <app-careplan [careplanValue]="item.care_plan_name" [careplanStatus]="item.care_plan_compliance"></app-careplan>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </ng-template>
+            </ngx-datatable-row-detail>-->
+            <ngx-datatable-column [width]="10" [resizeable]="false" [sortable]="false" [draggable]="false" [canAutoResize]="false">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row">
+                    </a>
+                </ng-template>
+               
+            </ngx-datatable-column>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-lg-2">
+                        <ngx-datatable-column [resizeable]="true" prop="user_name" name="   Name">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                <a><strong>{{value}}</strong></a><br/>
+                                <small>{{row.facility_name}}</small>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-3">
+                        <ngx-datatable-column [resizeable]="false" prop="email_id" name="Email" [width]="250">
+                            <ng-template let-value="value" ngx-datatable-cell-template>
+                                &nbsp; {{value}}&nbsp;
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-2">
+                        <ngx-datatable-column [resizeable]="false" prop="role_name" name="Role">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                <span *ngIf="!row.editable_flag">{{value}}</span>
+                                <app-dropdown *ngIf="row.editable_flag" id="edit_{{row.staff_id}}" [ngClass]="{}" name="edit_{{row.staff_id}}" [optionValueName]="'role_id'"
+                                    [optionTextName]="'role_name'" [data]="row.roleList" [(ngModel)]="row.role_name">
+                                </app-dropdown>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-3">
+                        <ngx-datatable-column [resizeable]="false" prop="access" name="Access">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                {{value}}
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-1">
+                        <ngx-datatable-column [resizeable]="false" prop="status" name="Status">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                {{value}}
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-1">
+                        <ngx-datatable-column [resizeable]="false" [width]="50">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                <app-client-dropdown [options]="row.options" *ngIf="row.options.length != 0" [listItems]="row.options" (slectedOption)="selectedOption($event,row)"></app-client-dropdown>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                </div>
+            </div>
+        </ngx-datatable>
+        <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+    </div>
+</div>
+<!-- Media Enabled List for the Participant List -->
+<!--<div class="feed-activity-list card-to-table-view">
+    <div class="feed-element" *ngFor="let row of gridData?.staff_dashboard_search_result; let i = index" (click)="toggleList(i)"
+        data-anchor="i">
+        <div class="media-body">
+            <a [routerLink]="['participant-dashboard', row.participant_id,row.participant_name,'ParticipantProflie']"><strong>{{row.participant_name}}</strong>,<strong>{{row.age}}</strong></a>            <br>
+            <small class="text-muted"><b>Care Plan</b></small><br>
+            <small class="text-muted">Count - {{row.care_plan_count}}</small>,&nbsp;
+            <i class="fa fa-circle fa-xs nav-text-color" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(row.overall_careplan_compliance)"></i>
+            <small class="text-muted">Compliance - {{row.overall_careplan_compliance}}</small><small *ngIf="row.overall_careplan_compliance != 'N/A'">%</small><br>
+            <small class="text-muted"><b>Medication</b></small><br>
+            <small class="text-muted">Count - {{row.meds_count}}&nbsp;&nbsp;&nbsp;</small>, <i class="fa fa-circle" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(row.medication_compliance)"></i>&nbsp;
+            <small class="text-muted">Compliance - {{row.medication_compliance}}%</small>
+        </div>
+        <div [ngClass]="{'display-block': highlightedDiv === i, 'display-none':highlightedDiv !== i}">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b5">
+                    <strong>VITALS</strong>
+                    <div class="pull-right">
+                        <small>Last Interaction: </small>&nbsp;<i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <small *ngIf="row.last_intervention_time">{{_dateUtilityService.getStringForTodayAndYesterday(row.last_intervention_time)}}</small>
+                        <small *ngIf="!row.last_intervention_time">-</small>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding">
+
+                    <div class="carousel-box">
+                        <app-carousel-set [perPage]="5" [startIndex]="0" [draggable]="'true'" [threshold]="20" [loop]="'false'">
+                            <div *ngFor="let vital of row.vital_list">
+                                <app-vitals [vitalValue]="vital" [vitalClass]="getVitalComponentClass(vital.vital_status)"></app-vitals>
+                            </div>
+                        </app-carousel-set>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="hr-div-solid col-lg-12"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="pull-right">
+                    <a class="hdt-vitals-view btn btn-xs btn-white" (click)="openInterventionModal('vitals',row.participant_id)" [ngClass]="isLinkDisabled(row.vital_task_count)">Vitals ({{row.vital_task_count}})</a>
+                    <a class="hdt-compliance-view btn btn-xs btn-white" [ngClass]="isLinkDisabled(row.compliance_task_count)" (click)="openInterventionModal('compliance',row.participant_id)">Compliance ({{row.compliance_task_count}})</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+</div>-->

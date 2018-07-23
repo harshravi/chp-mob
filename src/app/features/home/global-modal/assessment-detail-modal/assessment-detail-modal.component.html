@@ -1,0 +1,165 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close p-b-sm"></a>
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-xs-12 text-left">
+          <h1 class="modal-title">{{assessmentQuestionDetails[0].assessment_name}}</h1>
+          <h4 class="font-normal">{{assessmentQuestionDetails[0].participant_name}}</h4>
+
+        </div>
+
+        <div *ngIf="!assessmentQuestionDetails[0].isEpilepsy" class="col-lg-6 col-md-6 col-xs-12 text-right p-r-xxl modal-content-DL">
+          <button class="btn inline-block btn-circle v-i-align" [disabled]="leftButtonDisable" (click)="getPreviousData()">
+            <i class="fa fa-angle-left fa-2x" aria-hidden="true"></i>
+          </button>
+          <h3 class="inline-block p-w-sm">{{_dateUtilityService.getDateAsString(assessmentQuestionDetails[count].assessment_date)}}</h3>
+          <h3 class="inline-block p-w-sm" *ngIf="seizureDetails.updated_date">{{_dateUtilityService.getDateAsString(seizureDetails.updated_date)}}</h3>
+          <button class="btn inline-block btn-circle v-i-align" [disabled]="rightButtonDisable" (click)="getNextData()">
+            <i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div *ngIf="isEpilepsy" class="col-lg-6 col-md-6 col-xs-12 text-right p-r-xxl modal-content-DL">
+          <h3 class="inline-block p-w-sm">{{_dateUtilityService.getDateAsString(epilepsyHeaderDateDisp)}}</h3>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!isEpilepsy" class="modal-body">
+      <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+      <div *ngIf="assessmentQuestionDetails[count].assessment_status == 1">
+        <h4 class="m-b-md">
+          <strong>{{assessmentQuestionDetails[count]['assessment_msg_' + assessmentQuestionDetails[count].language]}}</strong>
+        </h4>
+        <div class="m-b"  *ngFor="let obj of assessmentQuestionDetails[count].assessment_questions">
+          <h4 class="p-b5">{{obj['assessment_' + assessmentQuestionDetails[count].language]}}</h4>
+            <div class="row">
+              <div class="col-lg-5"  *ngFor="let scale of obj.scales">
+                <div class="row">
+                  <div class="col-xs-1">
+                    <i class="fa fa-check-circle fill-cricle-box fa-lg"  aria-hidden="true"  *ngIf="scale.showCheckbox"></i>
+                      <i class="fa fa-circle-thin cricle-box-radio fa-lg "  aria-hidden="true"  *ngIf="!scale.showCheckbox"></i>
+      </div>
+      <div class="col-xs-10">
+        <small>
+          <span class="v-align {{scale.fontStrong}}">{{scale['scale_' + assessmentQuestionDetails[count].language]}}</span>
+        </small>
+    </div>
+  </div>
+</div>
+<div class="col-lg-12 m-t-sm" *ngIf="obj?.sub_questions && obj?.answer_text_english === 'Yes'">
+  <div class="m-b-sm" *ngFor="let subQuestions of obj?.sub_questions">
+    <span class="block">{{subQuestions?.assessment_english}}</span>
+    <span class="block">{{subQuestions?.answer_text_english}}</span>
+  </div>
+</div>
+</div>
+</div>
+</div>
+<div class="text-center" *ngIf="assessmentQuestionDetails[count].expiry_status == 1 && assessmentQuestionDetails[count].assessment_status == 0">
+  <h4>No responses are recorded.</h4>
+</div>
+<div class="text-center" *ngIf="assessmentQuestionDetails[count].expiry_status == 0 && assessmentQuestionDetails[count].assessment_status == 0">
+  <h4>Yet to receive responses.</h4>
+</div>
+</div>
+<div *ngIf="isEpilepsy" class="modal-body">
+  <div *ngIf="!isReviewQuestionnaire">
+    <div class="seizure-detail" *ngFor="let detail of seizureDetails">
+      <!-- <div>{{detail.question.type}}</div> -->
+      <div class="type-heading">{{detail.question.type}}</div>
+
+      <div class="quest">
+        <div class="title">{{detail.question.seizure_name}}</div>
+        <div class="ans">{{detail.seizure_name}}</div>
+      </div>
+
+      <div class="quest">
+        <div class="title">{{detail.question.seizure_description}}</div>
+        <div class="ans">{{detail.seizure_description}}</div>
+      </div>
+
+      <div class="quest">
+        <div class="title">{{detail.question.occurrence}}</div>
+        <div class="ans">{{detail.occurrence}}</div>
+      </div>
+
+      <div class="quest">
+        <div class="title">{{detail.question.occurrence_details}}</div>
+        <div class="ans">{{detail.occurrence_details}}</div>
+      </div>
+
+      <div class="quest">
+        <div class="title">{{detail.question.reason}}</div>
+        <div class="ans">{{detail.reason}}</div>
+      </div>
+
+      <div class="quest">
+        <div class="title">{{detail.question.solution}}</div>
+        <div class="ans">{{detail.solution}}</div>
+      </div>
+
+    </div>
+    <div class="text-center" *ngIf="!seizureDetails || seizureDetails.length === 0">
+      <h4>Yet to receive responses.</h4>
+    </div>
+  </div>
+
+  <div *ngIf="isReviewQuestionnaire && isReviewQuestionnaireCompleted">
+    <h4 class="m-b-md">
+      <strong>{{reviewQuestionnaireDetails['assessment_msg_' + reviewQuestionnaireDetails.language]}}</strong>
+    </h4>
+    <div class="m-b"  *ngFor="let obj of reviewQuestionnaireDetails.assessment_questions">
+      <h4 class="p-b5">{{obj['assessment_' + reviewQuestionnaireDetails.language]}}</h4>
+        <div *ngIf="isAnyUserAnswerWrong; else allAnswerCorrectTemplate" class="row assessment-detail-qa">
+          <div *ngIf="!obj.isUserAnswerCorrect">
+            <div class="wrong-answer">
+              <span class=" fa fa-times-circle fa-1"></span> {{obj.answer_string}}</div>
+            <div class="correct-answer">
+              <span class=" fa fa-check-circle fa-1"></span> {{obj.correct_answer}}</div>
+          </div>
+
+          <div *ngIf="obj.isUserAnswerCorrect">
+            <div class="correct-answer">
+              <span class=" fa fa-check-circle fa-1"></span> {{obj.answer_string}}
+            </div>
+          </div>
+        </div>
+
+        <ng-template #allAnswerCorrectTemplate>
+          <div class="row">
+            <div class="col-lg-5"  *ngFor="let scale of obj.scales">
+              <div class="row">
+                <div class="col-xs-1">
+                  <i class="fa fa-check-circle fill-cricle-box fa-lg"  aria-hidden="true"  *ngIf="scale.showCheckbox"></i>
+                    <i class="fa fa-circle-thin cricle-box-radio fa-lg "  aria-hidden="true"  *ngIf="!scale.showCheckbox"></i>
+  </div>
+  <div class="col-xs-10">
+    <small>
+      <span class="v-align {{scale.fontStrong}}">{{scale['scale_' + reviewQuestionnaireDetails.language]}}</span>
+    </small>
+</div>
+</div>
+</div>
+<div class="col-lg-12 m-t-sm" *ngIf="obj?.sub_questions">
+  <div class="m-b-sm" *ngFor="let subQuestions of obj?.sub_questions">
+    <span class="block">{{subQuestions?.assessment_english}}</span>
+    <span class="block">{{subQuestions?.answer_text_english}}</span>
+  </div>
+</div>
+</div>
+</ng-template>
+
+</div>
+</div>
+
+<div class="text-center" *ngIf="isReviewQuestionnaire && firstAssessmentDetail?.seizureQuestion?.assessment_status === '0'">
+  <h4>Yet to receive responses.</h4>
+</div>
+
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-white btn-w-s" (click)="closeAssessmentDetailModal()">Close</button>
+</div>
+</div>
+</div>

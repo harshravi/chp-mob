@@ -1,0 +1,66 @@
+@import '~assets/scss/_variables.scss';
+.w-70{
+    width:70px;
+}
+
+.font-dark-bold{
+    font-weight: 700;
+}
+
+.taskListBackground {
+   background-color: $medi-gray;
+}
+.f-15{
+    font-size: 15px;
+}
+@media (max-width: 991px) {
+    .full-height{
+        height: auto;
+    }
+    .stat-percent {
+    float: left;
+    padding-left: 15px;
+}
+}
+.modal-body {
+   padding: 0px;
+   height: 75vh;
+}
+.develop-modal-contant {
+    border-bottom: 1px solid #e7eaec;
+    position: relative;
+    overflow: hidden;    
+}
+.category-padd-title{
+    padding: 5px 10px 5px 15px;
+}
+
+.form-element-left{
+    position: absolute;
+    left: 0px;
+    text-align: left;
+}
+// lung error msg
+.form-element-lung{
+    position: absolute;
+    left: 19px;
+    text-align: left;
+}
+
+.lung-field-cont{
+    display: block;
+}
+
+.lung-field-cont > input {
+    width: 50%;
+    display: inline-block;
+}
+
+.lung-field-cont > app-check-box{
+    margin-left: 7%;
+}
+
+.one-val-req-error{
+    width: 100%;
+    margin: 5px 0;
+}

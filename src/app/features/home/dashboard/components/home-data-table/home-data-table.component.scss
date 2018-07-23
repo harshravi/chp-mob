@@ -1,0 +1,81 @@
+@import '~assets/scss/_variables.scss';
+.svg-icon {
+    background: url('../../../../../../assets/img/meds-pill.svg#Capa_1') no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+    display: -ms-grid;
+    display: -webkit-box;
+    display: -moz-box;
+    display: inline-block;
+}
+
+ul.care-plan-list {
+    padding-left: 18px;
+    list-style-type: none;
+    padding: 0px;
+    li {
+        list-style-position: inside;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 3px;
+    }
+}
+
+.not-active {
+    pointer-events: none;
+    cursor: default;
+    color: inherit;
+    opacity: 0.65;
+}
+
+.datatable-scroll {
+    width: 100% !important;
+}
+
+.datatable-row-detail {
+    width: auto !important;
+}
+
+.display-block {
+    display: block;
+}
+
+.display-none {
+    display: none;
+}
+
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+@media (max-width:760px) {
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view {
+        display: block;
+    }
+    .relative{
+        position: relative;
+    }
+    .action-arrow{
+        width: 10px;  
+        position: absolute;
+        top: 41%;
+        left: 5px;
+    }
+    .p-l-lg{
+        padding-left: 35px;
+    }
+}
+
+.w-xs{
+    width: 53px;
+}

@@ -1,0 +1,268 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close p-b-sm"></a>
+      <div class="row">
+        <div class="col-lg-8 col-md-8 col-xs-11 text-left">
+          <h1 class="modal-title text-left inline-block">
+            <span class="inline-block cricle-nav v-s-align m-r-xs intervention_participant_circle">
+              <i class="fa fa-circle" [ngClass]="participatData.vital_status | criticalityColor"></i>
+            </span>
+            <div class="intervention_participant_name">
+              {{participatData.participant_name}}
+            </div>
+            <div class="inline" *ngIf="!showConfirmMsg">
+              <span>&nbsp;&nbsp;<button class="btn btn-default" [disabled]="left_disabled" (click)="getOtherParticipantData('previous')"><i class="fa fa-chevron-left"></i></button>
+                </span>&nbsp;&nbsp;&nbsp;
+              <span><button class="btn btn-default" [disabled]="right_diabled" (click)="getOtherParticipantData('next')"><i class="fa fa-chevron-right"></i></button></span>
+            </div>
+          </h1>
+          <div class="m-t">
+            <div class="inline">
+              <app-chips [chips]="conditionsList"></app-chips>
+            </div>
+            <span class="text-success font-bold" *ngIf="conditionsCount!=0">+{{conditionsCount}}</span>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-xs-12 text-right m-t-sm modal-content-right" *ngIf="!showConfirmMsg">
+          <button class="btn w-100 btn-white m-r-sm" (click)="closeInterventionModal('closed')">Close</button>
+          <button class="btn w-100 btn-primary" (click)="saveIntervention()" [disabled]="!showForm || disableSave">Submit</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body no-padding">
+      <div class="full-height" *ngIf="!showConfirmMsg">
+        <div class="col-lg-12 no-padding full-height">
+          <div class="col-lg-6 col-md-6 p-w-md full-height border-right log-min-height">
+            <app-tabset [uniqueId]='participantId' *ngIf="participatData.overall_seizure_counts == 0">
+              <app-tab tabTitle="Vitals">
+                <div *ngIf="participatData.vitalDetails">
+                  <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+                  <div class="care-team-contant" [ngClass]="getBroderColor(data.event_status)" *ngFor="let data of participatData.vitalDetails; let i =index;">
+                    <div class="row">
+                      <div class="col-lg-12 no-padding">
+                        <div class="col-xs-8" style="padding-left: 54px">
+                          <i class="fa fa-paper-plane" aria-hidden="true" *ngIf="data.reassign_count > 0">
+                          <span *ngIf="data.reassign_count > 0">({{data.reassign_count}})</span>
+                          </i>
+                          <i class="fa fa-dot-circle-o" aria-hidden="true" *ngIf="data.snooze_count > 0">
+                          <span *ngIf="data.snooze_count > 0">({{data.snooze_count}})</span>
+                          </i>
+                          <strong>&nbsp;{{data.event_type_desc}}</strong>
+                        </div>
+                        <div class="col-xs-4 text-right no-padding-left">
+                          <small>{{_dateUtilityService.getOnlyDate(data.event_timestamp)}}&nbsp;{{_dateUtilityService.getOnlyTime(data.event_timestamp)}}</small>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 no-padding">
+                        <div class="col-xs-2 text-left">
+                          <!--<app-check-box checkId="intervention_{{data.task_id}}" (checkedOrnot)="vitalChecked($event, data)"></app-check-box>-->
+                          <app-custom-check-box checkId="intervention_{{data.task_id}}" [(ngModel)]="data.selected" (changed)="vitalChecked(data)"></app-custom-check-box>
+                        </div>
+                        <div class="col-xs-6">
+                          <div class="text-right">
+                            <div [ngClass]="getSymptomClass(data.event_status)">{{data | expandEventType}}</div>
+                            <div *ngIf="data.event_type!='BG' && data.event_type!='WHBMI'">{{data.unit}}</div>
+                          </div>
+                        </div>
+                        <div class="col-xs-4">
+                          <div class="text-right">
+                            <div [ngClass]="getSymptomClass(data.event_status)">{{data.variance ? data.variance : '-'}}</div>
+                            <div>{{data.varianceUnit}}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </app-tab>
+              <app-tab tabTitle="Symptom Assessment">
+                <!-- Tab 2 -->
+                <div *ngIf="participatData?.symptomAssessmentDetails?.symptoms">
+                  <div class="care-team-contant">
+                    <div class="row">
+                      <div class="col-xs-6">
+                        <small>SYMPTOM</small>
+                      </div>
+                      <div class="col-xs-6 text-right">
+                        <small>RESPONSE</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngFor="let symptom of participatData.symptomAssessmentDetails.symptoms" class="care-team-contant" [ngClass]="getSymptomStatus(symptom.answer_text)">
+                    <div class="row">
+                      <div class="col-xs-8">
+                        {{symptom.symptom}}
+                      </div>
+                      <div class="col-xs-4 text-right">
+                        {{symptom.answer_text}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-sm" *ngIf="participatData?.symptomAssessmentDetails?.assessment_expired_msg">
+                  {{participatData.symptomAssessmentDetails.assessment_expired_msg}}
+                </div>
+                <h4 class="align-center" *ngIf="participatData?.symptomAssessmentDetails?.assessment_pending_msg">
+                  Not Answered
+                </h4>
+              </app-tab>
+              <app-tab tabTitle="Notes">
+                <div class="note-padding">
+                  <div class="care-team-contant" *ngFor="let note of participatData?.notes_Details">
+                    <div class="p-b3">
+                      <span *ngFor="let name of note.vital_name_details let i = index" class="text-uppercase small">
+                        {{name}}<span *ngIf="i != note?.vital_name_details?.length-1">, </span>
+                      </span>
+                    </div>
+                    <div class="p-b3 small" *ngFor="let intervention of note.intervention_names">
+                      <strong>{{intervention}} </strong>
+                    </div>
+                    <div class="p-b3">{{note.notes}}</div>
+                    <div class="p-b3">
+                      <small class="font-bold">
+                        {{note.staff_name}} - {{note.staff_roll}}
+                      </small>
+                      <small class="pull-right" *ngIf="!note.snooze_duration_type">
+                        {{_dateUtilityService.getOnlyDate(note.reported_time)}}&nbsp;{{_dateUtilityService.getOnlyTime(note.reported_time)}}
+                        </small>
+                    </div>
+                    <div class="p-b3">
+                      <small class="font-bold" *ngIf="note.snooze_duration_type">
+                        Remind me in: {{note.snooze_duration}} {{note.snooze_duration_type}}
+                      </small>
+                      <small class="pull-right" *ngIf="note.snooze_duration_type">
+                        {{_dateUtilityService.getOnlyDate(note.reported_time)}}&nbsp;{{_dateUtilityService.getOnlyTime(note.reported_time)}}
+                        </small>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-sm" *ngIf="participatData?.notes_Details?.length == 0">
+                  No Data Available
+                </div>
+              </app-tab>
+            </app-tabset>
+
+            <!-- Siezure Code starts -->
+            <div *ngIf="participatData.overall_seizure_counts > 0">
+              <div class="m-t-md m-b-sm">
+                <div *ngFor="let name of participatData?.seizure_details">
+                  <span class="text-danger font-bold">{{name.seizure_counts}} </span><span>{{name.seizure_name}}</span>
+                  <span
+                    *ngIf="name.badExample_counts > 0"> ( {{name.badExample_counts}} Bad Example<span *ngIf="name.badExample_counts > 1"></span>)</span>
+                </div>
+              </div>
+              <div class="siezure-box">
+                <div class="care-team-contant small" *ngFor="let task of participatData?.seizure_task_details">
+                  <div class="col-xs-12 no-padding">
+                    <div class="col-xs-6">
+                      <strong> {{task.seizure_name}}</strong>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                      <span class="font10">{{_dateUtilityService.getOnlyTime(task.seizure_timestamp)}} {{_dateUtilityService.getOnlyDate(task.seizure_timestamp)}}</span> <span class="p-l-sm"><i class="fa fa-exclamation-triangle" *ngIf="task.seizure_example == 0" aria-hidden="true"></i></span>
+                    </div>
+                  </div>
+                  <div class="font10 col-xs-12 m-t-xs">{{task.seizure_description}}</div>
+                </div>
+              </div>
+            </div>
+            <!-- Siezure Code ends -->
+
+          </div>
+          <div class="col-lg-6 col-md-6 m-t-md">
+            <form class="m-sm" [hidden]="!showForm">
+              <div class="form-group">
+                <label>Intervention: <small class="req-error">REQUIRED</small> </label>
+                <app-combo-box [optionsList]="interventionList.intervention_types" (optionSelected)="optionSelected($event, 'intervention')"
+                  logType="Intervention"></app-combo-box>
+              </div>
+
+              <div class="form-group" *ngIf="showOutreach">
+                <label>Outreach: <small class="req-error">REQUIRED</small></label>
+                <!--<select class="form-control" name="Outreach" [(ngModel)]="interventionList.selected_outreach_type_cd" (ngModelChange)="optionSelected($event, 'outreach')">
+                  <option *ngFor='let data of interventionList.outreach_types' [value]='data.outreach_type_cd'>{{data.outreach_type_desc}}</option>
+                </select>-->
+                <app-dropdown [ngClass]="{}" name="Outreach" [optionValueName]="'outreach_type_cd'" [optionTextName]="'outreach_type_desc'"
+                  [data]="interventionList?.outreach_types" [(ngModel)]="interventionList.selected_outreach_type_cd" (ngModelChange)="optionSelected($event, 'outreach')"></app-dropdown>
+              </div>
+              <div class="form-group">
+                <label>Note: <small class="req-error">OPTIONAL</small></label>
+                <textarea class="form-control" [(ngModel)]="interventionList.intervention_notes" rows="3" id="comment" name="interventionNotes"></textarea>
+
+              </div>
+              <div class="form-group" *ngIf="showOutreach">
+                <label>Outcome: <small class="req-error">REQUIRED</small> </label>
+                <app-combo-box [optionsList]="interventionList.outcome_types" (optionSelected)="optionSelected($event, 'outcome')" logType="Outcome"></app-combo-box>
+              </div>
+              <div class="form-group" *ngIf="showAssign">
+                <label>Assign To: </label>
+                <!--<select class="form-control" name="contract" [(ngModel)]="interventionList.assigned_to_staff_id" (ngModelChange)="optionSelected($event, 'outcome')">
+                  <option *ngFor='let data of interventionList.assign_to_users' [value]='data.staff_id'>{{data.staff_name}}</option>
+                </select>-->
+
+                <app-dropdown [ngClass]="{}" name="contract" [optionValueName]="'staff_id'" [optionTextName]="'staff_name'" [data]="interventionList.assign_to_users"
+                  [(ngModel)]="interventionList.assigned_to_staff_id" (ngModelChange)="optionSelected($event, 'outcome')"></app-dropdown>
+
+              </div>
+              <div class="row" *ngIf="showSnooze">
+                <div class="col-xs-12 no-padding">
+                  <div class="col-xs-5">
+                    <div class="form-group">
+                      <label>Remind me in: </label>
+                      <input (focus)="snoozeDurationTouchedEvt()" type="text" name="snooze_duration" class="form-control" [(ngModel)]="snooze_duration"
+                        (ngModelChange)="optionSelected($event, 'outcome')">
+                    </div>
+                  </div>
+                  <div class="col-xs-7">
+                    <div class="form-group">
+                      <label class="" style="visibility: hidden">Remind me in: </label>
+                      <!--<select class="form-control" name="snoozeType" [(ngModel)]="snoozeType" (ngModelChange)="optionSelected($event, 'outcome')">
+                        <option *ngFor='let data of snoozeDropdown' [value]='data'>{{data}}</option>
+                      </select>-->
+
+                      <app-dropdown [isSimpleData]="true" [ngClass]="{}" name="snoozeType" [data]="snoozeDropdown" [(ngModel)]="snoozeType" (ngModelChange)="optionSelected($event, 'outcome')"></app-dropdown>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!--<div class="row">
+                <div class="col-xs-12 no-padding">
+                  <div class="col-xs-5">
+                    <button type="button" (click)="action()" class="btn btn-white btn-block">Cancel</button>
+                  </div>
+                  <div class="col-xs-7">
+                    <button type="button" class="btn btn-primary btn-block" (click)="saveIntervention()">Save</button>
+                  </div>
+                </div>
+              </div><br>-->
+              <div class="row">
+                <div class="col-xs-12">
+                  <div *ngIf="errorMessage" class="alert alert-danger">
+                    {{errorMessage}}
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="showConfirmMsg" class="text-center confirm-msg">
+        <div class="p-b">
+          You filled out the form, but you haven't submitted the intervention. Are you sure you want to close the window? All entered
+          information will be lost.
+        </div>
+        <div>
+          <button type="button" class="btn w-130 btn-white m-r-sm" (click)="closeConfirmMsg()">Cancel</button>
+          <button type="button" class="btn w-130 btn-danger" (click)="confirmed()">Close</button>
+        </div>
+      </div>
+    </div>
+    <!--<div class="modal-footer">
+      <button type="button" class="btn btn-white btn-w-s" [disabled]="showConfirmMsg" (click)="closeInterventionModal('closed')">Close</button>
+    </div>-->
+  </div>
+
+</div>

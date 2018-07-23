@@ -1,0 +1,29 @@
+
+/* Responsive Tables*/
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+@media (max-width:768px){
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view{
+         display: block;
+        .col-xs-12{
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+    }
+    .card-to-table-view .col-xs-12:first-child{
+        padding-top: 0px;
+    }
+    .w-100{
+        min-width:80px !important;
+        font-size: smaller;
+    }
+}

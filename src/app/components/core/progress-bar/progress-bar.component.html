@@ -1,0 +1,10 @@
+<div>
+  <div class="inline p-b3" [ngStyle]="{color:proressTextColor}">{{progressBarTitle}}</div>
+  <div class="inline small pull-right " *ngIf="value === 'N/A' else showSymbol" [ngClass]="proressPerColor">{{value}}</div>
+  <ng-template #showSymbol>
+    <div class="inline small pull-right " *ngIf="value !== 'N/A'" [ngClass]="proressPerColor">{{value}}{{symbol}}</div>
+  </ng-template>
+</div>
+<div class="progress-wrap progress" [ngStyle]="{height:height+'px'}">
+  <div class="progress-status-bar progress" [ngStyle]="{width:width+'%'}" [ngClass]="background"></div>
+</div>

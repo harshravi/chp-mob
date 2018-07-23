@@ -1,0 +1,8 @@
+<div class="col-lg-12"  #tableWrapper>
+  <app-ibox-container>
+    <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+    <app-ibox-content>
+      <app-access-management-table (refreshRequired)="refreshGrid($event)" [listOfRoles]="listOfRoles" [columnArray]="columnArray" [mappingAndPrivileges]="listOfRolesAndPrivilegesMapping" (selectionChange)="selectionChange($event)" (isSaveClicked)="saveTableData($event)" (newRoleSelected)="newRoleSelected($event)"></app-access-management-table>
+    </app-ibox-content>
+  </app-ibox-container>
+</div>

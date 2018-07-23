@@ -1,0 +1,54 @@
+@font-face {
+  font-family: 'vh-icons';
+  src:  url('fonts/vh-icons.eot?ifeq49');
+  src:  url('fonts/vh-icons.eot?ifeq49#iefix') format('embedded-opentype'),
+    url('fonts/vh-icons.ttf?ifeq49') format('truetype'),
+    url('fonts/vh-icons.woff?ifeq49') format('woff'),
+    url('fonts/vh-icons.svg?ifeq49#vh-icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="vh-icon-"], [class*="vh-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'vh-icons' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.vh-icon-Home:before {
+  content: "\e901";
+}
+.vh-icon-Care-Plans:before {
+  content: "\e908";
+}
+.vh-icon-Clients-Patients:before {
+  content: "\e900";
+}
+.vh-icon-Libraries:before {
+  content: "\e902";
+}
+.vh-icon-Menu:before {
+  content: "\e903";
+}
+.vh-icon-Messaging:before {
+  content: "\e904";
+}
+.vh-icon-Settings:before {
+  content: "\e905";
+}
+.vh-icon-Staff:before {
+  content: "\e906";
+}
+.vh-icon-Users:before {
+  content: "\e907";
+}
+

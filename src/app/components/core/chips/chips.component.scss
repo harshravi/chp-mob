@@ -1,0 +1,21 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+.lable-diagnosis{
+    display: inline-block;
+    text-align: left;
+    white-space: inherit;
+    vertical-align: baseline;
+    border-radius: .30em;
+    font-size: 10px;
+    font-weight: 600;
+    @include padding-all(2px,6px,2px,6px);
+    @include margin-all(0,5px,4px,0);
+    text-shadow: none;
+    border:1px solid $chip-border-color;
+    background: $white;
+    color:$chip-text-color;
+    text-transform: uppercase;
+    word-wrap:break-word;
+    word-break:break-word;
+}

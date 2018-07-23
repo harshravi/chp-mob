@@ -1,0 +1,177 @@
+<div class="inmodal">
+    <div class="modal-content animated bounceInRight">
+        <div class="modal-header">
+            <h1 class="modal-title text-left">Client Setup</h1>
+            <p class="text-left">This is description about this step.</p>
+        </div>
+        <form [formGroup]="form">
+            <app-wizard-container [updateOrSave]="context.edit" (saveEvent)="submitClientCreationForm()" (cancelEvent)="closeClientModal()"
+                [disableSave]="isDisabled">
+                <app-wizard-section title="Client Information">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Client Name *</label>
+                                <input id="clientname" maxlength="100" formControlName="client_name" type="text" class="form-control required">
+                                <error-messages [control]="form.controls.client_name"></error-messages>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Hospital Group *</label>
+                                <input id="hospitalgroup" maxlength="100" formControlName="hospital_group" type="text" class="form-control required">
+                                <error-messages [control]="form.controls.hospital_group"></error-messages>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input id="address1" maxlength="30" formControlName="address_line1" type="text" class="form-control required">
+                                <error-messages [control]="form.controls.address_line1"></error-messages>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input id="address2" maxlength="30" formControlName="address_line2" type="text" class="form-control required email">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input id="city" maxlength="30" formControlName="city" type="text" class="form-control required">
+                                <error-messages [control]="form.controls.city"></error-messages>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>State</label>
+                                        <input id="state" maxlength="30" formControlName="state" type="text" class="form-control required email">
+                                        <error-messages [control]="form.controls.state"></error-messages>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Postal Code</label>
+                                        <input id="postalcode" maxlength="5" formControlName="postal_code" type="text" class="form-control required email">
+                                        <error-messages [control]="form.controls.postal_code"></error-messages>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Deployment *</label>
+                                <select id="deployment" class="form-control m-b" name="account" formControlName="deployment_type">
+                                        <option value="1">SaaS</option>
+                                        <option value="2">On Premises</option>
+                                    </select>
+                                <error-messages [control]="form.controls.deployment_type"></error-messages>
+                            </div>
+                        </div>
+                    </div>
+                </app-wizard-section>
+                <app-wizard-section title="Module Selection">
+                    <div class="row" formArrayName="facility_module_list">
+                        <div class="col-lg-4" *ngFor="let module of form.controls.facility_module_list; let i=index">
+                            <div class="panel-body" [formGroupName]="i">
+                                <input class="checkbox-custom" type="checkbox" id="cb-{{i}}" formControlName="selected">
+                                <label for="cb-{{i}}" class="checkbox-custom-label">
+                                    {{module.controls.module_name.value}}
+                                    </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 form-inline">
+                        <div class="form-group pull-right">
+                            <label>Contract *</label><br>
+                            <select style="width:150px" id="contract" class="form-control m-b" name="contract" (change)="getEndDate()" formControlName="contract">
+                                    <option value="1">1-Yr</option>
+                                    <option value="2">2-Yr</option>
+                                    <option value="3">3-Yr</option>
+                                    <option value="4">4-Yr</option>
+                                    <option value="5">5-Yr</option>
+                            </select><br>
+                            <error-messages [control]="form.controls.contract"></error-messages>
+                        </div>
+                        <div class="form-group pull-right" style="margin-right:10px;">
+                            <label>Start Date *</label><br>
+                            <!--{{form.controls.contract_start_date.value | date: 'MM/dd/yyyy'}}-->
+                            <input type="date" class="form-control" data-date-inline-picker="true" id="startDate" value="{{form.controls.contract_start_date.value | date: 'MM/dd/yyyy'}}"
+                                name="contract_start_date" formControlName="contract_start_date" /><br>
+                            <error-messages [control]="form.controls.contract_start_date"></error-messages>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group pull-right" style="margin-right: 160px;" *ngIf="form.controls.contract.value">
+                            <label>End Date </label><br>
+                            <input class="form-control" type="label" *ngIf="!context.edit" value="{{tempContractEndDate}}" disabled />
+                            <input class="form-control" type="label" *ngIf="context.edit" value="{{form.controls.contract_end_date.value | date : 'MM/dd/yyyy'}}"
+                                disabled />
+                        </div>
+                    </div>
+                </app-wizard-section>
+                <app-wizard-section title="Create Admin">
+                    <div formArrayName="client_admin_list">
+                        <div *ngFor="let details of form.controls.client_admin_list; let i=index">
+                            <div class="panel-body row" [formGroupName]="i">
+                                <div class="col-lg-12">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Name *</label>
+                                            <input id="name" type="text" maxlength="50" formControlName="name" class="form-control" />
+                                            <error-messages [control]="details.controls.name"></error-messages>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Job Title *</label>
+                                            <input id="name" type="text" maxlength="50" formControlName="job_title" class="form-control" />
+                                            <error-messages [control]="details.controls.job_title"></error-messages>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Email *</label>
+                                            <input id="name" type="text" formControlName="email" class="form-control" />
+                                            <error-messages [control]="details.controls.email"></error-messages>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>System Role *</label>
+                                            <input id="name" type="text" formControlName="system_role" class="form-control" />
+                                            <error-messages [control]="details.controls.system_role"></error-messages>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Phone Number *</label>
+                                            <input id="name" maxlength="10" type="text" formControlName="phone_number" class="form-control" />
+                                            <error-messages [control]="details.controls.phone_number"></error-messages>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label class="invisible">Action</label>
+                                            <div>
+                                                <button [disabled]="i===4" *ngIf="form.controls.client_admin_list.controls.length===(i+1)" class="btn btn-primary pull-left"
+                                                    (click)="addDetail()"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                                <button *ngIf="form.controls.client_admin_list.controls.length>1 && form.controls.client_admin_list.controls.length!==(i+1)"
+                                                    class="btn btn-danger pull-left" (click)="removeDetail(i)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </app-wizard-section>
+            </app-wizard-container>
+        </form>
+    </div>
+</div>

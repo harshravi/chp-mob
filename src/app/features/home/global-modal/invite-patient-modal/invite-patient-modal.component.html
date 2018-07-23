@@ -1,0 +1,129 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close p-b-sm v-hidden">
+        <span aria-hidden="true">×</span>
+      </a>
+      <div class="row">
+        <div class="col-lg-8 col-md-8 col-xs-11 text-left">
+          <h1 class="modal-title">{{programDetails.program_name}}</h1>
+          <h4 class="font-noraml">Invite New Patient</h4>
+        </div>
+        <div class="col-lg-4 col-md-4 col-xs-12 text-right" *ngIf="showConfirmMsg === false">
+          <button class="btn w-100 m-r-sm btn-white" (click)="confirm()" [disabled]="disableCloseButton">Close</button>
+          <button class="btn w-100 btn-primary" type="submit" [disabled]="!form.valid || !selectedCareTeam" (click)="sendCarePlanInvites(form.value)" >Invite</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body no-padding">
+      <div class="full-height" *ngIf="!showConfirmMsg">
+        <div class="col-lg-12 no-padding full-height">
+          <div class="col-lg-6 col-md-6 p-w-md full-height border-right log-min-height">
+            <div class="m-t">
+              <form [formGroup]="form">
+                <div class="row">
+                  <div class="col-xs-12 no-padding">
+                    <div class="col-xs-6 no-padding-right">
+                      <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" formControlName="first_name" class="form-control" placeholder="First" [readonly]="editData.edit">
+                        <error-messages [control]="form.controls.first_name"></error-messages>
+                      </div>
+                    </div>
+                    <div class="col-xs-6 m-t-xs">
+                      <div class="form-group">
+                        <label></label>
+                        <input type="text" formControlName="last_name" class="form-control" placeholder="Last" [readonly]="editData.edit">
+                        <error-messages [control]="form.controls.last_name"></error-messages>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <label>Email</label>
+                    <input type="text" formControlName="email_id" class="form-control" placeholder="Email" [readonly]="editData.edit">
+                    <error-messages [control]="form.controls.email_id"></error-messages>
+                  </div>
+                </div> <br>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <label>Medical Record Number</label>
+                    <input type="text" [textMask]="{mask:mrnMask,guide:false}" formControlName="mrn" class="form-control" placeholder="Medical record number" [readonly]="editData.edit">
+                    <error-messages [control]="form.controls.mrn"></error-messages>
+                  </div>
+                </div> <br>
+                <div class="row">
+                  <div class="col-xs-12 no-padding">
+                    <div class="col-xs-7 no-padding-right">
+                      <div class="form-group">
+                        <label>Date of Birth</label>
+                        <app-datepicker [maxDate]="maxDate" [currentDate]="form.controls.dob" formControlName="dob" (onChangeEvt)="startDateChange()"
+                          format="MM/DD/YYYY"></app-datepicker>
+                          <!--<error-messages [control]="form.controls.dob"></error-messages>-->
+                      </div>
+                    </div>
+                    <div class="col-xs-5">
+                      <div class="form-group">
+                        <label>Gender</label>
+                        <app-dropdown required formControlName="gender" [ngClass]="{'selectpicker': true}" name="Outreach" [optionValueName]="'genderLabel'"
+                          [optionTextName]="'genderLabel'" [data]="genderSelection" (change)="gender($event)">
+                          </app-dropdown>
+                          <error-messages [control]="form.controls.gender"></error-messages>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 p-w-md">
+            <div class="m-t">
+              <label>Assign To</label>
+              <!--<div>
+                <input type="text"  (keyup)='getCareTeam($event)'>
+              </div>-->
+              <div class="input-group"><input type="text" [(ngModel)]="searchValue" class="form-control" (keyup)='getCareTeam($event)'>
+                <span class="input-group-btn">
+                      <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+              <div>
+                <ul class="white-bg border-bottom border-left-right no-padding medi-list-height">
+                  <li *ngFor='let careMember of programDetails.staff_details let i = index;' class="list-group-item cursor" (click)="careTeamSelected(careMember,i)"
+                    [ngClass]="{'heighlight-row': highlightedSearchedRow == i}">
+
+                    <div class="care-team-content">
+                      <div class="patient-name-circle pull-left">
+                        <span class="patient-name">{{careMember.staff_name_initials}}</span>
+                      </div>
+                      <div class="media-body">
+                        <strong class="p-b3">{{careMember.staff_name}}</strong>
+                        <div class="p-b3"><small>{{careMember.staff_role == null ?'':careMember.staff_role}} </small></div>
+                        <div class="p-b3"><small>{{careMember.phone_number}}</small></div>
+                      </div>
+                    </div>
+
+                    </li>
+                </ul>
+                <div *ngIf="programDetails.staff_details.length ==0">No Data Available</div>
+              </div>
+              <div *ngIf="!invited" class="m-t align-center">{{message}}</div>
+              <div *ngIf="invited" class="m-t text-navy align-center">{{message}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="showConfirmMsg" class="text-center confirm-msg m-b-md">
+        <div class="p-b">
+          You filled out the form, but you haven’t invited the patient. Are you sure you want to close the window? All entered information
+          will be lost.
+        </div>
+        <div>
+          <button type="button" class="btn w-100 btn-white m-r-sm" (click)="closeConfirmMsg()">Cancel</button>
+          <button type="button" class="btn w-100 btn-danger" (click)="confirmed()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

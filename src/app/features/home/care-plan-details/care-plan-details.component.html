@@ -1,0 +1,172 @@
+<div class="row">
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="programOverViewText"></app-ibox-header>
+      <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+      <app-ibox-content *ngIf="programDetails">
+        <h3>{{programDetails.program_name}}</h3>
+        <p [innerHTML]="programDetails?.program_details"></p>
+        <div class="row">
+          <div class="col-lg-12">
+            <p><strong>Vitals:</strong>
+              <span class="p-l-xs" *ngIf="listOfTags.length === 0 && programDetails.no_vital_avaible ">{{programDetails?.no_vital_avaible}}</span>
+            </p>
+            <div *ngIf="listOfTags.length !== 0">
+              <app-chips [chips]="listOfTags" [styleClassForChips]="styleInputForChips"></app-chips>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <p><strong>Duration: {{programDetails.duration}} days</strong></p>
+            <strong>Enrollment Period: {{_dateUtilityService.getDateAsString(programDetails.start_date)}} - {{programDetails.end_date == null ?'Open End': _dateUtilityService.getDateAsString(programDetails.end_date)}}</strong>
+          </div>
+          <!--<div class="col-lg-5">
+            <p><strong>Duration: {{programDetails.duration}} days</strong></p>
+            <strong>Enrollment Period: {{_dateUtilityService.getDateAsString(programDetails.start_date)}} - {{programDetails.end_date == null ?'Open End': _dateUtilityService.getDateAsString(programDetails.end_date)}}</strong>
+          </div>-->
+          <div class="col-lg-5">
+            <button type="submit" class="btn btn-primary w-150 pull-right" (click)="invitePatient()">Invite New Patient</button>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+    <div class="row">
+      <div class="col-lg-4">
+        <app-ibox-container>
+          <app-ibox-header [cardName]="patientOverViewText"></app-ibox-header>
+          <app-ibox-content *ngIf="programDetails">
+            <p><strong>Enrollment:</strong></p>
+            <div class="row">
+              <div class="col-xs-5 m-b-sm">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',programId,'CarePlan', {enrollmentStatus:'Enrolled'}]">
+                  <app-count-box [displayText]="displayTextEnrolled" [countValue]="programDetails.enrolled == null ? 0:programDetails.enrolled"
+                    [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox" [colorOfBoxText]="colorOfBoxTextEnrolled" [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>
+              <div class="col-xs-5 text-center m-b-sm">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',programId,'CarePlan', {enrollmentStatus:'Invited'}]">
+                  <app-count-box [displayText]="displayTextInvited" [countValue]="programDetails.invited ==null ? 0: programDetails.invited"
+                    [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox" [colorOfBoxText]="colorOfBoxTextCompleted" [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>
+              <!--As per MCH requirement commenting unassigned term in application-->
+              <!--<div class="col-xs-3 text-right m-b-sm">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',programId,'CarePlan', {enrollmentStatus:'Unassigned'}]">
+                  <app-count-box [displayText]="displayTextUnassigned" [countValue]="programDetails.unassigned== null? 0: programDetails.unassigned"
+                    [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox" [colorOfBoxText]="colorOfBoxTextCritical" [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>-->
+            </div>
+            <p><strong>Status:</strong></p>
+            <div class="row">
+              <div class="col-xs-5 m-b-sm">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',programId, 'CarePlan', {criticalStatus:'Critical'}]">
+                  <!--<app-count-box [displayText]="displayTextCritical" [countValue]="programDetails.critical == null ? 0:programDetails.critical"
+                    [colorOfBox]="colorOfBoxCritical" [headingTextForBox]=""></app-count-box>-->
+                  <app-count-box [displayText]="displayTextCritical" [countValue]="programDetails.critical == null ? 0:programDetails.critical"
+                    [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox" [colorOfBoxText]="colorOfBoxTextCritical" [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>
+              <div class="col-xs-5 text-center m-b-sm">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',programId, 'CarePlan', {criticalStatus:'Alert'}]">
+                  <!--<app-count-box [displayText]="displayTextAlert" [countValue]="programDetails.alert ==null ? 0: programDetails.alert" [colorOfBox]="colorOfBoxCompleted"
+                    [headingTextForBox]=""></app-count-box>-->
+                  <app-count-box [displayText]="displayTextAlert" [countValue]="programDetails.alert ==null ? 0: programDetails.alert" [colorOfBox]="colorOfBoxWhite"
+                    [borderOfBox]="borderOfBox" [colorOfBoxText]="colorOfBoxTextCompleted" [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>
+            </div>
+          </app-ibox-content>
+        </app-ibox-container>
+      </div>
+      <div class="col-lg-8">
+        <app-ibox-container>
+          <app-ibox-header [cardName]="criteriaText"></app-ibox-header>
+          <app-ibox-content *ngIf="programDetails">
+            <div class="row">
+              <div class="col-xs-12 no-padding">
+                <div class="col-xs-6 border-right">
+                  <div class="m-b-md">Inclusion criteria:</div>
+                  <div class="m-b-md"><strong>Age:</strong>&nbsp; {{programDetails.inclusion_criteria.criteria[0]?.min_age}}&nbsp;yrs to {{programDetails.inclusion_criteria.criteria[0]?.max_age}}&nbsp;yrs
+                  </div>
+                  <div class="m-b-md"><strong>Gender:</strong>&nbsp;
+                    <span *ngIf="programDetails.inclusion_criteria.criteria[0]?.gender==0">Male</span>
+                    <span *ngIf="programDetails.inclusion_criteria.criteria[0]?.gender==1">Female</span>
+                    <span *ngIf="programDetails.inclusion_criteria.criteria[0]?.gender==2">Male, Female</span>
+                  </div>
+                  <div class="m-b-md" *ngIf="programDetails.exclusion_criteria.criteria.length !=0"><strong>Gender:</strong>&nbsp;{{programDetails.inclusion_criteria.criteria[0].gender==1?'Male':'Female'}}</div>
+                  <div class="m-b-md"><strong>Diseases:</strong>
+                    <div *ngIf="programDetails?.inclusion_criteria.diseases" [innerHTML]="programDetails?.inclusion_criteria.diseases"></div>
+                  </div>
+                  <div class="m-b-md"><strong>Lifestyle:</strong>
+                    <div *ngIf="programDetails?.inclusion_criteria.lifestyle" [innerHTML]="programDetails?.inclusion_criteria.lifestyle"></div>
+                  </div>
+                  <div class="m-b-sm"><strong>Other:</strong>
+                    <div *ngIf="programDetails?.inclusion_criteria.other" [innerHTML]="programDetails?.inclusion_criteria.other"></div>
+                  </div>
+                </div>
+                <div class="col-xs-6">
+                  <div class="m-b-md">Exclusion criteria:</div>
+                  <!--<div class="m-b-md"><strong>Age:</strong>
+                    </div>-->
+                  <!--<div class="m-b-md"><strong>Gender:</strong>&nbsp;
+                    </div>-->
+                  <div class="m-b-md" *ngIf="programDetails.exclusion_criteria.criteria.length !=0"><strong>Gender:</strong>&nbsp;{{programDetails.exclusion_criteria.criteria[0].gender==1?'Male':'Female'}}</div>
+                  <div class="m-b-md"><strong>Diseases:</strong>
+                    <div *ngIf="programDetails?.exclusion_criteria.diseases" [innerHTML]="programDetails?.exclusion_criteria.diseases"></div>
+                  </div>
+                  <div class="m-b-md"><strong>Lifestyle:</strong>
+                    <div *ngIf="programDetails?.exclusion_criteria.lifestyle" [innerHTML]="programDetails?.exclusion_criteria.lifestyle"></div>
+                  </div>
+                  <div class="m-b-sm"><strong>Other:</strong>
+                    <div *ngIf="programDetails?.exclusion_criteria.other" [innerHTML]="programDetails?.exclusion_criteria.other"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </app-ibox-content>
+        </app-ibox-container>
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4">
+        <app-ibox-container>
+          <app-ibox-header [cardName]="goalText"></app-ibox-header>
+          <app-ibox-content *ngIf="programDetails">
+            <div *ngIf="programDetails?.goals" [innerHTML]="programDetails?.goals"></div>
+            <p *ngIf="!programDetails.goals">No Goals Available</p>
+          </app-ibox-content>
+        </app-ibox-container>
+      </div>
+      <div class="col-lg-4">
+        <app-ibox-container>
+          <app-ibox-header [cardName]="careTeamText"></app-ibox-header>
+          <app-ibox-content [styleClassForContent]="noPadClassForComponent" *ngIf="programDetails">
+            <div *ngFor="let careMember of programDetails.staff_details">
+              <div class="care-team">
+                <div class="care-team-contant">
+                  <div class="patient-name-circle pull-left">
+                    <span class="patient-name">{{careMember.staff_name_initials}}</span>
+                  </div>
+                  <div class="media-body">
+                    <div class="pull-right m-t-xs">
+                      <button class="btn btn-primary btn-circle" type="button"><i class="fa fa-comment fa-lg" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <strong class="p-b3">{{careMember.staff_name}}</strong>
+                    <div class="p-b3"><small>{{careMember.staff_role == null ?'':careMember.staff_role}} </small></div>
+                    <div class="p-b3"><small>{{careMember.phone_number}}</small></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="p-sm border-bottom" *ngIf="programDetails.staff_details.length==0">No Data Available</div>
+            <div class="text-center p-sm">
+              <button type="button" class="btn btn-white btn-block" [routerLink]="['/home/careTeam',programDetails.program_ref_no]" [disabled]="programDetails.staff_details.length==0">View All</button>
+            </div>
+          </app-ibox-content>
+        </app-ibox-container>
+      </div>
+    </div>
+  </div>
+</div>

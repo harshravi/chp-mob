@@ -1,0 +1,51 @@
+<div class="inmodal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <a class="close p-b-sm" (click)="closeGlobalSettings()">
+                <span aria-hidden="true">×</span>
+            </a>
+            <h1 class="modal-title text-left">Global Settings</h1>
+            <p class="text-left">These settings reflect across clients</p>
+        </div>
+        <form [formGroup]="form" novalidate (ngSubmit)="saveGlobalSettings()">
+            <div class="modal-body">
+                <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+                <div class="row">
+                    <div class="col-lg-4" *ngFor="let item of globalSettingOptions; let i = index" [attr.data-index]="i">
+                        <div class="form-group">
+                            <label>{{item.label_text}}</label>
+                            <!--<select #selectedCategory class="form-control m-b" formControlName="dropdown{{i}}" 
+                            (change)="customBox(item,selectedCategory.value,item.settings_value)">
+                                        <option *ngFor="let data of item.settings_type_values" [value]="data.settings_type_value" >
+                                            {{data.settings_type_label}}
+                                        </option>
+                                        <option [selected]="item.settings_matched=='matched'">
+                                           Custom
+                                        </option>                                        
+                            </select>-->
+
+                            <app-dropdown *ngIf="disableSelectRoleType!=true" [ngClass]="{'m-b': true}" name="globalSetttingDD" [optionValueName]="'settings_type_value'"
+                                [optionTextName]="'settings_type_label'" [data]="item.settings_type_values" formControlName="dropdown{{i}}"
+                                (change)="customBox(item, (selectedCategory ? selectedCategory.value : null), (item ? item.settings_value : null))">
+                                </app-dropdown>
+
+                                <div class="form-group" *ngIf="item.customFieldFlag">
+                                    <div>
+                                        <div class="inline"><input id="custom_medi-reminder" [formControl]="form.controls['sendReqTime'+i]" maxlength="2"
+                                                type="text" class="form-control custom-box" />
+                                        </div> &nbsp;
+                                        <div class="inline">{{item.time_suffix}}</div>
+                                    </div>
+                                    <error-messages [control]="form.controls['sendReqTime'+i]"></error-messages>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" (click)="closeGlobalSettings()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="row page-heading-phy">
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+    <div class="feed-element m-t-none">
+      <div class="patient-name-circle pull-left">
+        <span class="patient-name">{{displayName}}</span>
+      </div>
+      <div class="media-body" *ngIf="participantDetail">
+        <h2 class="text-overflow font-noraml"><span class="text-capital">{{participantDetail.participant_name}}, {{participantDetail.age}}</span>{{participantDetail.age_unit}}</h2>
+        <h3 class="text-muted p-b3 text-overflow">DOB: {{_dateUtilityService.getDateForStringValue(participantDetail.dob)}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>{{participantDetail.gender}}</span></h3>
+        <h3 class="text-muted p-b3 text-overflow"><strong>P: {{participantDetail.mobile}}</strong></h3>
+        <!--<div class="text-muted p-b3">H: {{participantDetail.mobile}}</div>-->
+        <h3 class="text-muted p-b3 address-line-height"> {{participantDetail.address}}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right text-left-sm">
+    <div class="inline p-r10 m-b-sm">
+      <div class="font-bold text-left">TASKS</div>
+      <app-count-box [displayText]="displayTextEnrolled" [countValue]="count" [colorOfBox]="colorOfBoxTasks"></app-count-box>
+    </div>
+    <div class="inline text-left v-align p-r10">
+      <div class="font-bold">COMPLIANCE</div>
+      <div class="inline p-r10" *ngIf="careplanCompliance">
+        <app-count-box [displayText]="careplanCompliance.displayTextEnrolled" [countValue]="careplanCompliance.compliance==undefined?'0':careplanCompliance.compliance"
+          [colorOfBox]="careplanCompliance.boxColor" [countSymbol]="careplanCompliance.careplanCountSymbol" [colorOfBox]="careplanCompliance.boxColor"
+          [borderOfBox]='careplanCompliance.boxBorder' [colorOfBoxText]="careplanCompliance.statusColor" [headingTextForBox]="COMPLIANCE"></app-count-box>
+      </div>
+      <div class="inline" *ngIf="medicationAdherence">
+        <app-count-box [displayText]="medicationAdherence.displayTextEnrolled" [countValue]="medicationAdherence.medication_adherence"
+          [colorOfBox]="medicationAdherence.boxColor" [borderOfBox]='medicationAdherence.boxBorder' [countSymbol]="medicationAdherence.medicationCountSymbol"
+          [colorOfBoxText]="commonUtils.getColorCodeForMedicationCompliacne(medicationAdherence.medication_adherence)" [headingTextForBox]="COMPLIANCE"></app-count-box>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Participant Diagnosis-Condition view Start-->
+<div class="row no-margins border-top-bottom">
+  <div *ngIf="('viewPrimaryDiagnosis' | privilege)" class="col-lg-12">
+    <div class="col-lg-7 col-md-7 col-sm-12 p-xs">
+      <div class="p-b3"><strong><small>CONDITIONS</small></strong></div>
+      <div class="bold" *ngIf="diagnosisConditions?.length == 0 && ('addPrimaryDiagnosis' | privilege)">Add a new condition...</div>
+      <div *ngFor="let diagnosis of diagnosisConditions" class="inline">
+        <div class="inline vital-infoWidth">
+          <div class="lable-diagnosis">{{diagnosis.diagnosis_name}}
+            <span class="cursor" (click)="deleteParticipantDiagnosis(diagnosis.diagnosis_name,diagnosis.diagnosis_id)">
+            <i *ngIf="('deletePrimaryDiagnosis' | privilege)" class="fa fa-times fa-lg" aria-hidden="true"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5 col-md-5 col-sm-12 p-xs text-right">
+      <div *ngIf="('addPrimaryDiagnosis' | privilege)" (click)="displayAddDiagnosisField()">
+        <button *ngIf="displayAdd == true" class="btn btn-primary">Add Condition</button>
+      </div>
+      <div *ngIf="displayAdd == false" class="pull-right">
+        <form [formGroup]="form" (ngSubmit)="addParticipantDiagnosis(form.value)" class="form-inline">
+          <input maxlength="150" type="text" class="form-control inline w-200 m-r-xs" [formControl]="form.controls['diagnosis_name']"
+          />
+          <button type="submit" class="btn btn-primary btn-sm inline m-r-xs" [disabled]="!form.valid">
+                <i class="fa fa-check fa-lg" aria-hidden="true"></i></button>
+          <button (click)="hideAddDiagnosisField()" class="btn btn-danger btn-sm inline"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Participant Diagnosis-Condition view End-->

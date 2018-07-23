@@ -1,0 +1,287 @@
+<div class="row" #tableWrapper>
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <!--drop down and checkbox to show ccd in view all-->
+        <div class="row">
+          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <!--<select class=" form-control" [(ngModel)]="selectedCCD" (ngModelChange)="getSelectedCCDInfo()">
+                <option *ngFor="let data of ccdList" value={{data.id}}>
+                  {{data.filterBy}}
+                </option>
+              </select>-->
+            <app-dropdown [optionTextName]="'filterBy'" [optionValueName]="'id'" [ngClass]="{}" name="snoozeType" [data]="ccdList" [(ngModel)]="selectedCCD"
+              (ngModelChange)="getSelectedCCDInfo()"></app-dropdown>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12" *ngIf="selectedCCD!='hospitalization_reason' && selectedCCD !='visit_information'">
+            <app-check-box [checkChecked]="showDuplicates" checkId="1" checkLabel='Show Duplicates' (checkedOrnot)="onCheckedOrUnchecked($event)"></app-check-box>
+          </div>
+        </div><br>
+        <!--drop down and checkbox to show ccd in view all ended-->
+        <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+
+        <!--display data in Visit Information section-->
+        <div *ngIf="selectedCCD == 'visit_information' && visitInfo">
+          <div class="col-lg-12 p-xs border-left-right border-top-bottom">
+            <div class="col-lg-5">
+              <p *ngIf="visitInfo.admit_date"><strong>Admit Date:</strong> <span>{{visitInfo.admit_date ? visitInfo.admit_date : '-' }}</span></p>
+            </div>
+            <div class="col-lg-7">
+              <p *ngIf="visitInfo.facility_name"> <strong>Location Of Visit:</strong> <span>{{visitInfo.facility_name}} {{visitInfo.street}} {{visitInfo.city}}{{visitInfo.state}} {{visitInfo.country}} {{visitInfo.postalCode}}</span></p>
+            </div>
+            <div class="col-lg-5">
+              <strong>Discharge Date:</strong> <span>{{visitInfo.discharge_date || visitInfo.discharge_date != "" ? visitInfo.discharge_date : '-'}}</span>
+            </div>
+          </div>
+          <div class="row table-to-card-view">
+            <div class="col-lg-12 p-m"><strong>Care Team Members</strong></div>
+          </div>
+        </div>
+        <!--display data in Visit Information section ended-->
+
+        <!--tabular view for CCD-->
+        <div class="row table-to-card-view">
+          <div class="col-lg-12">
+            <ngx-datatable *ngIf="ccdAllList" class="material" #myTable [rows]="rows" [columns]="columns" [columnMode]="'force'" [externalPaging]="false"
+              [headerHeight]="40" [offset]="offset" [footerHeight]="0" [rowHeight]="'auto'" [count]="count" [scrollbarH]="false"
+              [scrollbarV]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+                </a>
+              </ng-template>
+              <!--For Allergy-->
+              <ngx-datatable-column prop='entity' name="Allergen" *ngIf="selectedCCD=='allergies'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='allergy_type' name="Type" *ngIf="selectedCCD=='allergies'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='sevierity' name="Severity" *ngIf="selectedCCD=='allergies'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for Visit Information-->
+              <ngx-datatable-column prop='first_name' name="Name" *ngIf="selectedCCD=='visit_information'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{row.prefix}}&nbsp; {{row.first_name}}&nbsp; {{row.last_name}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='telephone_number' name="Telephone Number" *ngIf="selectedCCD=='visit_information'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='function_name' name="Function Code" *ngIf="selectedCCD=='visit_information'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for Problems-->
+              <ngx-datatable-column prop='problem_type' name="Type" *ngIf="selectedCCD=='problems'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for Social History-->
+              <ngx-datatable-column prop='social_history_type' name="Social History Type" *ngIf="selectedCCD=='social_history'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='history_discription' name="Description" *ngIf="selectedCCD=='social_history'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for Impairments-->
+              <ngx-datatable-column prop='functionl_condition' name="Functional Condition" *ngIf="selectedCCD=='impairments'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='impairment_type_type' name="Impairment Type" *ngIf="selectedCCD=='impairments'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for reason for hospitalization-->
+              <ngx-datatable-column prop='changedReason' name="Hospitalizations" *ngIf="selectedCCD=='hospitalization_reason'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for Procedures-->
+              <ngx-datatable-column prop='procedure_name' name="Procedure" *ngIf="selectedCCD=='procedures'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='procedure_date' name="Date" *ngIf="selectedCCD=='procedures'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--common column-->
+              <ngx-datatable-column prop='status' name="Status" *ngIf="selectedCCD!='visit_information' && selectedCCD!='social_history' && selectedCCD!='procedures' && selectedCCD!='hospitalization_reason'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='onset_date' name="Onset Date" *ngIf="selectedCCD!='visit_information' && selectedCCD!='social_history' && selectedCCD!='impairments' && selectedCCD!='procedures' && selectedCCD!='hospitalization_reason'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='start_date' name="Onset Date" *ngIf="selectedCCD=='social_history' || selectedCCD=='impairments'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <!--for problems not a common field-->
+              <ngx-datatable-column prop='health_observation' name="Health Status Observation" *ngIf="selectedCCD=='problems'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  {{value ? value : '-'}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='' name="" *ngIf="selectedCCD!='visit_information' && selectedCCD!='hospitalization_reason' || selectedCCD!='procedures'">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  <button (click)="activeCCD(row)" class="btn btn-primary btn-sm w-100" *ngIf="row.editable_status==2">Show</button>
+                  <button (click)="inActiveCCD(row)" class="btn btn-sm w-100 btn-danger" *ngIf="row.editable_status==1">Hide</button>
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+        </div>
+        <!--tabular view ended-->
+        <!--Card View for the Tabular Data for Mobile CONVERT TO COMPONENT-->
+        <div class="row card-to-table-view">
+          <div class="col-sm-12">
+            <!--allergies View-->
+            <div class="feed-activity-list" *ngIf="selectedCCD=='allergies' && ccdAllList">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div class="media-body">
+                  <div class="pull-right">
+                    <!--<app-chips [chips]="data.allergy_type"></app-chips>-->
+                    <small class="lable-diagnosis">{{data.allergy_type}}</small>
+                  </div>
+                  <div class="m-b-xs small"><strong>{{data.entity ? data.entity : '-'}}</strong></div>
+                  <div class="m-b-xs small"> <span class="font-bold">Severity:</span> {{data.sevierity ? data.sevierity : '-'}}</div>
+                  <div class="pull-left small">
+                    {{data.onset_date}}
+                  </div>
+                  <div class="pull-right text-uppercase {{data.statusColor}}">
+                    {{data.status}}
+                  </div>
+                </div>
+                <button (click)="activeCCD(row)" class="btn btn-primary btn-xs w-70" *ngIf="data.editable_status==2">Show</button>
+                <button (click)="inActiveCCD(row)" class="btn btn-xs w-70 btn-danger" *ngIf="data.editable_status==1">Hide</button>
+              </div>
+              <div *ngIf="rows?.length==0">No allergies were found in the medical history</div>
+            </div>
+
+            <!--impairments View-->
+            <div class="feed-activity-list" *ngIf="selectedCCD=='impairments' && ccdAllList">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div class="m-b-xs small"><strong>{{data.functionl_condition}}</strong></div>
+                <div class="m-b-xs small"><span class="font-bold">Impairment Type:</span> {{data.impairment_type_type ? data.impairment_type_type :
+                  '-'}}
+                </div>
+                <div class="pull-left small">
+                  {{data.start_date}}
+                </div>
+                <div class="pull-right text-uppercase {{data.statusColor}}">
+                  {{data.status}}
+                </div>
+                <button (click)="activeCCD(row)" class="btn btn-primary btn-xs w-70" *ngIf="data.editable_status==2">Show</button>
+                <button (click)="inActiveCCD(row)" class="btn btn-xs w-70 btn-danger" *ngIf="data.editable_status==1">Hide</button>
+              </div>
+              <div *ngIf="rows?.length==0">No impairments were found in the medical history</div>
+            </div>
+
+            <!--Problems view-->
+            <div class="feed-activity-list" *ngIf="selectedCCD=='problems' && ccdAllList">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div class="m-b-xs small"><strong>{{data.problem_type ? data.problem_type : '-'}}</strong> </div>
+                <div class="m-b-xs small"><span class="font-bold">Health Status Observation:</span> {{data.health_observation ? data.health_observation
+                  : '-'}}
+                </div>
+                <div class="pull-left small">
+                  {{data.onset_date}}
+                </div>
+                <div class="pull-right text-uppercase {{data.statusColor}}">
+                  {{data.status}}
+                </div>
+                <button (click)="activeCCD(row)" class="btn btn-primary btn-xs w-70" *ngIf="data.editable_status==2">Show</button>
+                <button (click)="inActiveCCD(row)" class="btn btn-xs w-70 btn-danger" *ngIf="data.editable_status==1">Hide</button>
+              </div>
+              <div *ngIf="rows?.length==0">No problems were found in the medical history</div>
+            </div>
+
+            <!--Procedures view-->
+            <div class="feed-activity-list" *ngIf="selectedCCD=='procedures' && ccdAllList">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div class="m-b-xs small"><span class="font-bold">Procedure: </span> {{data.procedure_name ? data.procedure_name : '-'}}</div>
+                <div class="small">
+                  {{data.procedure_date}}
+                </div>
+              </div>
+              <div *ngIf="rows?.length==0">No Procedure information was found in the medical history</div>
+            </div>
+
+            <!--hospitalization_reason view-->
+            <div class="feed-activity-list" *ngIf="selectedCCD=='hospitalization_reason' && ccdAllList">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div>
+                  {{data.reason}}
+                </div>
+              </div>
+              <div *ngIf="rows?.length==0">No hospitalization reasons were found in the medical history</div>
+            </div>
+
+            <!--Social history View-->
+            <div class="feed-activity-list" *ngIf="selectedCCD=='social_history' && ccdAllList">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div class="m-b-xs small"><strong>{{data.social_history_type}}</strong> </div>
+                <div class="m-b-xs small"><span class="font-bold">Description:</span> {{data.history_discription ? data.history_discription : '-'}}
+                </div>
+                <div class="small">
+                  {{data.start_date}}
+                </div>
+                <button (click)="activeCCD(row)" class="btn btn-primary btn-xs w-70" *ngIf="data.editable_status==2">Show</button>
+                <button (click)="inActiveCCD(row)" class="btn btn-xs w-70 btn-danger" *ngIf="data.editable_status==1">Hide</button>
+              </div>
+              <div *ngIf="rows?.length==0">No Social History information was found in the medical history</div>
+            </div>
+
+            <!--Visit Informations view-->
+            <div class="row" *ngIf="selectedCCD=='visit_information' && ccdAllList && rows?.length!=0">
+              <div class="col-lg-12 m-t-sm m-l-xs"><strong>Care Team Members</strong></div>
+            </div>
+            <div class="feed-activity-list" *ngIf="selectedCCD=='visit_information' && ccdAllList">
+              <div class="feed-element p-l-xs" *ngFor="let data of rows">
+                <div class="m-b-xs small"> <span class="font-bold"> Name: </span>{{data.prefix}}&nbsp;{{data.first_name}}&nbsp;{{data.last_name}}</div>
+                <div class="m-b-xs small"> <span class="font-bold">Telephone Number: </span>{{data.telephone_number ? data.telephone_number : '-'}}</div>
+                <div class="m-b-xs small"> <span class="font-bold">Function Code: </span>{{data.function_name ? data.function_name : '-'}}</div>
+              </div>
+              <div *ngIf="rows?.length==0" class="m-t-sm">No Visit Information was found in the medical history</div>
+            </div>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>

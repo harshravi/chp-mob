@@ -1,0 +1,8 @@
+<div *ngIf="vitalTasks?.length != 0">
+  <ng-template ngFor let-item [ngForOf]="vitalTasks" let-i="index" >
+    <app-task-box [current]="current" [indexNo]="i" (click) = "current = i" [taskDetails]="item" [textBoxDetails]="textboxDetail" [showCarePlan]="showCarePlan" (reassignOpenOrClosed)="checkReassign($event)" (selectedParticipant)="selectedParticipantDetails($event)" (enteredPatientName)="patientName($event)" (selectedItem)="selectedTask($event)"></app-task-box>
+  </ng-template>
+</div>
+<div class="p-lg text-center" *ngIf="vitalTasks?.length === 0">
+  <h3>You have no pending Tasks</h3>
+</div>

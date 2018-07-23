@@ -1,0 +1,7 @@
+<div #datepicker class="input-group cursor">
+    <input [attr.disabled]="_disabled" type="text" class="form-control cursor" name="datepicker" value="{{currentDate.value| date : 'MM/dd/yyyy'}}" readonly="readonly"
+        placeholder="MM/DD/YYYY" (change)="changeDate()">
+    <span class="input-group-addon">
+        <span class="fa fa-calendar"></span>
+    </span>
+</div>

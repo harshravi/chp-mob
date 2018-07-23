@@ -1,0 +1,4 @@
+<div class="col-lg-3 col-md-3 col-sm-4" [ngClass]="(!categoryData.enabled)?'disabled':''">
+  <div class="category-heading">{{categoryData.name}}</div>
+  <button class="btn btn-block category-content" *ngFor="let option of categoryData.options" (click)="selectedOption(categoryData.name,option)">{{option}}</button>
+</div>

@@ -1,0 +1,34 @@
+@import '~assets/scss/_variables.scss';
+
+.cursor{ outline: none; }
+
+a:hover{
+    color: inherit;
+}
+
+.vital-number{
+    color:$blue;
+}
+
+.progress-width{
+   width: calc(100% - 45px);
+}
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+
+.overall_compliance_lheight{
+    line-height: 3.1;
+}
+.actionPlan-btn-padding{
+    padding: 6px 12px;
+}
+.progress-bar-box{
+    padding-right:5px;
+}
+@media (max-width:992px){
+    .margin-media-sm{
+        margin-top: 10px;
+    }
+}

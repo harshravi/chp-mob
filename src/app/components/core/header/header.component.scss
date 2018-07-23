@@ -1,0 +1,134 @@
+@import '~assets/scss/_variables.scss';
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.side-right-menu{
+    margin-top: 3px;
+    width: 170px;
+    border-radius: 3px;
+    background-color: $dark-blue;
+    box-shadow: 0 0 4px 0 #293847;
+    .fullName{
+        padding:5px 12px !important;
+        white-space: inherit;
+        text-transform: capitalize;
+    }
+    .divider{
+        opacity: 0.32;
+        margin:10px 0;
+        background-color: $gray-divider;
+    }
+    li a{
+        color: $white;
+        padding: 6px 20px;
+    }
+    li a:hover{
+        background: $dark-black !important;
+    }
+    li a.noHover{
+        background: $dark-blue !important;
+        cursor: default;
+    }
+    .last-login a{
+        font-size: 9px;
+        line-height: 1.7;
+        padding:10px;
+        div:first-child{
+            color: $brown;
+        }
+    }
+}
+
+.dropdown-content {
+    display: none;
+    width: 340px;
+    position: absolute;
+    left: auto;
+    right: -25px;
+    z-index: 9999;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    background-color: $light-normal-gray;
+}
+
+.label.label-danger {
+    border-radius: 50%;
+    top: 0px;
+    right: 0px;
+}
+
+.mch-logo{
+    position: relative;
+    top: 14px;
+    left: 15px;
+    display: -ms-grid;
+    display: -webkit-box;
+    display: -moz-box;
+    span{
+        background: url('../../../../assets/img/MC_Health_System.svg') no-repeat;
+        width: 138px;
+        height: 30px;
+        background-size: contain;
+        display: -ms-grid;
+        display: -webkit-box;
+        display: -moz-box;
+    }
+}
+
+
+/* Branding Color as gradient */
+#brandingColors {
+    height: 0.5em;
+    background: linear-gradient(to right, #9FD47F, #4EB1B9);
+}
+
+.fixed-box{
+    position: fixed;
+    top: 68px;
+    bottom: 0;
+    right: 0;
+    width: 20.8%;
+    background-color: $light-normal-gray;
+    .scroll-box{
+        overflow: auto;
+        position: relative;
+        height: 100%;
+    }
+}
+
+// @media (max-width: 1260px) and (min-width: 993px) {
+//     .sideTaskbar {
+//         display: block;
+//         z-index: 0;
+//     }
+// }
+
+@media (max-width: 992px) {
+    // .sideTaskbar {
+    //     position: absolute;
+    //     top: 67px;
+    //     right: 0px;
+    //     display: block;
+    //     z-index: 0;
+    // }
+    .fixed-box{
+        width: 300px;
+    }
+}
+
+.display-media-label-640 {
+    display:inline-block;
+}
+
+@media (max-width:640px) {
+    .display-media-label-640 {
+        display:none;
+    }
+}
+
+@media (max-width:768px){
+    .side-right-menu{
+        left: -85px;
+    }
+}

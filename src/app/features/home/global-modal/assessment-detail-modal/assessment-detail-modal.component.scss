@@ -1,0 +1,84 @@
+@import '~assets/scss/_mixins.scss';
+
+.btn-circle{
+    background: transparent;
+}
+
+.btn:active{
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: none;
+    transition: none;
+}
+
+// For assessment answere 
+.col-xs-5,
+.col-sm-5,
+.col-md-5,
+.col-lg-5 {
+    position: relative;
+    min-height: 1px;
+    @include padding-all(0,0,0,16px);
+}
+    
+.col-xs-5 {
+    width: 20%;
+    float: left;
+}
+    
+@media (min-width: 768px) {
+.col-sm-5 {
+    width: 20%;
+    float: left;
+ }
+}
+    
+@media (min-width: 992px) {
+.col-md-5 {
+    width: 20%;
+    float: left;
+ }
+}
+    
+@media (min-width: 1200px) {
+.col-lg-5 {
+    width: 20%;
+    float: left;
+  }
+}
+
+.col-xs-1{
+ width: 1%;
+}
+
+.row.assessment-detail-qa .wrong-answer{
+    color:#D9002F ; 
+}
+
+.row.assessment-detail-qa .correct-answer{
+    color:#00B296; 
+}
+
+.row.assessment-detail-qa{
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.seizure-detail{
+    padding-bottom: 15px;
+}
+
+.type-heading{
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.quest > .title{
+    font-weight: bold;
+}
+
+.quest > .ans{
+    margin-bottom: 5px;
+}
+
+

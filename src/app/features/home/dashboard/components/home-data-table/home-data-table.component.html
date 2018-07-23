@@ -1,0 +1,219 @@
+<div #tableWrapper>
+    <P>Filter:</P>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <app-multiselect [listData]="riskStatusDetails" defaultName="All Risk Status" [multiSelectIndex]="multiselectTwo" [planText]='stage_text'
+                [updatedData]="updatedStage" (selection)="onSelection($event)"></app-multiselect>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <app-multiselect [listData]="carePlanData" [multiSelectIndex]="multiselectOne" [planText]="plan_text" [updatedData]="updatedData"
+                (selection)="onSelection($event)" defaultName="All Care Plans"></app-multiselect>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <!--<app-check-box [checkChecked]="showParticipant" checkId="1" checkLabel='My Patients' (checkedOrnot)="showMyParticipant($event)"></app-check-box>-->
+            <app-custom-check-box checkLabel="My Patients" (changed)="showParticipantChange()" [(ngModel)]="showParticipant"></app-custom-check-box>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 search-patient-overflow">
+            <div class="input-group"><input type="text" (keyup)=searchKeyPress($event) [(ngModel)]="searchParticipant" placeholder="Search patients" class="form-control">
+                <span class="input-group-btn">
+                    <button (click)='updateFilter($event)' type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-12">
+            <app-tags [tags]="program_name" (removeItem)="removeSelection($event)" (resetItems)="resetItems()" [resetFlag]="true"></app-tags>
+        </div>
+    </div>
+    <br>
+    <div class="table-to-card-view">
+        <ngx-datatable class="material expandable" #myTable [rows]="gridData?.staff_dashboard_search_result" [loadingIndicator]="loadingIndicator"
+            [columns]="columns" [rowClass]="getRowClass" [columnMode]="'force'" [footerHeight]="50" [rowHeight]="'auto'" [limit]="10"
+            (page)="onPage($event)" [externalPaging]="true" [messages]="messages" [count]="gridData?.count || 0">
+            >
+            <!--Row Details Angular-->
+            <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
+                <ng-template let-row="row" ngx-datatable-row-detail-template>
+                    <div class="text-center font-bold" *ngIf= "row?.careplan_vital_message != null">{{row?.careplan_vital_message}}</div>
+                    <div *ngIf= "row?.careplan_vital_message == null" >
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b5">
+                            <label>VITALS</label>
+                            <div class="pull-right">
+                                <strong>Last Interaction: </strong>&nbsp;<i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;
+                                <small *ngIf="row.last_intervention_time">{{_dateUtilityService.getStringForTodayAndYesterday(row.last_intervention_time)}}</small>
+                                <small *ngIf="!row.last_intervention_time">-</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding">
+                            <ng-template ngFor let-vital [ngForOf]="row.vital_list">
+                                <app-vitals [vitalValue]="vital" [participantStatus]="row.participant_status" [vitalClass]="getVitalComponentClass(vital.vital_status)"></app-vitals>
+                            </ng-template>
+                        </div>
+                        <!--<app-vitals *ngFor="let item in row.vital_list"></app-vitals>-->
+                    </div>
+                    <div class="hr-div-solid col-lg-12"></div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-8">
+                            <label class="pad-B5" *ngIf="row.diagnosis">CONDITIONS ({{row.diagnosis.length}})</label>
+                            <div>
+                                <app-chips [chips]="row.diagnosis"></app-chips>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <i class="fa fa-list-alt fa-lg nav-text-color" aria-hidden="true"></i> <label *ngIf="row.care_plan_names">&nbsp;CARE PLANS ({{row.care_plan_names.length}})</label>
+                            <ul class="care-plan-list">
+                                <ng-template ngFor let-item [ngForOf]="row.care_plan_names">
+                                    <app-careplan [careplanValue]="item.care_plan_name" [careplanStatus]="item.care_plan_compliance"></app-careplan>
+                                </ng-template>
+                            </ul>
+                        </div>
+                    </div>
+                </ng-template>
+            </ngx-datatable-row-detail>
+            <ngx-datatable-column [width]="10" [resizeable]="false" [sortable]="false" [draggable]="false" [canAutoResize]="false" name=" ">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div *ngIf="row.participant_status== -1" class="border-dnr"></div>
+                    <div *ngIf="row.participant_status== 0" class="border-normal"></div>
+                    <div *ngIf="row.participant_status== 1" class="border-alert"></div>
+                    <div *ngIf="row.participant_status== 2" class="border-danger"></div>
+                    <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+                    </a>
+                </ng-template>
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+                    </a>
+                </ng-template>
+            </ngx-datatable-column>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-lg-2">
+                        <ngx-datatable-column [resizeable]="true" prop="participant_name" name="Patients">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                <a [routerLink]="['participant-dashboard', row.participant_id,row.participant_name,'ParticipantProflie']"><strong>{{value}}</strong></a>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-2">
+                        <ngx-datatable-column headerClass="align-center" [cellClass]="textCenter" [resizeable]="false" prop="age" name="Age">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                &nbsp; {{value}}&nbsp;{{row.age_unit}}
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-3">
+                        <ngx-datatable-column [resizeable]="false" prop="care_plan_count" name="Care Plan">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                <div class="w-xs inline">
+                                    &nbsp;&nbsp;<i class="fa fa-list-alt fa-lg nav-text-color" aria-hidden="true"></i>&nbsp;&nbsp;{{value}}
+                                </div>
+                                <div class="inline">
+                                    <i class="fa fa-circle" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(row.overall_careplan_compliance)"></i>&nbsp;
+                                    {{row.overall_careplan_compliance}}
+                                    <span *ngIf="row.overall_careplan_compliance != 'N/A'">%</span>
+                                </div>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-3">
+                        <ngx-datatable-column [resizeable]="false" prop="meds_count" name="Meds">
+                            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                                <div class="w-xs inline">
+                                    &nbsp;
+                                    <span class="svg-icon"></span>
+                                    <!--<svg class="svg-icon" viewBox="0 0 300 400">
+                                        <use xlink:href="assets/img/meds-pill.svg#Capa_1" />
+                                    </svg>-->
+                                    &nbsp;{{value}}
+                                </div>
+                                <div class="inline">
+                                    <i class="fa fa-circle" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(row.medication_compliance)"></i>&nbsp;
+                                    {{row.medication_compliance}}%
+                                </div>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                    <div class="col-lg-2">
+                        <ngx-datatable-column [resizeable]="false" name="Take Action">
+                            <ng-template let-value="row" ngx-datatable-cell-template>
+                                <div class="inline-block" *ngIf="'viewVitalsManagement' | privilege" >&nbsp;&nbsp;&nbsp;
+                                    <a class="hdt-vitals-view" (click)="openInterventionModal('vitals',value.participant_id)" [ngClass]="isLinkDisabled(value.vital_task_count)">Vitals/Events ({{value.vital_task_count}})</a>                                    |
+                                </div>
+                                <div class="inline-block" *ngIf="'viewProgramOverviewCarePlanManagement' | privilege" >&nbsp;&nbsp;&nbsp;
+                                    <a class="hdt-compliance-view" [ngClass]="isLinkDisabled(value.compliance_task_count)" (click)="openInterventionModal('compliance',value.participant_id)">Compliance ({{value.compliance_task_count}})
+                                        </a>
+                                </div>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </div>
+                </div>
+            </div>
+        </ngx-datatable>
+        <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+    </div>
+</div>
+<!-- Media Enabled List for the Participant List -->
+<div class="feed-activity-list card-to-table-view">
+    <div *ngFor="let row of gridData?.staff_dashboard_search_result; let i = index" (click)="toggleList(i)" data-anchor="i" class="relative">
+        <div class="row no-margins">
+            <div *ngIf="row.participant_status== -1" class="border-dnr"></div>
+            <div *ngIf="row.participant_status== 0" class="border-normal"></div>
+            <div *ngIf="row.participant_status== 1" class="border-alert"></div>
+            <div *ngIf="row.participant_status== 2" class="border-danger"></div>
+            <div class="col-xs-12 no-padding">
+
+                <div class="feed-element p-l-lg">
+                    <div class="action-arrow"><a class="icon-right fa-2x"></a></div>
+                    <div class="media-body">
+                        <a [routerLink]="['participant-dashboard', row.participant_id,row.participant_name,'ParticipantProflie']"><strong>{{row.participant_name}}</strong>,<strong>{{row.age}}&nbsp;{{row.age_unit}}</strong></a>                        <br>
+                        <small class="text-muted"><b>Care Plan</b></small><br>
+                        <div class="w-xs inline-block"> <small class="text-muted">Count - {{row.care_plan_count}}</small></div>
+                        <i class="fa fa-circle fa-xs nav-text-color" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(row.overall_careplan_compliance)"></i>&nbsp;
+                        <small class="text-muted">Compliance - {{row.overall_careplan_compliance}}</small><small *ngIf="row.overall_careplan_compliance != 'N/A'">%</small><br>
+                        <small class="text-muted"><b>Medication</b></small><br>
+                        <div class="w-xs inline-block"><small class="text-muted">Count - {{row.meds_count}}</small></div> <i class="fa fa-circle" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(row.medication_compliance)"></i>&nbsp;
+                        <small class="text-muted">Compliance - {{row.medication_compliance}}%</small>
+                    </div>
+                    <div [ngClass]="{'display-block': highlightedDiv === i, 'display-none':highlightedDiv !== i}">
+                        <div class="row m-t-xs m-b-xs">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b5">
+                                <strong>VITALS</strong>
+                                <div class="pull-right">
+                                    <small>Last Interaction: </small>&nbsp;<i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;
+                                    <small *ngIf="row.last_intervention_time">{{_dateUtilityService.getStringForTodayAndYesterday(row.last_intervention_time)}}</small>
+                                    <small *ngIf="!row.last_intervention_time">-</small>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+                                <!--<ng-template ngFor let-vital [ngForOf]="row.vital_list"></ng-template>-->
+                                <div class="carousel-box">
+                                    <app-carousel-set [perPage]="5" [startIndex]="0" [draggable]="'true'" [threshold]="20" [loop]="'false'">
+                                        <div *ngFor="let vital of row.vital_list">
+                                            <app-vitals [vitalValue]="vital" [vitalClass]="getVitalComponentClass(vital.vital_status)"></app-vitals>
+                                        </div>
+                                    </app-carousel-set>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <small class="text-muted"><b>Take Action</b></small>
+                            <div class="p-t-xx">
+                                <a class="hdt-vitals-view btn btn-xs btn-white" (click)="openInterventionModal('vitals',row.participant_id)" [ngClass]="isLinkDisabled(row.vital_task_count)">Vitals ({{row.vital_task_count}})</a>
+                                <a class="hdt-compliance-view btn btn-xs btn-white" [ngClass]="isLinkDisabled(row.compliance_task_count)" (click)="openInterventionModal('compliance',row.participant_id)">Compliance ({{row.compliance_task_count}})</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-right m-t-sm">
+        <button class="btn btn-primary m-r-xs" (click)='updateTablePrev($event)' [disabled]="hidePrevBtn">Prev</button>
+        <button class="btn btn-primary" (click)='updateTableNext($event)' [disabled]="gridData?.staff_dashboard_search_result.length < 10">Next</button>
+    </div>
+    <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+</div>

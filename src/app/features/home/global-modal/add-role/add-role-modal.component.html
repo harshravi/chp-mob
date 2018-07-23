@@ -1,0 +1,140 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <form [formGroup]="form" (ngSubmit)="saveNewRole(form.value)">
+      <div class="modal-header">
+        <a class="close p-b-sm" (click)="closeAddRoles()">
+        <span aria-hidden="true">×</span>
+      </a>
+        <h1 class="modal-title text-left">Roles List</h1>
+        <p class="text-left">This is description about this step.</p>
+
+      </div>
+
+      <div class="modal-body">
+        <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+        <div class="row" *ngIf = "listTypeOfRoles">
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+              <label>Role Name</label><small class="req-error">&nbsp;REQUIRED</small>
+              <input id="rolename" maxlength="100" type="text" class="form-control" [formControl]="form.controls['role_name']" />
+              <error-messages [control]="form.controls.role_name"></error-messages>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+
+              <label>Select a Role Type</label><small class="req-error">&nbsp;REQUIRED</small>
+
+              <!--<select id="select_role_type" [formControl]="form.controls.role_type" class="form-control" *ngIf="disableSelectRoleType==true && listTypeOfRoles">
+                  <option disabled="disabled" [selected]="true">Select</option>
+                  <option *ngFor="let data of listTypeOfRoles" [value]="data.role_type">
+                           {{data.role_type_name}}
+                  </option>
+                </select>-->
+
+              <app-dropdown *ngIf="disableSelectRoleType==true && listTypeOfRoles" [ngClass]="{}" name="Outreach" [optionValueName]="'role_type'"
+                [optionTextName]="'role_type_name'" [data]="listTypeOfRoles" formControlName="role_type">
+                </app-dropdown>
+
+                <!--<select id="select_role_type" [formControl]="form.controls.role_type" class="form-control" *ngIf="disableSelectRoleType!=true"
+                disabled>
+                  <!--<option disabled="disabled" [selected]="true" value="Choose here">Choose here</option>
+                  <option *ngFor="let data of listTypeOfRoles" [value]="data.role_type">
+                           {{data.role_type_name}}
+                  </option>
+                </select>-->
+
+                <app-dropdown *ngIf="disableSelectRoleType!=true" [ngClass]="{}" name="Outreach" [optionValueName]="'role_type'" [optionTextName]="'role_type_name'"
+                  [data]="listTypeOfRoles" formControlName="role_type">
+                  </app-dropdown>
+
+                  <error-messages [control]="form.controls.role_type"></error-messages>
+            </div>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-10 col-sm-10">
+            <div class="form-group">
+              <label>Description</label>
+              <input id="description" maxlength="150" type="text" class="form-control" [formControl]="form.controls['role_description']"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2 col-sm-2 text-right">
+            <div class="form-group">
+              <label class="invisible">Action</label>
+              <button type="submit" class="btn btn-primary btn-w-s" [disabled]="!form.valid">{{editOrSave}}</button>
+            </div>
+          </div>
+
+        </div>
+        <br>
+        <div class="roleContant-box table-to-card-view">
+
+          <div class="role-list">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="col-sm-4"><label>Role</label></div>
+                <div class="col-sm-8"><label>Description</label></div>
+              </div>
+            </div>
+          </div>
+          <div class="role-list" [ngClass]="{'is-removing-active': item.isRemoving}" *ngFor="let item of listOfRoles; let i = index" [attr.data-index]="i">
+            <div class="row" id={{i}}>
+              <div class="col-sm-12">
+                <div class="col-sm-4">{{item.role_name}}</div>
+                <div class="col-sm-4">{{item.role_desc}}</div>
+                <div class="col-sm-2"><button type="button" class="btn btn-danger btn-sm btn-w-s text-center" (click)="showRemoveConfirmDialog(i)">Remove</button></div>
+                <div class="col-sms-2"><button type="button" class="btn btn-default btn-sm btn-w-s text-center" (click)="editRole(item)">Edit</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Card View for the Tabular Data for Mobile CONVERT TO COMPONENT-->
+        <div class="row card-to-table-view">
+          <div class="col-xs-12">
+            <div class="feed-activity-list">
+              <div class="feed-element" [ngClass]="{'is-removing-active': item.isRemoving}" *ngFor="let item of listOfRoles; let i = index" [attr.data-index]="i">
+                <div class="media-body ">
+                  <div>
+                    <div><label>Role :</label> {{item.role_name}}</div>
+                    <div><label>Description :</label> {{item.role_desc}}</div>
+                    <div><button type="button" class="btn btn-danger btn-sm btn-w-s text-center" (click)="showRemoveConfirmDialog(item,$event)">Remove</button>
+                      <button type="button" class="btn btn-default btn-sm btn-w-s text-center" (click)="editRole(item)">Edit</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-danger" *ngIf="fieldErrorStr">
+          <p>
+            <strong>{{fieldErrorStr}}</strong>
+          </p>
+
+        </div>
+        <div class="alert alert-danger" *ngIf="showDeleteConfirmBox">
+
+          <p><strong>Are you sure? You want to delete the role.</strong></p><br>
+
+          <div style="text-align:right">
+            <!--<select id="" style="display: inline-block;width:200px;" class="form-control" [(ngModel)]="replacementRole" (ngModelChange)="changeInReplaceRole($event)" >
+                            <option selected disabled>Select replacement role</option>
+                            <option *ngFor="let data of deleteRoleMapErrorResponse.role_list"  [value]="data.role_id">
+                                    {{data.role_name}}
+                            </option>
+                  </select> &nbsp;-->
+            <button type="button" class="btn btn-default btn-sm btn-w-s" (click)="closeConfirmDialogOfRemoveRole()">Cancel</button>&nbsp;
+            <button type="button" class="btn btn-danger btn-sm btn-w-s" (click)="deleteRole()">Confirm</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-white btn-w-s" (click)="closeAddRoles()">Close</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <form [formGroup]="form" name="form" (ngSubmit)="addUpdateActionPlan()">
+      <div class="modal-header">
+        <a class="close p-b-sm v-hidden">
+          <span aria-hidden="true">×</span>
+        </a>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-xs-6 text-left">
+            <h1 class="modal-title">Emergency Action Plan</h1>
+            <h4 class="font-noraml">{{participantName}}</h4>
+          </div>
+          <div class="col-lg-6 col-md-6 col-xs-12 text-right" *ngIf="!showConfermationBox">
+            <div class="col-md-12 no-padding">
+              <span class="btn w-100 btn-white m-r-sm" (click)="closeSymptomModal()">Cancel</span>
+              <button type="submit" class="btn w-100 btn-primary" [disabled]="form.invalid">{{context.submitBtnText}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body no-padding">
+        <div class="full-height">
+          <div class="col-lg-12 no-padding full-height">
+            <div *ngIf="!showConfermationBox">
+              <div class="col-lg-6 col-md-6 p-w-md border-right full-height medication-min-height">
+                <div class="m-t-md">
+                  <div class="form-group">
+                    <label>Length of Seizure</label>
+                    <small class="req-error">REQUIRED</small>
+                    <div class="white-bg b-t-gray border-left-right border-top-bottom seizureTextBox">
+                      <input type="text" class="no-borders seizureInputWidth" readonly="true" formControlName="length_of_seizure" placeholder="__">
+                      <span *ngIf="minute <= 1; else minutes" class="req-error">minute</span>
+                      <ng-template #minutes>
+                        <span class="req-error">minutes</span>
+                      </ng-template>
+                      <div class="pull-right user-selectNone">
+                        <button type="button"  [disabled]="minute === 59" class="fa fa-plus btn-time" (click)="increaseMinute('true')" aria-hidden="true"></button>
+                        <button type="button" [disabled]="minute <= 1" class="fa fa-minus btn-time" (click)="increaseMinute('false')" aria-hidden="true"></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Dosage</label>
+                    <small class="req-error">REQUIRED</small>
+                    <div class="white-bg b-t-gray border-left-right border-top-bottom seizureTextBox no-padding">
+                      <input type="text" placeholder="___" [textMask]="{mask: timeMask,guide:false}" class="no-borders form-control dosageInputWidth" formControlName="dosage"><span class="req-error">mg</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Drug Name</label>
+                    <small class="req-error">REQUIRED</small>
+                    <div *ngIf="!showSelectedDrug">
+                      <input type="text" class="form-control" formControlName="drug_name" (keyup)='getSearchedDrugDetails($event)'>
+                    </div>
+                    <div *ngIf="showSelectedDrug" class="white-bg b-t-gray border-left-right border-top-bottom seizureTextBox">
+                      <span>{{form.value.drug_name}}</span>
+                      <div class="pull-right ">
+                        <i class="fa fa-times cursor" (click)="removeSelectedDrug()" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <ul *ngIf="searchedDrug" class="white-bg border-bottom border-left-right no-padding medi-list-height">
+                        <li *ngFor='let data of searchedDrug let i = index;' (click)="toggleHighlightSearch(i);" [ngClass]="{'heighlight-searched-row': highlightedSearchedRow === i}"
+                          (click)="collectSelectedDrug(data)" class="list-group-item cursor">
+                          {{data.drug_name}}
+                        </li>
+                        <div class="p-sm" *ngIf="!searchedDrug">No Data Available</div>
+                      </ul>
+                      <!--<div *ngIf="drugIsSellected" class="white-bg text-center p-xs">
+                      <button class="btn btn-white w-200" (click)="addMedicationForm()">Select</button>
+                    </div>-->
+                      <!--<div class="p-sm" *ngIf="!searchedDrug">No Data Available</div>-->
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Form</label>
+                    <small class="req-error">REQUIRED</small>
+                    <!--<app-dropdown required formControlName="form" [ngClass]="{'selectpicker': true}" name="Outreach" [optionValueName]="'formLabel'"
+                    [optionTextName]="'genderLabel'" [data]="formSelection" (change)="form($event)">
+                  </app-dropdown>-->
+                    <!--<app-dropdown required formControlName="form" [ngClass]="{}" name="Outreach" [optionValueName]="'form_id'" [optionTextName]="'form_name'"
+                    [data]="formData" [(ngModel)]="selectedForm" (ngModelChange)="getSelectedFormInfo()"></app-dropdown>-->
+                    <app-dropdown name="dayFilter" [isSimpleData]="true" [data]="formDropdownDetails" (change)="getSelectedFormInfo()" formControlName="form"></app-dropdown>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 p-w-md full-height">
+                <div class=" m-t-lg text-center">
+                  <strong>Patient will see:</strong>
+                </div>
+                <div class="m-t-md m-b-lg text-center">
+                  <p>
+                    When experiencing a seizure over
+                    <span *ngIf="minute >= 1; else mintuteMissing">
+                    <span *ngIf="minute <= 1; else showMinutes">{{minute}} minute, </span>
+                    <ng-template #showMinutes><span>{{minute}} minutes,</span></ng-template>
+                    </span>
+                    <ng-template #mintuteMissing><span>_ minutes,</span></ng-template>take
+                    <span *ngIf="form.value?.dosage; else noDosage">{{form.value.dosage}}mg</span>
+                    <ng-template #noDosage><span>__mg</span></ng-template> of
+                    <span *ngIf="form.value?.drug_name; else noDrugName">{{form.value.drug_name}}</span>
+                    <ng-template #noDrugName><span>______</span></ng-template>as needed
+                    <span *ngIf="form.value?.form; else noForm">
+                      <span *ngIf="form.value.form === 'Mouth'; else whenNotMouth">by {{form.value.form}}</span>
+                      <ng-template #whenNotMouth>{{form.value.form}}</ng-template>
+                    </span>
+                    <ng-template #noForm><span>____</span></ng-template>
+                  </p>
+                </div>
+                <div class="form-group">
+                  <label>Note</label>
+                  <small class="req-error">OPTIONAL</small>
+                  <textarea type="textarea" rows="6" class="form-control" (keyup)="textInNote()" formControlName="note" maxlength=1000></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="confirm-msg text-center m-t" *ngIf="showConfermationBox">
+              <div class="p-b f-15">The Action Plan has not been set yet. Are you sure you want to close the window?</div>
+              <button type="button" class="btn w-150 btn-default m-r-xs" (click)="confemationClick(false)">Cancel</button>
+              <button type="button" class="btn w-150 btn-danger m-l-xs" (click)="confemationClick(true)">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

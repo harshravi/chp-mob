@@ -1,0 +1,66 @@
+<div class="row">
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="searchBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <div class="row">
+          <div class="col-lg-6 col-sm-6 col-xs-12">
+            <div *ngIf="hideShowCheckboxForMyCarePlans">
+              <app-check-box [checkChecked]="showMyProgramsFlag" checkId="1" checkLabel='View Active Care Plans' (checkedOrnot)="getCarePlans($event)"></app-check-box>
+            </div>       
+          </div>
+          <div class="col-lg-3 col-lg-offset-3 col-md-4 col-md-offset-2 col-sm-6 col-xs-12 search-patient-overflow">
+            <div class="input-group"><input type="text" placeholder="Search Care Plans..." class="form-control" (keyup)='updateFilter($event)'>
+              <span class="input-group-btn">
+                      <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <app-progress-spinner [isRunning]="isDataLoading" class="spinner-careplan-mtop"></app-progress-spinner>
+      <div class="text-center" *ngIf="noDataFlag">
+        <h2>No Data Available</h2>
+      </div>
+      <div class="col-lg-4 col-sm-6 col-xs-12" *ngFor="let carePlan of listOfCarePlans">
+        <app-ibox-container>
+          <app-ibox-header [cardName]="carePlan.program_name"></app-ibox-header>
+          <app-ibox-content>
+            <p class="program-desc" [innerHTML]="carePlan?.program_details">
+            </p>
+            <p *ngIf="carePlan.duration"><strong>Duration: {{carePlan.duration}} days </strong></p>
+            <p><span><strong>Status:</strong></span></p>
+            <div class="row border-bottom m-b-sm">
+              <div class="col-xs-4">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',carePlan.program_ref_no,'PatientProfile', {enrollmentStatus:'Enrolled'}]" (click)="setData(carePlan)">
+                  <app-count-box [displayText]="displayTextEnrolled" [countValue]="carePlan.enrolled == null ? 0:carePlan.enrolled" [colorOfBoxText] = "colorOfBoxTextEnrolled" [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox"
+                    [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>
+              <div class="col-xs-4 text-center m-b-sm">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',carePlan.program_ref_no,'PatientProfile', {enrollmentStatus:'Invited'}]" (click)="setData(carePlan)">
+                  <app-count-box [displayText]="displayTextInvited" [countValue]="carePlan.invited ==null ? 0: carePlan.invited" [colorOfBoxText] = "colorOfBoxTextCompleted" [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox"
+                    [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>
+               <!--As per MCH requirement commenting unassigned term in application-->
+              <!--<div class="col-xs-4 text-right">
+                <a class="text-primary" [routerLink]="['/home/carePlan/carePlanPatientsDetails/',carePlan.program_ref_no,'PatientProfile', {criticalStatus:'Critical'}]" (click)="setData(carePlan)">
+                  <app-count-box [displayText]="displayTextCritical" [countValue]="carePlan.critical== null? 0: carePlan.critical" [colorOfBoxText] = "colorOfBoxTextCritical" [colorOfBox]="colorOfBoxWhite" [borderOfBox]="borderOfBox"
+                    [headingTextForBox]=""></app-count-box>
+                </a>
+              </div>-->
+            </div>
+            <div class="contact-box-footer text-center">
+              <a class="text-primary" [routerLink]="['/home/carePlan/carePlanDetails',carePlan.program_ref_no,carePlan.program_name,'PatientProfile']"><button type="button" class="btn btn-default w-200">View Details</button></a>
+            </div>
+          </app-ibox-content>
+        </app-ibox-container>
+      </div>
+    </div>
+  </div>
+</div>

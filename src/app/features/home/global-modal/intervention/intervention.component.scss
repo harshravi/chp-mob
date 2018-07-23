@@ -1,0 +1,131 @@
+@import '~assets/scss/_variables.scss';
+
+.vital_danger{
+    color: $red; 
+}   
+
+.vital_normal{
+    color: $green;
+}
+
+.vital_alert{
+    color: $alert;
+}
+
+.vital_grey{
+    color: $label-badget-color;
+}
+
+.border-gray{
+    border-left:5px solid $normal-gray;
+    left:0;
+    top: 0;
+}
+
+.border-normal{
+    border-left:5px solid $navy;
+    left:0;
+    top: 0;   
+}
+
+.border-alert{
+    border-left:5px solid $alert;
+    left:0;
+    top: 0;
+}
+
+.border-danger{
+    border-left:5px solid $red;
+    left:0;
+    top: 0;
+}
+
+.full-height{
+    height: auto;
+}
+
+.modal-body {
+   height: 74vh;
+}
+
+.log-min-height{
+    min-height: 74vh;
+}
+
+.not-active {
+   pointer-events: none;
+   cursor: default;
+}
+
+.care-team-contant{
+    background: #fff;
+}
+
+.care-team-contant:last-child{
+    border-bottom: 1px solid transparent;
+}
+
+.siezure-box{
+    border: 1px solid #e7eaec;
+    .care-team-contant{
+        padding-right: 0px;
+        padding-left: 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
+.note-padding{
+    max-height: 50vh;
+    overflow: auto;
+    .care-team-contant{
+         padding: 10px 15px !important;
+    }
+}
+
+.cricle-nav{
+    font-size: initial;
+    vertical-align: middle;
+}
+.confirm-msg{
+    position: absolute;
+    top: 40%;
+    bottom: 0px;
+    right: 20%;
+    left: 20%;
+    font-size: 15px;
+}
+
+.font10{
+    font-size: 10px;
+}
+
+.w-130{
+    width:130px;
+}
+
+a.btn.disabled{
+    color: #cacaca;
+}
+
+.intervention_participant_circle{
+    float: left;
+    margin-top: 6px;	
+}
+
+.intervention_participant_name{
+    max-width: 421px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    float: left;
+}
+
+@media (max-width:768px){
+    .confirm-msg{
+        top: 30%;
+        bottom: 10%;
+        right: 10%;
+        left: 10%;
+    }  
+}

@@ -1,0 +1,187 @@
+// Code for name cricle 
+.profile-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-block;
+    text-transform: uppercase;
+    .patient-name {
+        display: block;
+        text-align: center;
+        font-size: $font-16;
+        color: $white;
+        text-transform: uppercase;
+        @include padding-all(8px, 8px, 8px, 8px);
+    }
+}
+
+.patient-name-circle {
+    background-color: $vetahealth-green; //background-image: url('../img/vetahealth/vh-avatar-100.png');
+    @extend .profile-circle;
+}
+.infoCircle{
+    background-image: url($vetahealth-product-logo);
+    background-size: contain;    
+    @extend .profile-circle;
+}
+.vetahealth-name-circle {
+    background-image: url($vetahealth-product-logo);
+    background-size: contain;
+    @extend .profile-circle;
+}
+
+// For check-box image's
+.cricle-box-radio {
+    color: $radio-circle-border-color;
+    vertical-align: text-top;
+}
+
+.fill-cricle-box {
+    color: $checkbox-checked-background;
+    vertical-align: text-top;
+}
+
+// For right status color 
+.border-status-green {
+    border-left: 5px solid $green-dark;
+}
+
+.border-status-alert {
+    border-left: 5px solid $alert;
+}
+
+.border-status-danger {
+    border-left: 5px solid $red;
+}
+
+.border-status-gray {
+    border-left: 5px solid $normal-gray;
+}
+
+// For all border absolute status
+.border-absolute {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    top: 0;
+}
+
+.border-gray {
+    border-left: 5px solid $normal-gray;
+    @extend .border-absolute;
+}
+
+.border-dnr {
+    border-left: 5px solid $dnr-gray;
+    @extend .border-absolute;
+}
+
+.border-normal {
+    border-left: 5px solid $navy;
+    @extend .border-absolute;
+}
+
+.border-alert {
+    border-left: 5px solid $alert;
+    @extend .border-absolute;
+}
+
+.border-danger {
+    border-left: 5px solid $red;
+    @extend .border-absolute;
+}
+
+.border-light-gray {
+    border-left: 5px solid $border-color;
+    @extend .border-absolute;
+}
+
+// common for all where we need no padding in ibox
+.care-team-contant {
+    border-bottom: 1px solid $border-color;
+    position: relative;
+    overflow: hidden;
+    @include padding-all(5px,
+    10px,
+    5px,
+    10px);
+    .pull-left {
+        margin-right: 10px;
+    }
+}
+
+// Vital card
+.cards {
+    height: $vital-card-height;
+    margin-right: 10px;
+    border: 1px solid $light-normal-gray;
+    @include radius-all-equal($count-box-border-radius);
+    background: $white;
+    @include padding-all(5px,
+    8px,
+    5px,
+    8px);
+    h1 {
+        margin-bottom: 0;
+        margin-top: 5px;
+    }
+}
+
+.cards:hover {
+    border: 1px solid $green;
+}
+
+.carousel-box {
+    @include padding-all(10px,
+    0px,
+    10px,
+    0px);
+    border-top: 1px solid $light-grey;
+    border-bottom: 1px solid $light-grey;
+    background: $light-blue;
+}
+
+// Care plan card 
+.program-desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-height: $careplan-card-line-height;
+    max-height: $careplan-card-max-height;
+    min-height: $careplan-card-min-height;
+    -webkit-line-clamp: 5;
+    /* number of lines to show */
+    -webkit-box-orient: vertical;
+}
+
+// Chip component
+.lable-diagnosis{
+    display: inline-block;
+    text-align: left;
+    white-space: inherit;
+    vertical-align: baseline;
+    border-radius: .30em;
+    font-size: 10px;
+    font-weight: 600;
+    @include padding-all(2px,6px,2px,6px);
+    @include margin-all(0,5px,4px,0);
+    text-shadow: none;
+    border:1px solid $chip-border-color;
+    background: $white;
+    color:$chip-text-color;
+    text-transform: uppercase;
+    word-wrap:break-word;
+    word-break:break-word;
+}
+
+// for word wrap
+.wordWrap{
+     word-wrap: break-word;
+    -moz-word-break: break-all;
+}
+
+// form field validation for red border
+input.ng-touched.ng-invalid {
+    border: 1px solid $red;
+}
+

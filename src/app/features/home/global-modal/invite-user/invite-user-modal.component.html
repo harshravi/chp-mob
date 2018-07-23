@@ -1,0 +1,52 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <form [formGroup]="form">
+      <div class="modal-header">
+        <a class="close p-b-sm" (click)="closeInviteUserModal()">
+          <span aria-hidden="true">×</span>
+        </a>
+        <h1 class="modal-title text-left">Invite Users</h1>
+        <p class="text-left">This is description about this step.</p>
+      </div>
+      <div class="modal-body">
+        <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+        <div formArrayName="user_list" *ngIf = 'listOfRoles'>
+          <div *ngFor="let details of user_list.controls; let i=index">
+            <div class="row" [ngClass]="{ 'alert-danger' :details.controls.email_id?.errors?.emailUniqueFailed  }" [formGroupName]="i">
+              <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="form-group">
+                  <label>E-mail</label><small class="req-error">&nbsp;REQUIRED</small>
+                  <input id="email_id" maxlength="100" type="email" class="form-control" formControlName="email_id" />
+                  <error-messages [control]="details.controls.email_id"></error-messages>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="form-group">
+                  <label>Select a Role</label><small class="req-error">&nbsp;REQUIRED</small>
+                  <app-dropdown *ngIf="listOfRoles" [ngClass]="{}" name="Outreach" [optionValueName]="'role_id'" [optionTextName]="'role_name'"
+                    [data]="listOfRoles" formControlName="role_id">
+                    </app-dropdown>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-12 pad-T22">
+                <button class="btn btn-primary pull-left m-r-xs" *ngIf="form.controls.user_list.controls.length===(i+1)" (click)="addDetail()"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                <button *ngIf="form.controls.user_list.controls.length>1" class=" btn btn-danger pull-left " (click)="removeDetail(i)">
+                  <i class="fa fa-trash " aria-hidden="true "></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-danger" *ngIf="errorMessageStr">
+          <p>
+            <strong>{{errorMessageStr}}</strong>
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer ">
+        <button type="button " class="btn btn-white btn-w-s " (click)="closeInviteUserModal() ">Close</button>
+        <button type="submit " class="btn btn-primary btn-w-s m-r-sm " [disabled]="!form.valid" (click)="saveInviteUser(form.value)">Submit</button>
+      </div>
+
+    </form>
+  </div>
+</div>

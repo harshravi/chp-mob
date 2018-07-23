@@ -1,0 +1,179 @@
+<div id="page-wrapper" class="gray-bg dashbard-1">
+    <div class="row border-bottom">
+        <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i class="fa fa-bars"></i> </a>
+                <div class="mch-logo">
+                    <span></span>
+                    <!--<svg width="138px" height="30px">
+                        <use xlink:href="assets/img/MC_Health_System.svg#mc_logo"  />
+                    </svg>-->
+                </div>
+            </div>
+            <ul class="nav navbar-top-links navbar-right pull-right">
+                <li *ngIf="userObject?.roleType !='ADMIN'">
+                    <a class="dropbtn count-info" (click)="showAlerts()">
+                        <i class="fa fa-bell-o" aria-hidden="true"></i>
+                        <span class="display-media-label-640">Alerts</span>
+                        <span class="label label-danger" *ngIf="alertList?.length > 0"><span style="visibility: hidden">1</span>
+                        </span>
+                    </a>
+                </li>
+                <li *ngIf="userObject?.roleType !='ADMIN'">
+                    <a class="dropbtn count-info" (click)="showTasks()">
+                        <i class="fa fa-th-list" aria-hidden="true"></i>
+                        <span class="display-media-label-640">Tasks</span>
+                        <span class="label label-danger" *ngIf="showTaskIndicator"><span style="visibility: hidden">1</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="cursor">
+                    <a (click)="showLogout($event)" class="last-child">
+                        <div class="patient-name-circle inline-block m-r-sm">
+                            <span class="patient-name dropbtn patient-name">{{phyDisplayName}}</span>
+                        </div>
+                        <!--<div class="inline-block v-align">
+                                            <div class="text-white m-t-sm  display-media-label-640">{{fullName}}</div>-->
+                        <!--<div>{{userObject.roleType =='ADMIN'? 'Client Admin' : 'Physician'}}</div>-->
+                        <!--</div>-->
+                        <div class="logout-action" id="logout-action">
+                            <ul class="dropdown-menu side-right-menu animated fadeInLeft"  id='logout-dropdown'>
+                                <li class="text-left"><a class="noHover fullName wordWrap">{{fullName}}</a></li>
+                                <li class="divider m-t-none"></li>
+                                <!-- <li><a>Profile</a></li> -->
+                                <!--<li><a>Change Password</a></li>-->
+                                <li><a (click)="onLogout()">Logout</a></li>
+                                <li class="divider"></li>
+                                <li><a (click)="openPnPModal()">Privacy Policy</a></li>
+                                <li><a (click)="openTnCModal()">Terms Of Use</a></li>
+                                <li class="divider m-b-none"></li>
+                                <li class="last-login">
+                                    <a class="noHover">
+                                        <div class="no-margins">LAST LOGIN</div>
+                                        <div class="no-margins">{{_dateTime.getDateForLastLogin(userObject.login_timestamp)}} {{timeZoneName}}</div>
+                                    </a>
+                                </li>
+            </ul>
+            </div>
+            </a>
+            </li>
+            </ul>
+        </nav>
+        <div id="brandingColors"></div>
+    </div>
+    <div class="row">
+        <div>
+            <div [ngClass]="contentClass">
+                <ng-content select="[dashboard-header-locator]"></ng-content>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="wrapper wrapper-content">
+                            <ng-content select="[dashboard-body-locator]"></ng-content>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="showTaksList && userObject?.roleType !='ADMIN'">
+            <div [ngClass]="taskClass">
+                <div class="fixed-box" id="elId">
+                    <div class="scroll-box">
+                        <div *ngIf="vitalTasks?.length > 0 || emergencyActionPlans?.length > 0" class="m-l m-t-xs m-r">
+                            <div class="inline">
+                                <h3 class="m-b-none">Tasks ({{vitalTasks.length}})</h3>
+                            </div>
+                            <div class="inline pull-right">
+                                <a class="close" (click)="showTasks()">
+                                <span aria-hidden="true">×</span>
+                            </a>
+                            </div>
+                        </div>
+
+                        <!--<div *ngIf="vitalTasks?.lenght === 0">
+                    <app-task-list [tasksList]="vitalTasks" (selectedItem)="selectedTask($event)"></app-task-list>
+                </div>-->
+                        <div>
+                            <app-task-list [showTaskMsg]="tasklist?.showMsg" [textboxDetail]="totalPatient" [tasksList]="vitalTasks" (selectedParticipant)="selectedParticipantDetails($event)"
+                                (enteredPatientName)="nameOfPatient($event)" (reassignOpenOrClosed)="checkReassign($event)" (selectedItem)="selectedActionPlansTask($event)"></app-task-list>
+                        </div>
+                        <!--<ng-template #showTask>-->
+                        <!--<div *ngIf="vitalTasks?.length >= 0">
+                            <app-task-list [showTaskMsg]="tasklist?.showMsg" [tasksList]="vitalTasks" (selectedPatient)="selectPatient($event)" (selectedItem)="selectedTask($event)"></app-task-list>
+                        </div>-->
+                        <!--<div *ngIf="vitalTasks?.length >= 0">
+                                <app-task-list [showTaskMsg]="tasklist?.showMsg" [textboxDetail]="totalPatient" [tasksList]="emergencyActionPlans" (selectedParticipant)="selectedParticipantDetails($event)"
+                                    (enteredPatientName)="nameOfPatient($event)" (selectedItem)="selectedActionPlansTask($event)"></app-task-list>
+                            </div>
+                        </ng-template>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="showAlertList">
+            <div [ngClass]="taskClass">
+                <div class="fixed-box" id="elId">
+                    <div class="scroll-box">
+                        <div class="m-l m-t-xs m-r" *ngIf="alertList?.length > 0">
+                            <div class="inline">
+                                <h3 class="m-b-none">Alerts</h3>
+                            </div>
+                            <div class="inline pull-right">
+                                <a class="close" (click)="showAlerts()">
+                                <span aria-hidden="true">×</span>
+                            </a>
+                            </div>
+                        </div>
+
+                        <!--<div class="red-bg p-xs m-t-sm">
+                        <span class="font-bold">!&nbsp;&nbsp;</span> Veta Health will be down for maintenance on July 23rd
+                        from 5:00am-9:00am EST
+                    </div>-->
+                        <div class="p-lg text-center" *ngIf="alertList?.length == 0;else other_content">
+                            <h3>You have no pending Alerts</h3>
+                        </div>
+                        <ng-template #other_content>
+                            <div class="m-t-sm care-team-contant white-bg m-l-sm m-r-sm" *ngFor='let data of seizureQuestionsAlertList'>
+                                <div class="patient-name-circle pull-left">
+                                    <span class="patient-name">{{data.participantName}}</span>
+                                </div>
+                                <div class="media-body">
+                                    <div class="font-bold text-success">
+                                        <a [routerLink]="['participant-dashboard', data.participant_id,data.participant_name,'ParticipantProflie']">
+                                {{data.participant_name}}
+                                </a>
+                                    </div>
+                                    <div class="text-muted small">
+                                        ({{data.mobile_number | slice:0:3}})&nbsp;{{data.mobile_number | slice:3:6}}-{{data.mobile_number | slice:6:10}}
+                                    </div>
+                                </div>
+                                <div class="m-t-sm text-success">
+                                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                                    <span class="small">{{data.alert_string}}</span>
+                                </div>
+                            </div>
+                            <div class="m-t-sm care-team-contant white-bg m-l-sm m-r-sm" *ngFor='let data of medicatonAlertList'>
+                                <div class="patient-name-circle pull-left">
+                                    <span class="patient-name">{{data.participantName}}</span>
+                                </div>
+                                <div class="media-body">
+                                    <div class="font-bold text-success">
+                                        <a [routerLink]="['participant-dashboard', data.participant_id,data.participant_name,'ParticipantProflie']">
+                                {{data.participant_name}}
+                                </a>
+                                    </div>
+                                    <div class="text-muted small">
+                                        ({{data.mobile_number | slice:0:3}})&nbsp;{{data.mobile_number | slice:3:6}}-{{data.mobile_number | slice:6:10}}
+                                    </div>
+                                </div>
+                                <div class="m-t-sm text-success">
+                                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                                    <span class="small">{{data.alert_string}}</span>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

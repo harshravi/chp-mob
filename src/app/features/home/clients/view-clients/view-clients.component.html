@@ -1,0 +1,8 @@
+<div class="col-lg-12">
+  <app-ibox-container>
+    <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+    <app-ibox-content>
+      <app-ngx-data-table (refreshRequired)="refreshGrid($event)" (checkBoxEmitted)="checboxState($event)" (selectedStatus)="selectedStatus($event)" [accountData]="clientAccountData"></app-ngx-data-table>
+    </app-ibox-content>
+  </app-ibox-container>
+</div>

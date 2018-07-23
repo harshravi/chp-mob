@@ -1,0 +1,26 @@
+<div #tempItem [ngClass]="{'open' : isDropdownOpen}" (click)="dropdownClick($event)" class="dropdown" id="multiselect-dropdown-main">
+  <button class="btn btn-white multiSelect-button" id="multiselect-dropdown" type="button">
+        {{getDisplayName('default')}}
+        <span class="pull-right"><i class="fa fa-chevron-down dropdown-arrow" aria-hidden="true"></i></span>
+      </button>
+
+  <!-- list for Intervention -->
+  <ul class="dropdown-menu" id="multiselect-dropdown-ul" *ngIf="logType == 'Intervention'">
+    <li [ngClass]="{'disabled' : option.isDisabled}" id="multiselect-dropdown-li" *ngFor="let option of optionsList">
+      <div *ngIf="option.multi_selectable == 1"><input [disabled]="option.isDisabled" id="cb-{{option.intervention_type_cd}}" class="checkbox-custom" name="cb-{{option.intervention_type_cd}}"
+          type="checkbox" [(ngModel)]="option.selected_flag" (ngModelChange)="optionChoosed(2,option.intervention_type_cd)">
+        <label for="cb-{{option.intervention_type_cd}}" class="checkbox-custom-label">{{option.intervention_type_desc}}</label></div>
+      <div *ngIf="option.multi_selectable == 0"><label><a (click)="!option.isDisabled && optionChoosed(1,option.intervention_type_cd)">{{option.intervention_type_desc}}</a></label></div>
+    </li>
+  </ul>
+
+  <!-- list for outcome -->
+  <ul class="dropdown-menu" id="multiselect-dropdown-ul" *ngIf="logType == 'Outcome'">
+    <li [ngClass]="{'disabled' : option.isDisabled}" id="multiselect-dropdown-li" *ngFor="let option of optionsList">
+      <div *ngIf="option.multi_selectable == 1"><input [disabled]="option.isDisabled" id="cb-{{option.outcome_type_cd}}" [disabled]="option.isDisabled" class="checkbox-custom"
+          name="cb-{{option.outcome_type_cd}}" type="checkbox" [(ngModel)]="option.selected_flag" (ngModelChange)="optionChoosed(2,option.outcome_type_cd)">
+        <label for="cb-{{option.outcome_type_cd}}" class="checkbox-custom-label">{{option.outcome_type_desc}}</label></div>
+      <div *ngIf="option.multi_selectable == 0"><label><a [ngClass]="getDisabledClass(option.isDisabled)" (click)="!option.isDisabled && optionChoosed(1,option.outcome_type_cd)">{{option.outcome_type_desc}}</a></label></div>
+    </li>
+  </ul>
+</div>

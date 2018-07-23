@@ -1,0 +1,124 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+a:hover{
+    color: inherit;
+}
+
+.p-xs{
+    @include padding-all(10px,10px,10px,20px);
+}
+
+.card-clicked{
+    border:1px solid $green;
+}
+
+/* Responsive Tables*/
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+table {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+}
+table thead {
+    /* head takes the height it requires, 
+    and it's not scaled when table is resized */
+    flex: 0 0 auto;
+    width: calc(100% - 0.1em);
+}
+table tbody {
+    /* body takes all the remaining available space */
+    flex: 1 1 auto;
+    display: block;
+    overflow-y: auto;
+}
+table tbody tr {
+    width: 100%;
+}
+table thead, table tbody tr {
+    display: table;
+    table-layout: fixed;
+}
+.table>thead>tr>th{
+    border-bottom: 1px solid #ddd;
+}
+.xm-font{
+    font-size: 15px;
+}
+
+.w-66{
+    width:66px;
+}
+.tableHeight{
+    height: 240px;
+}
+.rightButtonRedius{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.leftButtonRedius{
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right: none
+}
+.circleColor{
+    color:inherit;
+}
+.informationCircle{
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+}
+@media (max-width:768px){
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view{
+         display: block;
+    }
+    .devider-tab-graph{
+         border-bottom: 1px solid #d2d2d2;
+    }
+}
+.btn-default:active:hover{
+    color: inherit;
+    border: 1px solid #d2d2d2;
+    background-color: white;
+    font-weight: 600;
+ }
+
+.tool-tip-text{
+    text-align: center;
+    padding: 10px 8px 8px 12px;
+    font-weight: 600;
+    font-size: 16px;
+    opacity: 1 !important;
+    position: inherit;
+}
+.no-border{
+    border:none
+}
+.no-border:hover,{
+    border:none
+}
+.devider-tab-graph{
+    border-bottom: 1px solid lightgray;
+}
+.card-edit-del{
+    font-size: 16px;
+}
+
+.padding-row div{
+    padding-bottom: 10px;
+
+}
+.padding-row div:last-child{
+    padding-bottom: 0px;
+}

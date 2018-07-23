@@ -1,0 +1,36 @@
+.category-box{
+    min-height: 260px !important;
+}
+.category-heading{
+    width:180px;
+    height:62px;
+    background-color:#24c6c8;
+    border-radius:5px;
+    text-align:center;
+    vertical-align: middle;
+    line-height: 60px;
+    font-size: 1.5em;
+    color:white;
+    margin-bottom: 10px;
+}
+
+.category-content{
+    width:180px;
+    padding-top:10px;
+    margin-bottom: 5px;
+    text-align:center;
+    vertical-align: middle;
+    line-height: 20px;
+    color:#6B6E70;
+    background-color:white;
+    border-radius:5px;
+    border-color:#D3D3D3;
+}
+
+.disabled{
+    min-height: 260px !important;
+    .category-heading{
+        background-color: #EEEEEE;
+        color: #AAAAAA;
+    }
+}

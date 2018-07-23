@@ -1,0 +1,48 @@
+.inline-box{
+    display: inline-block;
+    vertical-align: bottom;
+    margin-right: 10px;
+    .btn{
+        margin-bottom: 1px;
+    }
+}
+
+.dropdown-fixedWidth{
+    width: 350px;
+}
+
+.role-dec{
+    padding-top:5px;
+}
+
+.table.access-table{
+    margin-bottom:0px;
+}
+
+.table.access-table tr th, .table.access-table tr td{
+    padding: .8rem 1.2rem;
+    line-height: 1.625;
+    vertical-align: middle;  
+}
+
+.table.access-table tr th{
+    border-top:none;
+}
+
+/* Responsive Tables*/
+// .table-to-card-view {
+//     display: block;
+// }
+
+// .card-to-table-view {
+//     display: none;
+// }
+
+// @media (max-width:491px) {
+//     .table-to-card-view {
+//         display: none;
+//     }
+//     .card-to-table-view {
+//         display: block;
+//     }
+// }

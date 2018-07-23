@@ -1,0 +1,10 @@
+<div class="col-lg-12">
+  <app-ibox-container>
+    <app-ibox-header cardName="Launcher"></app-ibox-header>
+    <app-ibox-content>
+      <div class="row">
+        <app-category-box *ngFor="let category of categoryData" [categoryData]="category" (selectedList)="selectedList($event)"></app-category-box>
+      </div>
+    </app-ibox-content>
+  </app-ibox-container>
+</div>

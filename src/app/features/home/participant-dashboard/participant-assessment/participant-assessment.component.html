@@ -1,0 +1,64 @@
+<div class="row" #tableWrapper>
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="assessmentListIBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <div class="row table-to-card-view">
+          <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+          <div class="col-lg-12">
+            <ngx-datatable class="material" #myTable [rows]="rows" [columns]="columns" [columnMode]="'force'" [offset]="offset" [footerHeight]="50"
+              [rowHeight]="'auto'" [limit]="10" [count]="count">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+                </a>
+              </ng-template>
+              <ngx-datatable-column prop='assessment_name' name="Questionnaire Name">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  <a (click)="openQuestionsAssessmentModal(row.assessment_id,row.participant_name, row.assessment_name)" [class.disabled]='showOpenAssessment ? true : null'>{{value}}<span *ngIf="row.assessment_count">&nbsp;({{row.assessment_count}})</span></a>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='assessment_status' name="Status" headerClass="align-center" [cellClass]="textCenter">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                  <label *ngIf="row.assessment_status == 0 && row.expiry_status == 0" class="label-warning text-center w-100 b-r-md p-xxs font-noraml">Pending</label>
+                  <label *ngIf="row.assessment_status == 1 && row.expiry_status == 0" class="bg-green1 text-center w-100 b-r-md p-xxs font-noraml">Complete</label>
+                  <label *ngIf="row.assessment_status == 0 && row.expiry_status == 1" class="btn-primary text-center w-100 b-r-md p-xxs font-noraml">Unanswered</label>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column prop='completed_date' name="Last Completed">
+                <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+        </div>
+
+        <!--Card View for the Tabular Data for Mobile CONVERT TO COMPONENT-->
+        <div class="row card-to-table-view">
+          <div class="col-sm-12">
+            <div class="feed-activity-list">
+              <div class="feed-element" *ngFor="let row of rows">
+                <div class="media-body ">
+                  <strong>
+                        <a (click)="openQuestionsAssessmentModal(row.assessment_id,row.participant_name, row.assessment_name)" [class.disabled]='showOpenAssessment ? true : null'>
+                          {{row.assessment_name}}<span *ngIf="row.assessment_count">&nbsp;({{row.assessment_count}})</span></a>
+                        </strong>
+                  <br>
+                  <span class="pull-left">
+                          <b>Last Completed</b> <br>
+                          <small class="text-muted">{{_dateUtilityService.getDateAsString(row.completed_date)}}</small>
+                      </span>
+                  <br>
+                  <span class="pull-right">
+                        <label *ngIf="row.assessment_status == 0 && row.expiry_status == 0" class="label-warning btn btn-sm">Pending</label>
+                        <label *ngIf="row.assessment_status == 1 && row.expiry_status == 0" class="bg-green1 btn btn-sm">Complete</label>
+                        <label *ngIf="row.assessment_status == 0 && row.expiry_status == 1" class="btn-primary btn btn-smt">Unanswered</label>
+                      </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>

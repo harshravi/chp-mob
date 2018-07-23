@@ -1,0 +1,221 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close p-b-sm"></a>
+      <div class="row">
+        <div class="col-lg-8 col-md-8 col-xs-11 text-left">
+          <h1 class="modal-title text-left">
+            <div class="intervention_participant_name">
+              {{interventionComplianceModel?.participant_name}}
+            </div>
+            <div class="inline" *ngIf="!showConfirmMsg"><span>&nbsp;&nbsp;<button class="btn btn-default" [disabled]="left_disabled" (click)="getOtherParticipantData('previous')"><i class="fa fa-chevron-left"></i></button></span>&nbsp;&nbsp;&nbsp;
+              <span><button class="btn btn-default" [disabled]="right_diabled" (click)="getOtherParticipantData('next')"><i class="fa fa-chevron-right"></i></button></span></div>
+          </h1>
+          <div class="m-t">
+            <div class="inline">
+              <app-chips [chips]="conditionsList"></app-chips>
+            </div>
+            <span class="text-success font-bold" *ngIf="conditionsCount!=0">+{{conditionsCount}}</span>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-xs-12 text-right m-t-sm modal-content-right" *ngIf="!showConfirmMsg">
+          <button class="btn w-100 btn-white m-r-sm" (click)="closeInterventionComplianceModal('closed')">Close</button>
+          <button class="btn w-100 btn-primary" (click)="saveIntervention()" [disabled]="!showForm || disableSave">Submit</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body no-padding">
+      <div class="full-height" *ngIf="!showConfirmMsg">
+        <div class="col-lg-12 no-padding full-height">
+          <div class="col-lg-6 col-md-6 p-w-md full-height border-right log-min-height">
+            <app-tabset [uniqueId]='participantId'>
+              <app-tab tabTitle="Compliance">
+                <div class="left-side m-t-md">
+                  <div class="care-team-contant text-dark-grey" *ngIf="interventionComplianceModel?.careplanCMPLDetails?.length">CARE PLANS</div>
+                  <div *ngIf="interventionComplianceModel?.careplanCMPLDetails?.length">
+                    <div class="care-team-contant" [ngClass]="getBroderColor(data.event_status)" *ngFor="let data of interventionComplianceModel?.careplanCMPLDetails; let i = index">
+                      <div class="row">
+                        <div class="col-lg-12 no-padding">
+                          <div class="col-xs-7" style="padding-left: 54px">
+                            <i class="fa fa-paper-plane" aria-hidden="true" *ngIf="data.reassign_count > 0">
+                          <span *ngIf="data.reassign_count > 0">({{data.reassign_count}})</span>
+                          </i>
+                            <i class="fa fa-dot-circle-o" aria-hidden="true" *ngIf="data.snooze_count > 0">
+                          <span *ngIf="data.snooze_count > 0">({{data.snooze_count}})</span>
+                          </i>
+                            <strong>{{data?.event_type_desc}}</strong>
+                          </div>
+                          <div class="col-xs-5 text-right no-padding-left">
+                            <small>{{_dateUtilityService.getOnlyDate(data.event_timestamp)}}&nbsp;{{_dateUtilityService.getOnlyTime(data.event_timestamp)}}</small>
+                          </div>
+                        </div>
+                        <div class="col-lg-12 no-padding">
+                          <div class="col-xs-2 text-left">
+                            <!--<app-check-box checkId="carePlanCheckbox_{{i}}" (checkedOrnot)="vitalChecked($event, data)"></app-check-box>-->
+                            <app-custom-check-box checkId="intervention_{{data.task_id}}" [(ngModel)]="data.selected" (changed)="vitalChecked(data)"></app-custom-check-box>
+                          </div>
+                          <div class="col-xs-10">
+                            <div class="text-right">
+                              <div [ngClass]="getSymptomClass(data.event_status)">{{data?.event_value}}%</div>
+                              <div>Care Plan Compliance</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="care-team-contant text-dark-grey m-t-md" *ngIf="interventionComplianceModel?.medicationCMPLDetails?.length">MEDICATION</div>
+                  <div class="m-b-lg" *ngIf="interventionComplianceModel?.medicationCMPLDetails?.length">
+                    <div class="care-team-contant" [ngClass]="getBroderColor(data.event_status)" *ngFor="let data of interventionComplianceModel?.medicationCMPLDetails">
+                      <div class="row">
+                        <div class="col-lg-12 no-padding">
+                          <div class="col-xs-7" style="padding-left: 54px">
+                            <strong>{{data?.event_type_desc}}</strong>
+                          </div>
+                          <div class="col-xs-5 text-right">
+                            <small>{{_dateUtilityService.getOnlyDate(data.event_timestamp)}}&nbsp;{{_dateUtilityService.getOnlyTime(data.event_timestamp)}}</small>
+                          </div>
+                        </div>
+                        <div class="col-lg-12 no-padding">
+                          <div class="col-xs-2 text-left">
+                            <!--<app-check-box checkId="carePlanCheckbox_{{data.task_id}}" (checkedOrnot)="vitalChecked($event, data)"></app-check-box>-->
+                            <app-custom-check-box checkId="intervention_{{data.task_id}}" [(ngModel)]="data.selected" (changed)="vitalChecked(data)"></app-custom-check-box>
+                          </div>
+                          <div class="col-xs-10">
+                            <div class="text-right">
+                              <div [ngClass]="getSymptomClass(data.event_status)">{{data?.event_value}}%</div>
+                              <div>Medication Compliance</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </app-tab>
+              <app-tab tabTitle="Notes">
+                <div class="note-padding">
+                  <div class="care-team-contant" *ngFor="let note of interventionComplianceModel?.notes_Details">
+                    <div class="p-b5">
+                      <span *ngFor="let name of note.complaince_name_details let i = index" class="text-uppercase small">{{name}}<span *ngIf="i != note?.complaince_name_details?.length-1">, </span></span>
+                    </div>
+                    <div class="p-b5 small" *ngFor="let intervention of note.intervention_names"><strong>{{intervention}} </strong></div>
+                    <div class="p-b5">{{note.notes}}</div>
+                    <!--<div class="p-b5">
+                      <small class="font-bold">{{note.staff_name}} - {{note.staff_roll}}</small><br>
+                      <small class="font-bold">Remind me in: {{note.snooze_duration}} {{note.snooze_duration_type}}</small>
+                      <small class="pull-right">{{_dateUtilityService.getOnlyDate(note.reported_time)}}&nbsp;{{_dateUtilityService.getOnlyTime(note.reported_time)}}</small>
+                    </div>-->
+                    <div class="p-b3">
+                      <small class="font-bold">
+                        {{note.staff_name}} - {{note.staff_roll}}
+                      </small>
+                      <small class="pull-right" *ngIf="!note.snooze_duration_type">
+                        {{_dateUtilityService.getOnlyDate(note.reported_time)}}&nbsp;{{_dateUtilityService.getOnlyTime(note.reported_time)}}
+                        </small>
+                    </div>
+                    <div class="p-b3">
+                      <small class="font-bold" *ngIf="note.snooze_duration_type">
+                        Remind me in: {{note.snooze_duration}} {{note.snooze_duration_type}}
+                      </small>
+                      <small class="pull-right" *ngIf="note.snooze_duration_type">
+                        {{_dateUtilityService.getOnlyDate(note.reported_time)}}&nbsp;{{_dateUtilityService.getOnlyTime(note.reported_time)}}
+                        </small>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-sm" *ngIf="interventionComplianceModel?.notes_Details?.length == 0">
+                  No Data Available
+                </div>
+              </app-tab>
+            </app-tabset>
+
+          </div>
+          <div class="col-lg-6 col-md-6 m-t-md">
+            <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+            <div *ngIf="false">
+              Please select atleast one item from the list
+            </div>
+            <form class="m-sm" *ngIf="showForm">
+              <div class="form-group">
+                <label>Intervention: <small class="req-error">REQUIRED</small> </label>
+                <app-combo-box [optionsList]="interventionList?.intervention_types" (optionSelected)="optionSelected($event, 'intervention')"
+                  logType="Intervention"></app-combo-box>
+              </div>
+
+              <div class="form-group" *ngIf="showOutreach">
+                <label>Outreach: <small class="req-error">REQUIRED</small></label>
+
+                <!--<select class="form-control" name="intervention_outcome" [(ngModel)]="interventionList.selected_outreach_type_cd">
+                  <option *ngFor='let data of interventionList?.outreach_types' [value]='data.outreach_type_cd'>{{data.outreach_type_desc}}</option>
+                </select>-->
+
+                <app-dropdown [ngClass]="{}" name="intervention_outcome" [optionValueName]="'outreach_type_cd'" [optionTextName]="'outreach_type_desc'"
+                  [data]="interventionList?.outreach_types" [(ngModel)]="interventionList.selected_outreach_type_cd">
+                </app-dropdown>
+
+              </div>
+              <div class="form-group">
+                <label>Note: <small class="req-error">OPTIONAL</small></label>
+                <textarea class="form-control" [(ngModel)]="interventionList.intervention_notes" rows="3" id="comment" name="interventionNotes"></textarea>
+
+              </div>
+              <div class="form-group" *ngIf="showOutreach">
+                <label>Outcome: <small class="req-error">REQUIRED</small> </label>
+                <app-combo-box [optionsList]="interventionList?.outcome_types" (optionSelected)="optionSelected($event, 'outcome')" logType="Outcome"></app-combo-box>
+              </div>
+              <div class="form-group" *ngIf="showAssign">
+                <label>Assign To: </label>
+
+                <!--<select class="form-control" name="contract" [(ngModel)]="interventionList.assigned_to_staff_id" (ngModelChange)="optionSelected($event, 'outcome')">
+                  <option *ngFor='let data of interventionList?.assign_to_users' [value]='data.staff_id'>{{data.staff_name}}</option>
+                </select>-->
+
+                <app-dropdown [optionTextName]="'staff_name'" [optionValueName]="'staff_id'" [ngClass]="{}" name="contract" [data]="interventionList?.assign_to_users"
+                  [(ngModel)]="interventionList.assigned_to_staff_id" (ngModelChange)="optionSelected($event, 'outcome')"></app-dropdown>
+
+              </div>
+              <div class="row" *ngIf="showSnooze">
+                <div class="col-xs-12 no-padding">
+                  <div class="col-xs-5">
+                    <div class="form-group">
+                      <label>Remind me in: </label>
+                      <input type="text" (focus)="snoozeDurationTouchedEvt()" name="snooze_duration" class="form-control" [(ngModel)]="snooze_duration"
+                        (ngModelChange)="optionSelected($event, 'outcome')">
+                    </div>
+                  </div>
+                  <div class="col-xs-7">
+                    <div class="form-group">
+                      <label class="" style="visibility: hidden">Remind me in: </label>
+                      <app-dropdown [ngClass]="{}" [isSimpleData]="true" name="snoozeType" [data]="snoozeDropdown" [(ngModel)]="snoozeType" (ngModelChange)="optionSelected($event, 'outcome')"></app-dropdown>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12">
+                  <div *ngIf="errorMessage" class="alert alert-danger">
+                    {{errorMessage}}
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="showConfirmMsg" class="text-center confirm-msg">
+        <div class="p-b">
+          You filled out the form, but you haven't submitted the intervention. Are you sure you want to close the window? All entered
+          information will be lost.
+        </div>
+        <div>
+          <button type="button" class="btn w-130 btn-white m-r-sm" (click)="closeConfirmMsg()">Cancel</button>
+          <button type="button" class="btn w-130 btn-danger" (click)="confirmed()">Close</button>
+        </div>
+      </div>
+    </div>
+    <!--<div class="modal-footer">
+      <button type="button" class="btn btn-white btn-w-s" [disabled]="showConfirmMsg" (click)="closeInterventionComplianceModal('closed')">Close</button>
+    </div>-->
+  </div>
+</div>

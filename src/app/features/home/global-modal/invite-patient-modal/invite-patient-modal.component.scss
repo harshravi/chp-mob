@@ -1,0 +1,67 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+
+.cursor:hover{
+    background-color: $medi-gray;
+}
+
+.heighlight-row{
+    background-color: #18a689!important;
+    color: $white;
+    @include margin-all(3px,3px,3px,3px);
+    @include radius-all-equal($count-box-border-radius);
+    @include padding-all(6px,6px,6px,6px);   
+}
+
+.confirm-msg{
+    position: absolute;
+    top: 35%;
+    bottom: 0px;
+    right: 20%;
+    left: 20%;
+    font-size: 15px;
+} 
+
+.medi-list-height{	
+    max-height: 43vh;
+    overflow-y:auto;
+    margin-bottom:0px;
+}
+
+.inmodal .modal-body {
+  height: 73vh;
+}
+
+.care-team-content {
+    .pull-left {
+        margin-right: 10px;
+    }
+}
+
+@media (max-width:768px){
+    .confirm-msg{
+        top: 25%;
+        bottom: 10%;
+        right: 10%;
+        left: 10%;
+    }  
+}
+
+@media (max-width: 991px) {
+    .full-height{
+        height: auto;
+    }
+}
+
+.profile-circle {
+    .patient-name {
+        font-size: 14px;
+        @include padding-all(9px, 6px, 8px, 6px);
+    }
+}
+
+.patient-name-circle {
+    background-color: $vetahealth-green; //background-image: url('../img/vetahealth/vh-avatar-100.png');
+    @extend .profile-circle;
+}

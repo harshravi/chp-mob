@@ -1,0 +1,11 @@
+<div class="row no-padding no-margins siema-carousel-holder">
+  <div class="col-lg-1 col-md-1 col-xs-2 col-sm-1 button-enable">
+    <a [ngClass]="{'disabled' : !isPrevVisible}" (click)="isPrevVisible ? prev(1) : null" type="button" class="btn btn-circle controls flex-button-left"><i class="fa fa-angle-left fa-lg" aria-hidden="true"></i></a>
+  </div>
+  <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 m-l-xs-carousel no-padding" [id]="randomId" [ngClass]="{'z-index-neg':!isLoadingSiema,'z-index-zero':isLoadingSiema}">
+    <ng-content></ng-content>
+  </div>
+  <div class="col-lg-1 col-md-1 col-xs-2 col-sm-1 button-enable z-index-arrow">
+    <a [ngClass]="{'disabled' : !isNextVisible}" (click)="isNextVisible ? next(1) : null" type="button" class="btn btn-circle controls flex-button-right"><i class="fa fa-angle-right fa-lg" aria-hidden="true"></i></a>
+  </div>
+</div>

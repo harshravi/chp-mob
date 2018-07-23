@@ -1,0 +1,7 @@
+<div class="inline text-center">
+  <div class="p-b3 font-bold">{{headingTextForBox}}</div>
+  <div class="profile-taks bg-muted {{borderOfBox}}" [ngClass]="colorOfBox">
+    <h2 [ngClass]="colorOfBoxText">{{countValue}}<span *ngIf="countValue?.toString() !== 'N/A'">{{countSymbol}}</span></h2>
+    <small>{{displayText}}</small>
+  </div>
+</div>

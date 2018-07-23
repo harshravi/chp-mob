@@ -1,0 +1,116 @@
+<div #tableWrapper>
+    <app-ibox-container>
+        <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+        <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+            <div class="row no-margins border-bottom">
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 p-l-sm m-t-sm m-b-sm">
+                    <div>
+                        <label>Time Period</label>
+                        <app-dropdown *ngIf="searchDetails" [ngClass]="{'selectpicker': true}" name="Outreach" [optionValueName]="'time_period_value'"
+                            [optionTextName]="'time_period_label'" [data]="searchDetails.event_log_time_period" [(ngModel)]="selectedTimePeriod"
+                            (ngModelChange)="timePeriodSelection(selectedTimePeriod)">
+                        </app-dropdown>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-lg-offset-6 col-md-4 col-md-offset-4 col-sm-6 col-xs-12 m-t-sm m-b-sm search-patient-overflow">
+                    <label class="v-hidden">Search:</label>
+                    <div class="input-group"><input type="text" [(ngModel)]="searchEventlogText" placeholder="Find" class="form-control" (keyup)='searchWithText($event)'>
+                        <span class="input-group-btn">
+                                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+            <div class="pad-md-box table-to-card-view">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ngx-datatable #myTable *ngIf="rows && rows.length" class="material expandable" #myTable [rows]="rows" [columnMode]="'force'"
+                            [headerHeight]="35" [footerHeight]="50" [rowHeight]="'auto'" [limit]="10" [externalPaging]="true"
+                            [count]="searchDetails?.count" [offset]="searchDetails?.offset" (page)="onPage($event)">
+                            <ngx-datatable-column [resizeable]="false" prop="event_date" name="Date" [width]="350">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <div *ngIf="row.color_code== 2" class="border-gray"></div>
+                                    <div *ngIf="row.color_code== 0" class="border-normal"></div>
+                                    <div *ngIf="row.color_code== 1" class="border-alert"></div>
+                                    <div *ngIf="row.color_code== 3" class="border-danger"></div>
+                                    <div class="p-l-sm">{{_dateUtilityService.getOnlyDate(row.event_date)}}&nbsp; -&nbsp; {{_dateUtilityService.getOnlyTime(row.event_date)}}</div>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column [resizeable]="false" prop="event_type" name="Type" [width]="350">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <a (click)="eventLogModal(row.event_log_id)">{{row.event_type}}</a>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column [resizeable]="false" prop="trigger_type_desc" name="Trigger" [width]="350">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    {{row.trigger_type_desc}}<br>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column [resizeable]="false" prop="reported_by" name="Reported by" [width]="350">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    {{row.reported_by}}<br>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column [resizeable]="false" prop="status" name="Status" [width]="350">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    {{row.status}}
+                                </ng-template>
+                            </ngx-datatable-column>
+                        </ngx-datatable>
+                    </div>
+                </div>
+            </div>
+
+            <!--Card View for the Tabular Data for Mobile CONVERT TO COMPONENT -->
+            <div class="pad-md-box card-to-table-view">
+                <div class="row p-w-xs">
+                    <div class="col-xs-12 border-bottom" *ngFor="let row of rows">
+                        <div *ngIf="row.color_code== 2" class="border-gray test"></div>
+                        <div *ngIf="row.color_code== 0" class="border-normal test"></div>
+                        <div *ngIf="row.color_code== 1" class="border-alert test"></div>
+                        <div *ngIf="row.color_code== 3" class="border-danger test"></div>
+                        <div class="col-xs-9 no-padding">
+                            <strong>
+                                <a (click)="eventLogModal(row.event_log_id)">{{row.event_type}}<br></a>
+                            </strong>
+                            <div class="m-t-xs" *ngIf ="row.trigger_type_desc"><small class="lable-diagnosis">{{row.trigger_type_desc}}</small></div>
+                            <small>{{_dateUtilityService.getOnlyDate(row.event_date)}}&nbsp; -&nbsp; {{_dateUtilityService.getOnlyTime(row.event_date)}}</small>
+                        </div>
+                        <div class="col-xs-3 text-right">
+                            <small class="text-muted">{{row.reported_by}}<br></small>
+                            <small class="patient-cell-number">{{row.status}}</small>
+                        </div>
+                        <!--<div class="feed-activity-list">
+                            <div class="feed-element" *ngFor="let row of rows">
+                                <div *ngIf="row.color_code== 2" class="border-gray test"></div>
+                                <div *ngIf="row.color_code== 0" class="border-normal test"></div>
+                                <div *ngIf="row.color_code== 1" class="border-alert test"></div>
+                                <div *ngIf="row.color_code== 3" class="border-danger test"></div>
+                                <div class="media-body">
+                                    <span class="pull-right">
+                                        <span>{{_dateUtilityService.getOnlyDate(row.event_date)}}&nbsp; -&nbsp; {{_dateUtilityService.getOnlyTime(row.event_date)}}</span>
+                                    </span>
+                                    <strong>
+                                        <a (click)="eventLogModal(row.event_log_id)">{{row.event_type}}</a>
+                                    </strong>
+                                    <small class="patient-cell-number">{{row.trigger_type_desc}}<br></small>
+                                    <small class="text-muted">{{row.reported_by}}</small><br>
+                                    <small class="text-muted"></small>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+                <div class="text-right m-t-sm">
+                    <button class="btn btn-primary m-r-xs" (click)='updateTablePrev($event)' [disabled]="hidePrevBtn">Prev</button>
+                    <button class="btn btn-primary" (click)='updateTableNext($event)' [disabled]="rows.length < 10">Next</button>
+                </div>
+            </div>
+            <h4 class="p-xs text-center" *ngIf="!(rows && rows?.length) && isDataLoading==false">
+                No data to display
+            </h4>
+        </app-ibox-content>
+    </app-ibox-container>
+</div>

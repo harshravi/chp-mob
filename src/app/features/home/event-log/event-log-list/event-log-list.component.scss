@@ -1,0 +1,33 @@
+@import '~assets/scss/_mixins.scss';
+
+/* Responsive Tables*/
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+@media (max-width:768px){
+    .v-hidden{
+        display: none;
+    }
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view{
+         display: block;
+        .col-xs-12{
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+    }
+    .card-to-table-view .col-xs-12:first-child{
+        padding-top: 0px;
+    }
+}
+
+.pad-md-box{
+    @include padding-all(10px,20px,10px,20px);
+}

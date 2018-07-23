@@ -1,0 +1,97 @@
+<div class="row">
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <div *ngIf="symptomAssessmentDetails">
+          <table class="table white-bg no-margins">
+            <thead *ngIf="symptomAssessment">
+              <tr>
+                <th>Symptom</th>
+                <th class="text-right">Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of symptomAssessment">
+                <td [ngClass]="getClass(data.answer_text)">{{data.symptom}}</td>
+                <td class="text-right">{{data.answer_text}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="!symptomAssessmentDetails.symptoms">Not Answered</div>
+        </div>
+        <div *ngIf="seizureQuestionnaireDetails?.seizure_details">
+          <div class="m-b-md" *ngFor="let data of seizureQuestionnaireDetails.seizure_details">
+            <div *ngIf="seizureQuestionnaireDetails.seizure_details[0].seizureDate === null">
+              <strong>{{data.type}}</strong><br>
+              <strong class="m-t-md block">What do you call it?</strong>
+              <div>{{data.seizure_name}}</div>
+              <strong>Description:</strong>
+              <div>{{data.seizure_description}}</div>
+              <strong>How many do you/they have at home?</strong>
+              <div>{{data.occurrence}}</div>
+              <strong>How long do they usually last?</strong>
+              <div>{{data.occurrence_details}}</div>
+              <strong>I know it's coming because...</strong>
+              <div>{{data.reason}}</div>
+              <strong>After it's over i/they...</strong>
+              <div>{{data.solution}}</div>
+            </div>
+            <div class="text-center" *ngIf="seizureQuestionnaireDetails.seizure_details[0].seizureDate != null">
+              <h4>Yet to receive responses.</h4>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="scheduledAssessmentDetails && ('' + scheduledAssessmentDetails?.assessment_status) == '1' ">
+          <h4 class="assessment-quest" *ngIf='scheduledAssessmentDetails.assessment_name =="Symptom Check" || scheduledAssessmentDetails.assessment_name =="Therapeutic Vest" 
+          || scheduledAssessmentDetails.assessment_name == "Emergency Action plan review"'>{{scheduledAssessmentDetails['assessment_msg_' + scheduledAssessmentDetails.language] }}</h4>
+          <div *ngFor="let data of scheduledAssessmentDetails.assessment_questions">
+            <h4>{{data['assessment_' + scheduledAssessmentDetails.language]}}</h4>
+
+            <div *ngIf="isAnyUserAnswerWrong; else allAnswerCorrectTemplate" class="row assessment-detail-qa">
+              <div *ngIf="!data.isUserAnswerCorrect">
+                <div class="wrong-answer"><span class=" fa fa-times-circle fa-1"></span> {{data.answer_string}}</div>
+                <div class="correct-answer"><span class=" fa fa-check-circle fa-1"></span> {{data.correct_answer}}</div>
+              </div>
+
+              <div *ngIf="data.isUserAnswerCorrect">
+                <div class="correct-answer">
+                  <span class=" fa fa-check-circle fa-1"></span> {{data.answer_string}}
+                </div>
+              </div>
+            </div>
+
+            <ng-template #allAnswerCorrectTemplate>
+              <div class="p-h-sm row">
+                <div class="col-lg-4" *ngFor="let scale of data.scales">
+                  <div class="row">
+                    <div class="col-xs-1">
+                      <i class="fa fa-check-circle fill-cricle-box fa-lg" aria-hidden="true" *ngIf="scale.showCheckbox"></i>
+                      <i class="fa fa-circle-thin cricle-box-radio fa-lg" aria-hidden="true" *ngIf="!scale.showCheckbox"></i>
+                    </div>
+                    <div class="col-xs-10">
+                      <small><span class="v-s-align {{scale.fontStrong}}">{{scale['scale_' + scheduledAssessmentDetails.language]}}</span></small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12 m-t-sm" *ngIf="data?.sub_questions && data?.answer_text_english === 'Yes'">
+                  <div class="m-b-sm" *ngFor="let subQuestions of data?.sub_questions">
+                    <span class="block">{{subQuestions?.assessment_english}}</span>
+                    <span class="block">{{subQuestions?.answer_text_english}}</span>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <div *ngIf="!scheduledAssessmentDetails.assessment_questions">Not Answered</div>
+          </div>
+        </div>
+        <div class="text-center" *ngIf="scheduledAssessmentDetails?.expiry_status == 1 && scheduledAssessmentDetails?.assessment_status == 0">
+          <h4>No responses are recorded.</h4>
+        </div>
+        <div class="text-center" *ngIf="scheduledAssessmentDetails?.expiry_status == 0 && scheduledAssessmentDetails?.assessment_status == 0">
+          <h4>Yet to receive responses.</h4>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+@import '~assets/scss/_variables.scss';
+
+.carousel-button{
+    position: absolute;
+    top:35px;
+    background: $carousel-button-color;
+    color:$carousel-text-color;
+    opacity: $carousel-button-opacity;
+}
+
+@each $name in 'right' 'left' {
+    .flex-button-#{$name} {
+        float:#{name};
+        @extend .carousel-button;
+    }
+}
+
+div.siema.controls{
+    opacity:$carousel-opacity;
+    &:hover{
+        opacity:$carousel-opacity-hover;
+    }
+}
+
+.z-index-neg{
+    z-index:-9999;
+    height:133px;
+}
+
+.z-index-zero{
+    z-index:0;
+}
+
+.button-enable{
+    display: block;
+}
+
+.z-index-arrow{
+     z-index: 800;
+}
+
+.siema-carousel-holder{
+    height: 108px;
+    overflow: hidden;
+}
+
+.siema-carousel-holder.loading{
+    visibility: hidden;
+}
+
+@media (max-width: 768px){
+    .button-enable{
+        display: none;
+    }
+    .m-l-xs-carousel{
+        margin-left: 8.33333333%;
+    }
+}
+
+a.disabled{
+    opacity: 0.4;
+}

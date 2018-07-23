@@ -1,0 +1,19 @@
+<div class="gray-bg" style="position:fixed;width:100%;height:100%;">
+  <div class="middle-box text-center loginscreen animated fadeInDown">
+    <img alt="image" style="padding-bottom:20px;" src="assets/img/vetahealth.png" />
+    <p>you will receive a one-time passcode on your email shortly.Please enter the code below.</p>
+    <form [formGroup]="passcodeForm" class="m-t" (ngSubmit)="submitPhysicianOTP(passcodeForm.value)">
+      <label>Passcode</label>  
+      <div class="form-group">
+        <input type="password" formControlName="passcode" placeholder="" class="form-control">
+        <error-messages [control]="passcodeForm.controls.passcode"></error-messages>
+      </div>
+      
+       <button [disabled]="!passcodeForm.valid" class="btn btn-primary block full-width m-b" type="submit">Confirm</button>
+      <!--<button [disabled]="!passcodeForm.valid" class="btn btn-primary block full-width m-b" type="button">redirect</button>-->
+    </form>
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{errorMessage}}
+    </div>
+  </div>
+</div>

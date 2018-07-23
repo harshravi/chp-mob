@@ -1,0 +1,60 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+.seizureTextBox{
+    height: 34px;
+    padding: 6px 10px;
+}
+.seizureInputWidth{
+    width: 15px;
+}
+.dosageInputWidth{
+    width: 50px;
+    height: 32px;
+    display: inline-block;
+}
+.dosageTextBOx{
+    height: 30px;
+    padding: 2px 0px 2px 3px;    
+}
+.remove-border-left {
+    border-left: none;
+    top:0px;
+}
+
+.user-selectNone{
+    user-select: none;
+}
+
+.btn-time{
+    background: #fff;
+    padding: 5px;
+    cursor: pointer;
+    border: none;
+    // color: #c4c4c4;
+    margin-left: 5px;
+}
+.btn-time[disabled]{
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
+.btn-time:focus{
+    outline: none;
+}
+
+.confirm-msg{
+    position:absolute;
+    top: 40%;
+    bottom: 0px;
+    right:20%;
+    left: 20%;
+    font-size: 15px;
+} 
+.heighlight-searched-row{
+    background-color: #18a689!important;
+    color: $white;
+    @include margin-all(3px,3px,3px,3px);
+    @include radius-all-equal($count-box-border-radius);
+    @include padding-all(6px,6px,6px,6px);   
+}

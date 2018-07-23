@@ -1,0 +1,25 @@
+.confirm-msg{
+    position: absolute;
+    top: 30%;
+    bottom: 0px;
+    right: 5%;
+    left: 5%;
+    font-size: 15px;
+}
+
+.w-130{
+    width:130px;
+}
+
+.inmodal .modal-body {
+    height: 34vh !important;
+}
+
+@media (max-width:768px){
+    .confirm-msg{
+        top: 20%;
+        bottom: 10%;
+        right: 5%;
+        left: 5%;
+    }  
+}

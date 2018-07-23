@@ -1,0 +1,150 @@
+<div class="inmodal">
+    <div class="modal-content">
+        <form [formGroup]="form" name="form" (ngSubmit)="saveLungs()" class="">
+            <div class="modal-header">
+                <a class="close p-b-sm"></a>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-xs-6 text-left">
+                        <h1 class="modal-title">Health Status</h1>
+                        <h4 class="font-noraml">{{participantName}}</h4>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-xs-12 text-right modal-content-DL" *ngIf="!showConfermationBox">
+                        <div class="col-md-12 no-padding">
+                            <button class="btn w-100 btn-default m-r-sm" type="button" (click)="closeModal()">Cancel</button>
+                            <button class="btn w-100 btn-primary" type="submit" [disabled]="form.invalid">{{this.context.btnText}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="full-height">
+                    <div class="col-lg-12 no-padding full-height">
+                        <div class="col-lg-6 col-md-6 p-w-md border-right full-height">
+                            <div class="white-bg m-t-md">
+                                <div class="develop-modal-contant text-dark-grey p-l-xs"><small>CATEGORY</small></div>
+                                <div class="develop-modal-contant taskListBackground category-padd-title"><strong class="m-l-smx">Lung Function</strong></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 p-w-md m-t-md">
+                            <!--checkbox method require to change-->
+                            <div *ngIf="!showConfermationBox">
+
+                                <div class="form-group rowBottom m-t-md">
+                                    <label class="one-val-req-error error" *ngIf="errorMessage.isOneValueRequiredError">Please enter atleast one value to add data.</label>
+
+                                    <label><strong>PEF</strong></label>
+                                    <small class="m-l-xs req-error">L/min</small>
+                                    <div class="lung-field-cont">
+                                        <div *ngIf="context.editable; else pefNotEditable">
+                                            <input validationCharExp="^[0-9(\.)]$" appLungInputNumberValidation type="text" [appDisabled]="(!context.lungDetails['pef_value_' + context.baseUnit] && context.editable)"
+                                                formControlName="value" (ngModelChange)="checkLungDataStatus($event, 'benchmark1')"
+                                                placeholder="" class="form-control">
+                                        </div>
+                                        <ng-template #pefNotEditable>
+                                            <input validationCharExp="^[0-9(\.)]$" appLungInputNumberValidation type="text" formControlName="value" (ngModelChange)="checkLungDataStatus($event, 'benchmark1')"
+                                                placeholder="" class="form-control">
+                                        </ng-template>
+                                        <app-check-box [disabled]="lungDataStatus?.pef_status == 1" [hidden]="this.context.showBenchmark" inputClass="no-margin"
+                                            labelClass="font-dark-bold no-margin" checkLabel="Set as Baseline" formControlName="benchmark1">
+                                        </app-check-box>
+                                    </div>
+                                    <div class="form-element-lung">
+                                        <label class="pull-left error" *ngIf="errorMessage.isPEFMinError">Min value for PEF cannot be less then "50"</label>
+                                        <label class="pull-left error" *ngIf="errorMessage.isPEFMaxError">Max value for PEF cannot be greater then "700"</label>
+                                        <error-messages [control]="form.controls.value"></error-messages>
+                                    </div>
+                                </div>
+                                <div class="form-group rowBottom">
+                                    <label><strong>FEV1</strong></label>
+                                    <small class="m-l-xs req-error">L</small>
+                                    <div class="lung-field-cont">
+                                        <div *ngIf="context.editable; else fevNotEditable">
+                                            <input validationCharExp="^[0-9(\.)]$" appLungInputNumberValidation type="text" [appDisabled]="(!context.lungDetails['fev1_value_' + context.baseUnit] && context.editable)"
+                                                #form_value_ext formControlName="value_ext" (ngModelChange)="checkLungDataStatus($event, 'benchmark2')"
+                                                placeholder="" class="form-control">
+                                        </div>
+
+                                        <ng-template #fevNotEditable>
+                                            <input validationCharExp="^[0-9(\.)]$" appLungInputNumberValidation type="text" #form_value_ext formControlName="value_ext"
+                                                (ngModelChange)="checkLungDataStatus($event, 'benchmark2')" placeholder="" class="form-control">
+                                        </ng-template>
+                                        <app-check-box [disabled]="lungDataStatus?.fev1_status == 1" formControlName="benchmark2" [hidden]="this.context.showBenchmark"
+                                            inputClass="no-margin" labelClass="font-dark-bold no-margin" checkLabel="Set as Baseline">
+                                        </app-check-box>
+                                    </div>
+                                    <div class="form-element-lung">
+                                        <label class="pull-left error" *ngIf="errorMessage.isFEV1MinError">Min value for FEV1 cannot be less then "0.1"</label>
+                                        <label class="pull-left error" *ngIf="errorMessage.isFEV1MaxError">Max value for FEV1 cannot be greater then "6"</label>
+                                        <error-messages [control]="form.controls.value_ext"></error-messages>
+                                    </div>
+                                </div>
+                                <div class="form-group rowBottom">
+                                    <label><strong>FVC</strong></label>
+                                    <small class="m-l-xs req-error">L</small>
+                                    <div class="lung-field-cont">
+                                        <div *ngIf="context.editable; else fvcNotEditable">
+                                            <input validationCharExp="^[0-9(\.)]$" appLungInputNumberValidation type="text"
+                                                [appDisabled]="(!context.lungDetails['fvc_value_' + context.baseUnit] && context.editable)"
+                                                formControlName="value_ext2" (ngModelChange)="checkLungDataStatus($event, 'benchmark3')"
+                                                placeholder="" class="form-control">
+                                        </div>
+
+                                        <ng-template #fvcNotEditable>
+                                            <input validationCharExp="^[0-9(\.)]$" appLungInputNumberValidation type="text"
+                                                formControlName="value_ext2" (ngModelChange)="checkLungDataStatus($event, 'benchmark3')"
+                                                placeholder="" class="form-control">
+                                        </ng-template>
+                                        <app-check-box [disabled]="lungDataStatus?.fvc_status == 1" formControlName="benchmark3" [hidden]="this.context.showBenchmark"
+                                            inputClass="no-margin" labelClass="font-dark-bold no-margin" checkLabel="Set as Baseline">
+                                        </app-check-box>
+                                    </div>
+                                    <div class="form-element-lung">
+                                        <label class="pull-left error" *ngIf="errorMessage.isFVCMinError">Min value for FVC cannot be less then "0.1"</label>
+                                        <label class="pull-left error" *ngIf="errorMessage.isFVCMaxError">Max value for FVC cannot be greater then "6"</label>
+                                        <error-messages [control]="form.controls.value_ext2"></error-messages>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group inline">
+                                            <label>Date</label>
+                                            <app-datepicker [disabled]="context.editable" [minDate]="minDate" [maxDate]="maxDate" [currentDate]="form.controls.date"
+                                                formControlName="date" format="MM/DD/YYYY">
+                                            </app-datepicker>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12 col-sm-12">
+                                        <div class="form-group inline stat-percent">
+                                            <div class="row">
+                                                <div class="">
+                                                    <label class="block">Time</label>
+                                                    <div class="inline col-md-6 col-sm-6 col-xs-6  no-padding-left m-b-xs">
+                                                        <input [appDisabled]="context.editable" required [textMask]="{mask: timeMask}" #timeFrequency (keyup)="checkStringLength($event)"
+                                                            (blur)="checkFrequencyTime($event.target.value,timeFrequency)" class="form-control"
+                                                            formControlName="time" type="text" placeholder="00:00" />
+                                                    </div>
+                                                    <div class="inline col-md-6 col-sm-6 col-xs-6 no-padding-left m-b-xs">
+                                                        <app-dropdown [disabled]="context.editable" [setSelectedText]="dateAMPMSelectedText" name="dayFilter" [isSimpleData]="true"
+                                                            [data]="dateSeletorOption" formControlName="selectedAMPM" (change)="timeSuffixSelection()"></app-dropdown>
+                                                    </div>
+                                                    <label class="pull-left error" *ngIf="timeErrorFlag">Please enter time between 1 to 12</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="showConfermationBox">
+                                <div class="confirm-msg text-center">
+                                    <div class="p-b f-15">The data point has not been added yet. Are you sure you want to close the window?</div>
+                                    <button type="button" class="btn w-150 btn-default m-r-xs" (click)="confemationClick(false)">Cancel</button>
+                                    <button type="button" class="btn w-150 btn-danger m-l-xs" (click)="confemationClick(true)">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,320 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <form [formGroup]="form" name="form" (ngSubmit)="saveMedication((form.value))">
+      <div class="modal-header">
+        <a class="close p-b-sm" (click)="closeSymptomModal()" *ngIf = "!showConfirmCloseModalMsg && !showConfirmCloseModalMsgForEdit">
+          <span aria-hidden="true">×</span>
+        </a>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-xs-6 text-left">
+            <h1 class="modal-title">Medications</h1>
+            <h4 class="font-noraml">{{participantName}}</h4>
+          </div>
+          <div class="col-lg-6 col-md-6 col-xs-12 text-right" *ngIf = "!showConfirmCloseModalMsg && !showConfirmCloseModalMsgForEdit">
+            <div class="col-md-5 text-left no-padding">
+              <div class="p-b3">Overall Compliance</div>
+              <!--<div *ngIf="data.medication_taken_percentage === 'N/A' else withPercentageSymbol" class="col-xs-12 col-md-2 col-sm-2 col-lg-2 text-right text-left-sm m-t-xs m-l-xs">
+                {{data.medication_taken_percentage}}
+              </div>-->
+
+              <!--<i class="fa fa-circle text-navy"></i>&nbsp;<span class="font-bold">{{overallCompliance}}%</span>          -->
+              <span *ngIf="overallCompliance === 'N/A' else withPercentageSymbol"><i class="fa fa-circle text-navy fa-lg"></i>&nbsp;{{overallCompliance}}</span>
+              <ng-template #withPercentageSymbol>
+                <i class="fa fa-circle fa-lg" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(overallCompliance)"></i>                &nbsp;{{overallCompliance}}%
+              </ng-template>
+            </div>
+            <div class="col-md-7 no-padding">
+              <button class="btn w-100 m-r-sm btn-white" (click)="editSelectedDrug()" [disabled]="enableEdit" *ngIf="editMedicationBtn && ('editMedication' | privilege)">Edit</button>
+              <span class="btn w-100 btn-white m-r-sm" (click)="cancel()" *ngIf="cancelBtn">Cancel</span>
+              <button class="btn w-100 btn-primary" type="submit" [disabled]="saveForm" *ngIf="saveMedicationBtn">Save</button>
+              <button class="btn w-100 btn-primary" [disabled]="enableAdd" (click)="addNewDrug()" *ngIf="addMedicationBtn && ('addMedication' | privilege)">Add New</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body no-padding">
+        <!--dialog while closing the medication-->
+        <div *ngIf = "showConfirmCloseModalMsg">
+           <div class="modal-body text-center">
+            <div class="confirm-msg">
+                <div class="p-b">You have not saved your previous action. Are you sure you want to close?</div>
+                <button type="button" class="btn w-130 btn-default m-r-sm" (click)="cancelConfirmDialog()">Cancel</button>
+                <button type="button" class="btn w-130 btn-danger" (click)="closeConfirmDialog()">Close</button>
+            </div>
+        </div>
+        </div>
+        <!--dialog while editing the medication-->
+         <div *ngIf = "showConfirmCloseModalMsgForEdit">
+           <div class="modal-body text-center">
+            <div class="confirm-msg">
+                <div class="p-b">You have not saved your previous action. Are you sure you want to close?</div>
+                <button type="button" class="btn w-130 btn-default m-r-sm" (click)="cancelConfirmDialogForEdit()">Cancel</button>
+                <button type="button" class="btn w-130 btn-danger" (click)="closeConfirmDialogForDialog()">Close</button>
+            </div>
+        </div>
+        </div>
+        <div class="full-height" *ngIf = "!showConfirmCloseModalMsg && !showConfirmCloseModalMsgForEdit">
+          <div class="col-lg-12 no-padding full-height">
+            <div class="col-lg-6 col-md-6 p-w-md border-right full-height medication-min-height">
+              <div class="white-bg m-t-md">
+                <div class="care-team-contant text-dark-grey">ACTIVE</div>
+                <div class="care-team-contant" *ngIf='activeMedicationDetailsLength <= 0 '>No Date Available</div>
+                <div *ngFor="let data of activeMedicationDetails; let i = index;" (click)="toggleHighlight(i,activePast='active');" [ngClass]="{'heighlight-row': highlightedDivActive === i}">
+                  <div (click)="selectedMedicationDetails(data,'active')" class="care-team-contant cursor">
+                    <span *ngIf="data.medStatus== 1" class="{{data.medStatusColor}}"></span>
+                    <span *ngIf="data.medStatus== 2" class="{{data.medStatusColor}}"></span>
+                    <span *ngIf="data.medStatus== 0" class="{{data.medStatusColor}}"></span>
+                    <div class="row">
+                      <strong class="col-xs-12 col-md-9 col-sm-9 col-lg-9 m-l-xs wordWrap">{{(data?.from_fda === 2 || data?.from_fda === 3) && data?.frequency == null ? '! ':''}}{{data.drug_name}}
+                        <span *ngIf="data.active_numarator_strength && data.active_ingred_unit">
+                          {{data.active_numarator_strength+data.active_ingred_unit}}
+                        </span>
+                      </strong>
+                      <div *ngIf="data.medication_taken_percentage === 'N/A' else withPercentageSymbol" class="col-xs-12 col-md-2 col-sm-2 col-lg-2 text-right text-left-sm m-t-xs m-l-xs">
+                        {{data.medication_taken_percentage}}
+                      </div>
+                      <ng-template #withPercentageSymbol>
+                        <div class="col-xs-12 col-md-2 col-sm-2 col-lg-2 text-right text-left-sm m-t-xs m-l-xs" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(data.medication_taken_percentage)">
+                          {{data.medication_taken_percentage}}%
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+              <div class="white-bg m-t m-b-lg">
+                <div class="care-team-contant text-dark-grey">PAST</div>
+                <div class="care-team-contant" *ngIf='pastMedicationDetailsLength <= 0 '>No Date Available</div>
+                <div *ngFor='let data of pastMedicationDetails; let i = index;' (click)="toggleHighlight(i,activePast='past');" [ngClass]="{'heighlight-row': highlightedDivPast === i}">
+                  <div (click)="selectedMedicationDetails(data,'past')" class="care-team-contant cursor">
+                    <span class="border-light-gray"></span>
+                    <div class="row">
+                      <strong class="col-xs-12 col-md-9 col-sm-9 col-lg-9 m-l-xs">{{data.drug_name}}
+                        <span *ngIf="data.active_numarator_strength && data.active_ingred_unit">
+                          {{data.active_numarator_strength+data.active_ingred_unit}}
+                        </span>
+                      </strong>
+                      <!--<div class="col-xs-12 col-md-2 col-sm-2 col-lg-2 text-right text-left-sm m-t-xs m-l-xs">{{data.medication_taken_percentage}}&nbsp;%</div>-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 col-md-6 p-w-md m-t-md">
+              <!-- Box when no drug is selected-->
+              <div *ngIf="noDrugSelected">
+                <div class="font-bold text-center">None of the drug is selected</div>
+                <!--<input [textMask]="{mask: mask}" [(ngModel)]="myModel" type="text" [ngModelOptions]="{standalone: true}"/>-->
+              </div>
+              <!-- Box to show details of selected drug-->
+              <div *ngIf="drugDetails">
+                <!--<p>{{selectedMedication | json}}</p>-->
+                <div class="form-group">
+                  <label>Drug Name</label>
+                  <div class="wordWrap">{{selectedMedication.drug_name}}
+                    <span *ngIf="selectedMedication.active_numarator_strength && selectedMedication.active_ingred_unit">
+                      {{selectedMedication.active_numarator_strength+selectedMedication.active_ingred_unit}}
+                    </span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Active Ingredient</label>
+                  <div *ngIf="selectedMedication.substance_name">{{selectedMedication.substance_name}}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-xs-6">
+                    <label>Start Date</label>
+                    <div *ngIf="selectedMedication.medication_start_date">{{selectedMedication.medication_start_date}}</div>
+                  </div>
+                  <div class="form-group col-xs-6">
+                    <strong>End Date</strong>
+                    <div *ngIf="selectedMedication.medication_end_date">{{selectedMedication.medication_end_date}}</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Frequency</label>
+                  <div *ngIf="selectedMedication.frequency">{{selectedMedication.frequency}}</div>
+                </div>
+                <div class="form-group">
+                  <label>Notification</label>
+                  <div *ngIf="selectedMedication.doses">
+                    <span *ngFor='let data of selectedMedication.doses'>
+                  {{data.dose_time}}&nbsp;&nbsp;
+                  </span>
+                  </div>
+                </div>
+                <!--<div class="form-group">
+                  <label>Dosage</label>
+                  <div *ngIf="selectedMedication.dosage">{{selectedMedication.dosage}}</div>
+                </div>-->
+                <div class="row">
+                  <div class="form-group col-xs-6">
+                    <label>Dosage</label>
+                    <div *ngIf="selectedMedication.dosage">{{selectedMedication.dosage}}</div>
+                  </div>
+                  <div class="form-group col-xs-6">
+                    <strong>Form</strong>
+                    <div *ngIf="selectedMedication.form">{{selectedMedication.form}}</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Notes</label>
+                  <div *ngIf="selectedMedication.note">{{selectedMedication.note}}</div>
+                </div>
+              </div>
+              <div class="form-group" *ngIf="addDrug">
+                <label>Drug Name</label>
+                <small class="req-error">REQUIRED</small>
+                <div class="input-group">
+                  <input type="text" placeholder="Search Drug" class="form-control" (keyup)='getSearchedDrugDetails($event)'>
+                  <span class="input-group-btn">
+                        <button type="button" class="btn btn-default remove-border-left"><span class="glyphicon glyphicon-search"></span></button>
+                  </span>
+                </div>
+                <div>
+                  <ul *ngIf="searchedDrug" class="white-bg border-bottom border-left-right no-padding medi-list-height">
+                    <li *ngFor='let data of searchedDrug let i = index;' (click)="toggleHighlightSearch(i);" [ngClass]="{'heighlight-searched-row': highlightedSearchedRow === i}"
+                      (click)="collectSelectedDrug(data.drug_id)" class="list-group-item cursor">
+                      {{data.drug_name}}&nbsp;{{data.active_numarator_strength}}&nbsp;{{data.active_ingred_unit}}
+                    </li>
+                    <!--<div class="p-sm" *ngIf="!data">No Data Available</div>-->
+                  </ul>
+                  <div *ngIf="drugIsSellected" class="white-bg text-center p-xs">
+                    <button class="btn btn-white w-200" (click)="addMedicationForm()">Select</button>
+                  </div>
+                  <!--<div class="p-sm" *ngIf="!searchedDrug">No Data Available</div>-->
+                </div>
+              </div>
+              <div *ngIf="addDrugForm">
+                <div class="form-group">
+                  <label>Drug Name</label>
+                  <small class="req-error">REQUIRED</small>
+                  <input type="text" class="form-control" readonly="readonly" formControlName="drugNameDetail" placeholder="Drug Name">
+                </div>
+                <div class="form-group">
+                  <label>Active Ingredient</label>
+                  <small class="req-error">REQUIRED</small>
+                  <textarea class="form-control" rows="2" formControlName="substance_name" placeholder="Active Ingredient" (keyup)="checkRequireField()"></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                      <label>Start Date</label>
+                      <small class="req-error">REQUIRED</small>
+                      <div *ngIf="showStartDate" class="pointer">
+                        <app-datepicker [minDate]="medicationMinDate" [currentDate]="form.controls.medication_start_date" (onChangeEvt)="startDateChange()"
+                          formControlName="medication_start_date" format="MM/DD/YYYY">
+                        </app-datepicker>
+                        <error-messages [control]="form.controls.medication_start_date"></error-messages>
+                      </div>
+                      <div *ngIf="!showStartDate">
+                        <input type="text" class="form-control" readonly="readonly" formControlName="medication_start_date" placeholder="Drug Name">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                      <label>End Date</label>
+                      <div class="pointer">
+                        <app-datepicker [minDate]="form.value.medication_start_date" [currentDate]="form.controls.medication_end_date" formControlName="medication_end_date"
+                          format="MM/DD/YYYY">
+                        </app-datepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Frequency</label>
+                  <input appOnlyNumber="^[0-9]*$" type="text" class="form-control" formControlName="frequency" placeholder="" (keyup)="checkRequireField()">
+                  <label class="pull-left error" *ngIf="errorMessage.isFrequencyMaxFailed">Max value for Frequency cannot be greater then "48"</label>
+                  <label class="pull-left error" *ngIf="errorMessage.isFrequencyMinFailed">Min value for Frequency cannot be less then "1"</label>
+                </div>
+                <div>
+                  <div class="form-group inline progress-width">
+                    <label>Notification</label>
+                    <small class="req-error">REQUIRED</small>
+                    <div *ngIf="dosesValueCollection.length > 0" class="white-bg p-xxs b-t-gray border-left-right border-top-bottom">
+                      <div class="inline">
+                        <div class="inline vital-infoWidth">
+                          <app-tags [tags]="doseFrequencyTimeArr" (removeItem)="removeFrequency($event)" [resetFlag]="false"></app-tags>
+                          <!--<div class="inline lable-diagnosis " *ngFor="let data of dosesValueCollection">{{data.dose_time}}&nbsp;&nbsp;
+                            <span class="cursor v-i-align">
+                              <i class="fa fa-times" (click)="removeFrequency(data.dose_time)" aria-hidden="true"></i></span>
+                          </div>-->
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="dosesValueCollection.length <= 0">
+                      <input type="text" class="form-control" readonly="readonly" placeholder="Schedule patient reminders">
+                    </div>
+                  </div>
+                  <div class="form-group inline m-l-xs v-b-align">
+                    <span class="btn btn-primary btn-sm v-i-align" (click)="addFrequency()"><i aria-hidden="true" class="fa fa-plus fa-sm"></i></span>
+                  </div>
+                </div>
+                <div *ngIf="addFrequencyDiv">
+                  <div class="form-group inline time-width">
+                    <label>Time</label>
+                    <input [textMask]="{mask: timeMask}" #timeFrequency (keyup)="checkStringLength($event)" (blur)="checkFrequencyTime($event.target.value,timeFrequency)"
+                      class="form-control" formControlName="dosesValue" type="text" placeholder="00:00" />
+                    <label class="pull-left error" *ngIf="timeErrorFlag">Please enter time between 1 to 12</label>
+                  </div>
+                  <div class="form-group inline m-l-xs v-b-align">
+                    <select #selectedCategory class="form-control" (change)="timeSuffixSelection(selectedCategory.value)">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                  </div>
+                  <div class="form-group inline m-l-xs v-b-align">
+                    <button (click)="submitFrequecyData()" [disabled]="checkLength" class="btn btn-white v-i-align">Add</button>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                      <label>Dosage</label>
+                      <small class="req-error">REQUIRED</small>
+                      <input type="text" class="form-control" formControlName="dosage" placeholder="Amount Taken" (keyup)="checkRequireField()">
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                      <label>Form</label>
+                      <small class="req-error">REQUIRED</small>
+                      <input type="text" class="form-control" formControlName="form" placeholder="How is it taken" (keyup)="checkRequireField()">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Notes</label>
+                  <textarea class="form-control" rows="2" formControlName="note" placeholder="Enter additional notes here"></textarea>
+                </div>
+                <div *ngIf="editDrugDetails && ('deleteMedication' | privilege)" class="form-group">
+                  <a class="set-inactive-link" (click)="confirmSetInactive()">Set Inactive</a>
+                </div>
+              </div>
+              <div *ngIf="isSetInactiveMsgVisible" class="inactive-msg-top">
+
+                <div class="inactive-msg-1-line">
+                  Are you sure you want to set
+                </div>
+                <div class="inactive-msg-2-line">
+                  {{selectedMedication.drug_name}}
+                </div>
+                <div class="inactive-msg-3-line">
+                  inactive?
+                </div>
+                <div class="inactive-msg-btn">
+                  <span (click)="setInactiveCancel()" class="btn w-100 btn-white m-r-sm">Cancel</span>
+                  <button (click)="setInactiveSubmit()" class="btn w-100 btn-primary" type="submit">Set Inactive</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

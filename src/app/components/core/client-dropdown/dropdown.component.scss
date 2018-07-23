@@ -1,0 +1,18 @@
+$green : #1ab394;
+$red : #ED5565;
+
+.green{ color: $green;}
+
+.red{color: $red;}
+
+.ellipsisBtn, .btn:active{
+    margin-bottom: 0px;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0 12px;
+}
+.dropdown-menu.left-menu{
+    left:auto;
+    right:0px;
+    z-index: 9999;
+}

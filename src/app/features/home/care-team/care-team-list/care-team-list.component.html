@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <div class="row">
+          <div class="col-lg-12 form-inline">
+            <!--<div class="input-group col-lg-2 col-md-3 col-sm-6 col-xs-12 v-align m-r-sm">-->
+              <!--<select class="form-control" [(ngModel)]="selectedRole" (ngModelChange)="getRole()">
+                  <option value="-1">All Roles</option>
+                  <option *ngFor="let data of roleList" value={{data.id}}>
+                    {{data.filterBy}}
+                  </option>
+                </select>-->
+
+              <!--<app-dropdown [ngClass]="{}" name="Outreach" [optionValueName]="'id'" [optionTextName]="'filterBy'"
+                [data]="roleList" [(ngModel)]="selectedRole" (ngModelChange)="getRole()">
+              </app-dropdown>-->
+            <!--</div>-->
+            <div class="input-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
+              <input type="text" placeholder="Search Members" class="form-control" (keyup)='updateFilter($event)'>
+              <span class="input-group-btn ">
+                      <button type="button" class="btn btn-default "><span class="glyphicon glyphicon-search"></span></button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <h5>{{count}} Members Found</h5>
+          </div>
+        </div>
+         <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+        <div class="row">
+          <div class="col-lg-12">
+            <ngx-datatable class="material expandable" #myTable [rows]="rows" [columnMode]="'force'" [footerHeight]="50" [rowHeight]="'auto'"
+              [limit]="10">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+                </a>
+              </ng-template>
+              <ngx-datatable-column [resizeable]="false" prop="staff_name" name="Name">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="patient-name-circle pull-left m-r-sm">
+                    <span class="patient-name">{{row.staff_name_initials}}</span>
+                  </div>
+                  <div class="text-success font-bold text-overflow">{{row.staff_name}}</div>
+                  <div class="small" *ngIf="row.staff_id">{{row.mobile_number}}</div>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [resizeable]="false" prop="staff_name" name="Care Plan">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div *ngIf="row.staff_id">{{row.program.length==1 ? row.program[0].program_name : 'Multiple'}}</div>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [resizeable]="false" prop="email_id" name="Email">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div *ngIf="row.staff_id"> {{row.email_id}} </div>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [resizeable]="false" prop="staff_role" name="Role">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{row.staff_role}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [cellClass]="textCenter" [resizeable]="false" [width]="20" name=" ">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <button class="btn btn-primary btn-circle" *ngIf="row.staff_id" type="button"><i class="fa fa-comment fa-lg" aria-hidden="true"></i>
+                  </button>
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>

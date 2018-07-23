@@ -1,0 +1,97 @@
+<div>
+  <div class="row">
+    <div class="col-lg-5">
+      <div class="input-group">
+        <input type="text" placeholder="Search Client" class="form-control" (keyup)='updateFilter($event)'>
+        <span class="input-group-btn">
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search">
+        </span>
+        </button>
+        </span>
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <app-check-box [checkChecked]="showDisabled" checkId="1" checkLabel='Show Disabled' (checkedOrnot)="onCheckedOrUnchecked($event)"></app-check-box>
+    </div>
+
+    <div class="col-lg-4">
+      <button (click)="openAccountModal()" class="btn btn-primary pull-right">Add New Client</button>
+    </div>
+  </div>
+  <ngx-datatable class="material expandable vheight" #myTable [rows]="rows" [columns]="columns" [columnMode]="'force'" [footerHeight]="50"
+    [rowHeight]="'auto'" (page)="onPage($event)">
+    <ng-template let-row="row" ngx-datatable-cell-template>
+      <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+      </a>
+    </ng-template>
+    <!--Row Details Angular-->
+    <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
+      <ng-template let-row="row" ngx-datatable-row-detail-template>
+        <div class="col-lg-12">
+          <div class="col-lg-4">
+            <div *ngFor="let a of row.client_admin_list">
+              <strong>{{a.name}} {{a.system_role}}</strong>
+              <div>{{a.job_title}}</div>
+              <div>{{a.email}}/{{a.phone_number}}</div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div></div>
+            <div class="col-lg-3">
+              <div><strong>0 users</strong></div>
+              <div><strong>0 care plans</strong></div>
+            </div>
+            <div class="col-lg-5">
+              <div>Module available for this contract:</div>
+              <div *ngFor="let a of row.facility_module_list">
+                {{a.module_name}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngx-datatable-row-detail>
+
+    <!--Column Definition-->
+    <ngx-datatable-column [width]="30" [resizeable]="false" [sortable]="false" [draggable]="false" [canAutoResize]="false" name=" ">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+        </a>
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column prop="client_name" [resizeable]="false" name="Client Name" [width]="300">
+      <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+        <a><strong>{{value}}</strong></a>
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column prop="contract" [resizeable]="false" name="Term (Yr)">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{value}}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column prop="contract_start_date" [resizeable]="false" name="Since">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{value| date}}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column prop="contract_end_date" [resizeable]="false" name="Ending">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{value | date}}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column prop="status" name="Status" [resizeable]="false" [width]="50">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        <i class="fa fa-clock-o fa-lg" *ngIf="value ==10" [ngClass]="'orange'" aria-hidden="true"></i>
+        <i class="fa fa-check-circle-o fa-lg" *ngIf="value ==11" [ngClass]="'green'" aria-hidden="true"></i>
+        <i class="fa fa-check-circle-o fa-lg" *ngIf="value ==12" [ngClass]="'red'" aria-hidden="true"></i>
+        <i class="fa fa-check-circle-o fa-lg" *ngIf="value ==13" [ngClass]="'gray'" aria-hidden="true"></i>
+        <i class="fa fa-clock-o fa-lg" *ngIf="value ==14" [ngClass]="'red'" aria-hidden="true"></i>
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column [width]="30" [resizeable]="false" name=" ">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <app-dropdown [option]="getOptions(row)" *ngIf="getOptions(row).length != 0"></app-dropdown>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>

@@ -1,0 +1,21 @@
+/* Responsive Tables*/
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+.w-70{
+    width:70px;
+}
+
+@media (max-width:768px){
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view{
+         display: block;
+    }
+}

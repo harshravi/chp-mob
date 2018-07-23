@@ -1,0 +1,95 @@
+<div class="row" #tableWrapper>
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <div class="row">
+          <div class="col-lg-12 form-inline">
+            <!--<div class="input-group col-lg-2 v-align m-r-sm">
+
+              <app-dropdown [optionTextName]="'filterBy'" [optionValueName]="'id'" [ngClass]="{}" name="rolesDD" [data]="roleList" [(ngModel)]="selectedRole"
+                (ngModelChange)="getRole()"></app-dropdown>
+
+            </div>-->
+            <div class="input-group col-lg-3">
+              <input type="text" placeholder="Search Members" class="form-control" (keyup)='updateFilter($event)'>
+              <span class="input-group-btn ">
+                      <button type="button" class="btn btn-default "><span class="glyphicon glyphicon-search"></span></button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <h5>{{count}} Members Found</h5>
+          </div>
+        </div>
+        <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+        <div class="row table-to-card-view">
+          <div class="col-lg-12">
+            <ngx-datatable class="material expandable" #myTable [rows]="rows" [columnMode]="'force'" [footerHeight]="50" [rowHeight]="'auto'"
+              [limit]="10">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+                </a>
+              </ng-template>
+              <ngx-datatable-column [resizeable]="false" prop="staff_name" name="Name">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="patient-name-circle pull-left m-r-sm">
+                    <span class="patient-name">{{row.staff_name_initials}}</span>
+                  </div>
+                  <div class="text-success font-bold text-overflow">{{row.staff_name}}</div>
+                  <div class="small">{{row.mobile_number}}</div>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [resizeable]="false" prop="staff_name" name="Care Plan">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <span *ngIf="row.program">
+                    {{row.program.length==1 ? row.program[0].program_name : 'Multiple'}}
+                  </span>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [resizeable]="false" prop="email_id" name="Email">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{row.email_id}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [resizeable]="false" prop="staff_role" name="Role">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{row.staff_role}}
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column [cellClass]="textCenter" [resizeable]="false" [width]="20" name=" ">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <button *ngIf="row.program" class="btn btn-primary btn-circle-chat " type="button"><i class="fa fa-comment fa-lg" aria-hidden="true"></i>
+                        </button>
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+        </div>
+        <!-- Card View for the Tabular Data for Mobile CONVERT TO COMPONENT-->
+        <div class="row card-to-table-view">
+          <div class="col-sm-12">
+            <div class="feed-activity-list">
+              <div class="feed-element" *ngFor="let data of rows">
+                <div class="patient-name-circle pull-left m-r-sm">
+                  <span class="patient-name">{{data.staff_name_initials}}</span>
+                </div>
+                <div class="media-body ">
+                  <button class="btn btn-primary btn-circle pull-right" type="button">
+            <i aria-hidden="true" class="fa fa-comment fa-lg">
+            </i>
+          </button>
+                  <strong>{{data.staff_name}}</strong>, <small class="patient-cell-number">{{data.mobile_number}}</small>
+                  <small class="text-muted">{{data.email_id}}</small><br>
+                  <small class="text-muted"><b>Care Plan</b>&nbsp;-&nbsp;<span *ngIf="data.program">{{data.program.length==1 ? data.program[0].program_name : 'Multiple'}}</span></small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>

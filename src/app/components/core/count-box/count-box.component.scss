@@ -1,0 +1,22 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+.profile-taks{
+    @include radius-all-equal($count-box-border-radius);
+    width: $count-box-width;
+    height: $count-box-height;
+    // margin-bottom: 10px;
+    h2{
+        margin:0;
+        @include padding-all(14px,0,6px,0);
+        font-size:$count-box-number-font-size;
+        font-weight: lighter;
+        span{
+            font-size: 15px;
+        }
+    }
+    small{
+        font-size: $count-box-text-font-size;
+        text-transform: uppercase;
+    }
+}

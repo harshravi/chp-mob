@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="wrapper no-padding">
+      <div class="chat-container">
+        <div [ngClass]="{'left-show':openResponsiveUserList==true}" class="left">
+          <div class="top">
+            <div class="row">
+              <div class="col-md-12">
+                <input type="text" placeholder="Start Conversation" ngModal="[(search)]" class="form-control" (keyup)='updateFilter($event)'>
+              </div>
+            </div>
+          </div>
+          <div class="ppl_box">
+            <ul class="people no-padding" *ngIf="listChatUsers?.active_chat_user">
+              <div *ngFor="let item of listChatUsers?.active_chat_user; let i = index" (click)="toggleHighlight(i)">
+                <li class="person" data-chat="person1" (click)="createOrJoinChatChannel(item)" [ngClass]="{'active' : item?.isChatOpen === true || item?.unread > 0 }">
+                  <span class="pull-left m-r-sm">
+                      <div class="patient-name-circle pull-left">
+                        <span class="patient-name">{{item?.name_initials}}</span>
+              </div>
+              </span>
+              <span class="name">{{item?.displayName}}</span>
+              <span class="time" *ngIf="item?.updatedDate">{{_dateTime.getDateAsStringAndOnlyTimeForToday(item?.updatedDate)}}</span>
+              <span class="preview">{{item?.messageContent}}</span>
+              <!--<img src="https://s13.postimg.org/ih41k9tqr/img1.jpg" alt="" />
+              <span class="name">Thomas Bangalter</span>
+              <span class="time">2:09 PM</span>
+              <span class="preview">I was wondering...</span>-->
+              </li>
+          </div>
+          </ul>
+          <div *ngIf="listOfAllContactsWithNoChat">
+            <div class="border-bottom p-a-m text-dark-grey" *ngIf="listOfAllContactsWithNoChat?.length != 0">
+              <small>Other Contacts</small>
+            </div>
+            <ul class="people no-padding">
+              <a *ngFor="let item of listOfAllContactsWithNoChat">
+                <li class="person" data-chat="person1" (click)="createOrJoinChatChannel(item)">
+                  <span class="pull-left m-r-sm">
+                      <div class="patient-name-circle pull-left">
+                        <span class="patient-name">{{item?.name_initials}}</span>
+          </div>
+          </span>
+          <span class="name">{{item?.displayName}}</span>
+          <span class="time">{{item?.messages[item.messages.length-1]?.createdAt|date:'MMM-d-yy h:m'}}</span>
+          <span class="preview">{{item?.messageContent}}</span>
+          </li>
+          </a>
+          </ul>
+        </div>
+      </div>
+      <span *ngIf="listOfAllContactsWithNoChat"><div class="text-center" *ngIf="listOfAllContactsWithNoChat?.length == 0 && listChatUsers?.active_chat_user?.length ==0 ">
+        No user found.
+      </div></span>
+    </div>
+    <div class="right">
+      <div class="top">
+        <div class="topbar-padding">
+          <span>To: <span class="name">{{chatBoxTitle}}</span></span>
+          <div class="pull-right display-userlist-icon" (click)="showUserList()"><i class="fa fa-comments" aria-hidden="true"></i></div>
+        </div>
+       
+        <div class="text-center"><app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner></div>
+        <div class="chat-height" id="chatBox">
+          <div *ngIf="!selectedUserMessages"><br><br>
+            <h2 class="text-center">Welcome to Chat!</h2>
+          </div>
+          <div *ngIf="selectedUserMessages">
+            <div class="text-center" *ngIf="disableLoadMore && selectedUserMessages?.messages?.length != 0">
+              <button type="button" class="btn btn-default load-more" (click)="loadOlderMessages()">Load More</button>
+            </div>
+            <div class="text-center" *ngIf="!disableLoadMore">
+              <h4 class="text-center">No More Messages!</h4>
+            </div>
+          </div>
+          <div class="chat" data-chat="person1" *ngFor=" let message of selectedUserMessages?.messages">
+            <div class="conversation-start" *ngIf="message.createdDate != null">
+              <span>{{_dateTime.getDateAsString(message?.createdDate)}}</span>
+            </div>
+            <div class="bubble you" *ngIf="message.direction== 'INCOMING'">
+              <div class="small font-bold">{{selectedUserMessages.displayName}}</div>
+              <div class="p-h-xs">{{message?.decryptedBody!=null?message.decryptedBody:message.body}}</div>
+              <div class="text-right small">{{_dateTime.getDateAsString(message?.timestamp)}} &nbsp; {{_dateTime.getOnlyTime(message.timestamp)}}</div>
+            </div>
+            <div class="bubble me" *ngIf="message.direction== 'OUTGOING'">
+              <div class="m-t-xs" [innerHTML]="message?.decryptedBody!=null?message.decryptedBody:message.body"></div>
+              <div class="text-right small">{{_dateTime.getDateAsString(message?.timestamp)}} &nbsp; {{_dateTime.getOnlyTime(message.timestamp)}} &nbsp;
+                <span *ngIf="message.recipientStatus == 'DELIVERED'"><i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i></span>
+                <span *ngIf="message.recipientStatus == 'READ'"><i class="fa fa-check-circle fa-lg" aria-hidden="true"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-sm border-top write" *ngIf="form">
+          <form name="chatForm" [formGroup]="form" (ngSubmit)="sendMessageTwilio(form.value)">
+            <div class="inline text-area-width">
+              <textarea placeholder="Type a message" class="form-control" formControlName="message_input" style="height : 36px" (keyup)='onKeyUpForChat($event)'></textarea>
+            </div>
+            <div class="inline v-align">
+              &nbsp; &nbsp;<button type="submit" class="btn btn-default" [disabled]="!form.valid"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+
+            </div>
+          </form>
+          <!--<button type="" class="btn btn-default" (click)="deleteAll()"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>-->
+          <!--<button type="" class="btn btn-default" (click)="shutdownTwilioInstance()"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>-->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!--<app-messaging></app-messaging>-->

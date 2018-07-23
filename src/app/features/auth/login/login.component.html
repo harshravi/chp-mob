@@ -1,0 +1,21 @@
+<div class="gray-bg" style="position:fixed;width:100%;height:100%;">
+  <div class="middle-box text-center loginscreen animated fadeInDown">
+    <img alt="image" style="padding-bottom:20px;" src="assets/img/vetahealth.png" />
+    <form [formGroup]="loginForm" class="m-t" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <input type="text" formControlName="username" placeholder="User Name" class="form-control">
+        <error-messages [control]="loginForm.controls.username"></error-messages>
+      </div>
+      <div class="form-group">
+        <input type="password" formControlName="password" placeholder="Password" class="form-control">
+        <error-messages [control]="loginForm.controls.password"></error-messages>
+      </div>
+      <button [disabled]="!loginForm.valid" class="btn btn-primary block full-width m-b" type="submit">Login</button>
+    </form>
+    <div class="font10">Please login using your Cerner credentials. If this is your<br> first login attempt, your credentials will be verified 
+      on the <br> next page. Please email <a href="mailto:support@myvetahealth.com" class="footerlink">support@myvetahealth.com</a> if <br>you encounter any issues logging in. </div>
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{errorMessage}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<span #item class="dropdown" [ngClass]="{'open' : isDropdownOpen}"> 
+  <button class="btn ellipsisBtn" (click)="dropdownClick($event)" type="button">
+    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+  </button>
+  <ul class="dropdown-menu left-menu">
+    <li *ngFor="let list of listItems"><a (click)="clicked(list)" [ngClass]="getClassForList(list)">{{list}}</a></li>
+    <!--<li class="divider"></li>
+    <li><a href="#">Disable</a></li>-->
+  </ul>
+</span>

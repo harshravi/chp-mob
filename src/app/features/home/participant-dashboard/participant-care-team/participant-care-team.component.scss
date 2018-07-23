@@ -1,0 +1,28 @@
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+@media (max-width:961px) {
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view {
+        display: block;
+    }
+}
+
+@media (max-width:321px) {
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view {
+        display: block;
+        .patient-cell-number{
+            display:block;
+        }
+    }
+}

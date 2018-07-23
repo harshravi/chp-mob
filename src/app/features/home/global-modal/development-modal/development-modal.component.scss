@@ -1,0 +1,36 @@
+@import '~assets/scss/_variables.scss';
+.w-70{
+    width:70px;
+}
+
+// responsive changes for dev modal
+.modal-body {
+   padding: 0px;
+   height: 75vh;
+}
+
+@media (max-width: 991px) {
+    .full-height{
+        height: auto;
+    }
+}
+
+.taskListBackground {
+    background-color: $medi-gray;
+}
+.f-15{
+    font-size: 15px;
+}
+.develop-modal-contant {
+    border-bottom: 1px solid #e7eaec;
+    position: relative;
+    overflow: hidden;
+}
+.category-padd-title{
+    padding: 5px 10px 5px 15px;
+}
+.form-element-left{
+    position: absolute;
+    left: 0px;
+    text-align: left;
+}

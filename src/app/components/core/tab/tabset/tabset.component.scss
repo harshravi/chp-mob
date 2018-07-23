@@ -1,0 +1,25 @@
+.nav-tabs > li > a{
+    min-height: 0px;
+    padding: 12px 20px 12px 25px;
+}
+
+.nav-tabs{
+    border-bottom: none;
+    background: none;
+}
+
+.task-tabs li a{
+    color: #A7B1C2;
+    background: none;
+    border-radius: 0px;
+    border: none;
+}
+
+.task-tabs li.active a{
+    background: #fff;
+    color: #757575;
+    border:1px solid #e6e6e6;
+    border-bottom-color: transparent;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}

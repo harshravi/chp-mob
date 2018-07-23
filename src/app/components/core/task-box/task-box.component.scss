@@ -1,0 +1,68 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+.small{
+    font-size: 10px;
+}
+.urgent-card{
+    background: #fff;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 6px 0 rgba(167, 177, 194, 0.6);
+    .card-element{
+        padding:10px;
+    }
+    .vital-info{
+        padding: 5px 10px 10px 10px;
+    }
+    .name-body{
+        display: inline-block;
+        padding-left: 10px;
+        width: calc(100% - 130px);
+    }
+    .font-12{
+        font-size: 12px;
+    }
+    .searchBoxLi{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .medi-list-height{	
+        max-height: 13vh;
+        overflow-y: auto;
+    }
+    .searchBox{
+        position: relative;        
+    }
+    .clearText{
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+    .heighlight-searched-row{
+        background-color: #18a689!important;
+        color: $white;
+        @include margin-all(3px,3px,3px,3px);
+        @include radius-all-equal($count-box-border-radius);
+        @include padding-all(6px,6px,6px,12px);   
+    }
+    .reassign-box{
+        position: absolute;
+        background: #fff;
+        padding-bottom: 10px;
+        border-right: 1px solid #e5e6e7;
+        border-left: 1px solid #e5e6e7;
+        border-bottom: 1px solid #e5e6e7;
+        right: 20px;
+        left: 20px;
+    }    
+}
+
+.btn-circle {
+    width: 25px;
+    height: 25px;
+    padding: 2px 0;
+    border: 1px solid #1bb394;
+    position: relative;
+    top: -5px;
+}

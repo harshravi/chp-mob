@@ -1,0 +1,68 @@
+<div class="col-lg-12">
+  <app-ibox-container>
+    <app-ibox-header cardName="Medication List"></app-ibox-header>
+    <app-ibox-content>
+      <div class="row">
+        <div class="col-lg-5">
+          <div class="input-group">
+            <input type="text" placeholder="Search Client" class="form-control">
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search">
+        </span>
+            </button>
+            </span>
+          </div>
+        </div>
+        <!--<app-check-box (checkedOrnot)="onCheckedOrUnchecked($event)" name='Show disable'></app-check-box>-->
+        <div class="col-lg-4">
+          <button class="btn btn-primary pull-right">Add Custom Medication</button>
+        </div>
+      </div>
+      <div class="">
+        <ngx-datatable class="material expandable vheight" #myTable [rows]="rows" [columns]="columns"
+          [columnMode]="'force'" [headerHeight]="50" [rowHeight]="'auto'"
+          (page)="onPage($event)">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+            </a>
+          </ng-template>
+          <ngx-datatable-column prop="brand_name" name="Brand" width="300">
+            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+              <a><strong>{{value}} <br/></strong></a>{{row.substance_name}}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column prop="active_numerator_strength" name="Substance Dose" width="30">
+            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+              {{value}}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column prop="route_name" name="Application" width="30">
+            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+              {{value}}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column prop="company_name" name="Company" width="30">
+            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+              {{value}}
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column prop="custom" name="Custom" width="30">
+            <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+              {{value}}
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+      <!--<vh-pagination [count]="count" [limit]="limit"></vh-pagination>-->
+      <div class="row" style="padding: 5px 12px;">
+        <div class="col-lg-6" style="padding-top: 10px; font-size: 12pt">{{count}} total</div>
+        <div class="col-lg-6">
+          <button type="button" class="btn btn-primary pull-right" (click)="loadMore()">Load More</button>
+        </div>
+      </div>
+    </app-ibox-content>
+  </app-ibox-container>
+</div>

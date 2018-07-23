@@ -1,0 +1,68 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+.vital-box{
+    @include padding-all(5px,10px,5px,10px);
+    @include radius-all-equal($count-box-border-radius);
+    margin-bottom: 10px;
+    background: $white;
+    min-height: 66px;
+    div{
+        @include padding-all(0,0,0,20px);
+    }
+}
+
+.circle{
+    border: 5px solid;
+    border-radius: 50%;
+    width:5px; height:5px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.vital-orange{
+    border: 1px solid ;
+    border-color: $alert;
+    @extend .vital-box;
+    span.vital-bg{
+        @extend .circle;
+        border-color: $alert;
+    }
+}
+
+.vital-green{
+    border: 1px solid ;
+    border-color: $navy;
+    @extend .vital-box;
+    span.vital-bg{
+        @extend .circle;
+        border-color: $navy;
+    }
+}
+.vital-gray{
+    border: 1px solid ;
+    border-color: $dnr-gray;
+    background: rgba(255, 255, 255, 0.7);
+    color: #999;
+    @extend .vital-box;
+    span.vital-bg{
+        @extend .circle;
+    }
+}
+.vital-red{
+    border: 1px solid ;
+    border-color: $red;
+    @extend .vital-box;
+    span.vital-bg{
+        @extend .circle;
+        border-color: $red;
+    }
+}
+
+.vital-heading-size{
+    font-size:11px;
+    font-weight:bold;
+}
+.vital-body-size{
+    font-size:12px;
+}

@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col-lg-12" *ngIf="userObject?.roleType =='STAFF'">
+    <app-ibox-container>
+      <app-ibox-header cardName="Patient List"></app-ibox-header>
+      <app-ibox-content>
+        <app-home-data-table></app-home-data-table>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+
+  <!-- Code for Client Admin -->
+  <div class="col-lg-12" *ngIf="userObject?.roleType =='ADMIN'">
+    <app-ibox-container>
+      <app-ibox-header cardName="User List"></app-ibox-header>
+      <app-ibox-content>
+        <app-client-data-table></app-client-data-table>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+
+</div>

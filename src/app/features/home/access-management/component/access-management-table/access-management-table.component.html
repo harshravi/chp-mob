@@ -1,0 +1,100 @@
+<div class="row">
+  <div class="col-lg-6">
+    <div class="input-group inline-box dropdown-fixedWidth">
+      <label>Select a Role</label><small>&nbsp;TO VIEW PRIVILEGES</small>
+      <!--<select id="medication_reminder" [(ngModel)]="selectRoleListVar" 
+      (ngModelChange)="changeInSelectRoleList($event)" class="form-control m-b">
+                  <option *ngFor="let data of listOfRoles" [value]="data.role_id">
+                           {{data.role_name}}
+                  </option>
+        </select>-->
+      <app-dropdown id="medication_reminder" [ngClass]="{}" name="Outreach" [optionValueName]="'role_id'" [optionTextName]="'role_name'"
+        [data]="listOfRoles" [(ngModel)]="selectRoleListVar" (ngModelChange)="changeInSelectRoleList($event)">
+      </app-dropdown>
+    </div>
+    <div class="inline-box">
+      <button class="btn btn-default" (click)="openAddRoleModal('edit')"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+      <button class="btn btn-primary" (click)="openAddRoleModal('create')"><i class="fa fa-plus" aria-hidden="true"></i></button>
+    </div>
+    <div class="role-dec">{{selectRoleDescription}}</div>
+  </div>
+  <div class="col-lg-6">
+    <div class="text-right">
+      <button class="btn btn-w-m btn-default">Reset</button>
+      <button class="btn btn-w-m btn-primary" (click)="saveTableData()">Save</button>
+    </div>
+  </div>
+</div>
+<ngx-datatable class="material expandable vheight" #myTable [rows]="rows" [columns]="columnArray" [columnMode]="'force'"
+  [rowHeight]="'auto'">
+  <ng-template let-row="row" ngx-datatable-cell-template>
+    <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+    </a>
+  </ng-template>
+  <!--Row Details Angular-->
+  <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
+    <ng-template let-row="row" ngx-datatable-row-detail-template>
+      <div class="table-responsive table-to-card-view">
+        <table class="table access-table">
+          <tr>
+            <th></th>
+            <th *ngFor="let a of columnArray" class="text-center">
+              {{a.name}}
+            </th>
+          </tr>
+          <tr *ngFor="let a of row.features">
+            <td>
+              {{a.feature_name}}
+            </td>
+            <td *ngFor="let check of a.privileges" class="text-center">
+              <app-check-box [hidden]="!check.available" [checkChecked]="check.selected" [checkId]="check.action_id + a.feature_id" (checkedOrnot)="changePrivilege($event,check.action_id,a.feature_id)"></app-check-box>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!--Card View for the Tabular Data for Mobile CONVERT TO COMPONENT-->
+        <!--<div class="row card-to-table-view">
+          <div class="col-sm-12">
+            <div class="feed-activity-list">
+              <div class="feed-element" *ngFor="let row of rows">
+                <div class="media-body ">
+                  <div>
+                      <div *ngFor="let a of row.features">
+                        {{a.feature_name}}
+                        <div *ngFor="let b of columnArray">
+                           {{b.name}} 
+                           <div *ngFor="let check of a.privileges">
+                            <app-check-box [hidden]="!check.available" [checkChecked]="check.selected" [checkId]="check.action_id + a.feature_id" (checkedOrnot)="changePrivilege($event,check.action_id,a.feature_id)"></app-check-box>
+                           </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>-->
+      <!--<div class="col-lg-12" *ngFor="let a of row.features">
+          <div class="col-lg-4">
+            {{a.feature_name}}
+          </div>
+          <div class="col-lg-1" *ngFor="let check of a.privileges">
+            <app-check-box *ngIf="check.available" [checkChecked]="check.selected" [checkId]="check.action_id + a.feature_id" (checkedOrnot)="changePrivilege($event,check.action_id,a.feature_id)"></app-check-box>
+          </div>
+        </div>-->
+    </ng-template>
+  </ngx-datatable-row-detail>
+
+  <!--Column Definition-->
+  <ngx-datatable-column [width]="30" [resizeable]="false" [sortable]="false" [draggable]="false" [canAutoResize]="false" name="">
+    <ng-template let-row="row" ngx-datatable-cell-template>
+      <a [class.icon-right]="!row.$$expanded" [class.icon-down]="row.$$expanded" title="Expand/Collapse Row" (click)="toggleExpandRow(row)">
+      </a>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column prop="module_name" [resizeable]="false" name="Pages/Features" [width]="300">
+    <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+      <a><strong>{{value}}</strong></a>
+    </ng-template>
+  </ngx-datatable-column>
+</ngx-datatable>

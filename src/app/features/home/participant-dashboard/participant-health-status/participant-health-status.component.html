@@ -1,0 +1,716 @@
+<div class="row">
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+      <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+        <!--drop down to show weekly,monthly and days-->
+        <div class="p-xs" *ngIf="vitalName !='LUNG' && vitalName !='DEVELOPMENT'">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="inline">Filter: &nbsp;</div>
+              <div class="inline">
+                <!--<select class="form-control" [(ngModel)]="selectedTimeline" (ngModelChange)="getUpdatedData()">
+                <option *ngFor="let data of dayWiseFilter" value={{data.id}}>
+                  {{data.filterBy}}
+                </option>
+              </select>-->
+
+                <app-dropdown [optionTextName]="'filterBy'" [optionValueName]="'id'" [ngClass]="{}" name="dayFilter" [data]="dayWiseFilter"
+                  [(ngModel)]="selectedTimeline" (ngModelChange)="getUpdatedData()"></app-dropdown>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- drop down ended -->
+
+        <!--carousel component to show vitals-->
+        <div class="carousel-box">
+          <div class="row">
+            <div class="col-lg-12" *ngIf="carouselData">
+              <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+              <app-carousel-set [noOfTileAvailable]="carouselData?.length" [goToSlide]="cardClicked" (carouselInit)="carouselInit()" *ngIf="isCarouselVisible"
+                [refreshEvent]="carouselRefreshEvent" [perPage]="5" [startIndex]="0" [draggable]="'false'" [threshold]="20"
+                [loop]="'false'">
+                <div *ngFor="let vital of carouselData; let i = index" (click)="getVitalData(vital,i)">
+                  <a class="text-primary">
+                    <div class="cards" [ngClass]="{'card-clicked': cardClicked === i}">
+                      &nbsp;
+                      <small>{{vital.vital_desc | uppercase}}</small>
+                      <small *ngIf="vital[0]?.vital_desc">{{vital[0].vital_desc | uppercase}}</small>
+                      <div *ngIf="vital.vital_desc!='Activity' && vital.vitalType!='BP' && vital.vitalType!='WHBMI'" class="text-right">
+                        <h1 [ngClass]="getClass(vital.vital_status)" *ngIf="vital.vitalType!='FLUID' && vital.vitalType!='FEV1,FVC' && vital[0]?.vital_desc!='Lung Function' && vital.vitalType!='DEVELOPMENT'">
+                          <span *ngIf="vital.value; else noValue">{{vital.value}}</span>
+                          <ng-template #noValue>
+                            <span>-</span>
+                          </ng-template>
+                        </h1>
+                        <h1 [ngClass]="getClass(vital[0]?.vital_status)" *ngIf="vital[0]?.vital_desc=='Lung Function'">
+                          <span *ngIf="vital; else noVital">{{vital | formatLungData:'values'}}</span>
+                          <ng-template #noVital>
+                            <span>-</span>
+                          </ng-template>
+                        </h1>
+                        <h1 [ngClass]="getClass(vital.vital_status)" *ngIf="vital.vitalType=='FLUID'">{{vital.value_ltr}}</h1>
+                        <small *ngIf="vital.vitalType!='FEV1,FVC'">{{vital.unit}}</small>
+                        <small *ngIf="vital[0]?.vital_desc=='Lung Function'">
+                          <span *ngIf="vital[0].unit; else noUnit">
+                            <span *ngIf="vital[0].value && !vital[0].value_ext && !vital[0].value_ext2; else noPefUnit">
+                              {{vital[0].pef_unit | capitalizeFirstLetter}}&nbsp;({{vital | formatLungData:'itemType'}})
+                            </span>
+                            <ng-template #noPefUnit>
+                              {{vital[0].unit | capitalizeFirstLetter}}&nbsp;({{vital | formatLungData:'itemType'}})
+                            </ng-template>
+                          </span>
+                          <ng-template #noUnit>
+                          <h1>-</h1>
+                          </ng-template>
+                        </small>
+                      </div>
+                      <div *ngIf="vital.vital_desc=='Activity'" class="text-right">
+                        <div *ngIf="vital?.steps; else noActivity">
+                          <h1>{{vital.steps}}</h1>
+                          <small>Steps</small>
+                        </div>
+                        <ng-template #noActivity>
+                          <h1>-</h1>
+                        </ng-template>
+                      </div>
+                      <div *ngIf="vital.vitalType=='BP'" class="text-right">
+                        <div *ngIf="vital.value; else displayNone">
+                          <h1 [ngClass]="getClass(vital.vital_status)">{{vital.value && vital.value_ext ? vital.value +'/'+ vital.value_ext : ''}}</h1>
+                          <small>{{vital.unit}}</small>
+                        </div>
+                        <ng-template #displayNone>
+                          <h1>-</h1>
+                        </ng-template>
+                      </div>
+                      <div *ngIf="vital.vitalType=='DEVELOPMENT'" class="text-right">
+                        <div *ngIf="vital?.weight; else other_text">
+                          <h1 [ngClass]="getClass(vital.vital_status)">
+                            <span *ngIf="vital.weight > 0; else noWeight">
+                              {{vital.weight +'/'}}
+                            </span>
+                            <ng-template #noWeight>
+                              <span>-</span>
+                            </ng-template>
+                            <span *ngIf="vital.bmi > 0; else noBmi">
+                              {{vital.bmi}}
+                            </span>
+                            <ng-template #noBmi>
+                              <span>-</span>
+                            </ng-template>
+                            <!--{{vital.weight >= 0 && vital.bmi >= 0 ? vital.weight +'/'+ vital.bmi: ''}}-->
+                          </h1>
+                          <small>{{vital.weight_unit}}</small>
+                        </div>
+                        <ng-template #other_text>
+                          <div class="text-right">
+                            <h1>-</h1>
+                          </div>
+                        </ng-template>
+                      </div>
+                      <div class="p-t-xx" *ngIf="vital.vital_desc!=='Activity'">
+                        <div><small class="pull-left text-dark-grey" *ngIf="vital.time">{{_dateUtilityService.getDateAsString(vital.time)}}</small></div>
+                        <div><small class="pull-right text-dark-grey" *ngIf="vital.time">{{_dateUtilityService.getOnlyTime(vital.time)}}</small></div>
+                      </div>
+                      <div class="p-t-xx" *ngIf="vital.vital_desc==='Activity'">
+                        <div><small class="pull-left text-dark-grey" *ngIf="vital.timestamp">{{_dateUtilityService.getDateAsString(vital.timestamp)}}</small></div>
+                        <div><small class="pull-right text-dark-grey" *ngIf="vital.timestamp">{{_dateUtilityService.getOnlyTime(vital.timestamp)}}</small></div>
+                      </div>
+                      <div class="p-t-xx" *ngIf="vital[0]?.vital_desc=='Lung Function'">
+                        <div><small class="pull-left text-dark-grey" *ngIf="vital[0]?.time">{{_dateUtilityService.getDateAsString(vital[0].time)}}</small></div>
+                        <div><small class="pull-right text-dark-grey" *ngIf="vital[0]?.time">{{_dateUtilityService.getOnlyTime(vital[0].time)}}</small></div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </app-carousel-set>
+            </div>
+          </div>
+        </div>
+        <!--carousel ended-->
+
+        <div class="p-m" *ngIf="vitalName ==='Heart Rate' || vitalName ==='Blood Oxygen' || vitalName ==='Peak Expiratory Flow' "
+          class="m-t-lg">
+          <!--<app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>-->
+          <app-graphs [data]="graphData" [timeline]="selectedTimeline"></app-graphs>
+        </div>
+
+        <div class="p-m devider-tab-graph p-b" *ngIf="vitalName == 'LUNG'">
+          <div class="row">
+            <div class="col-md-8 pull-left">
+              <div class="col-md-12 no-padding">
+                <strong class="xm-font">Lung Function</strong><br>
+                <small>{{participantName}}</small>
+              </div>
+            </div>
+            <div class="col-md-4 pull-right text-right">
+              <button class="btn w-100 m-r-sm btn-white" *ngIf="editButton && vitalName =='LUNG'" [disabled]='tablularData.length==0' (click)="enableEdit(true)">Edit Data</button>
+              <button class="btn w-100 m-r-sm btn-white" *ngIf="editData && vitalName =='LUNG'" (click)="enableEdit(false)">Cancel</button>
+              <button class="btn w-100 btn-primary" (click)="openLungsModal()">Add Data</button>
+            </div>
+          </div>
+          <div class="row" *ngIf="vitalName =='LUNG'">
+            <div class="col-md-9 border-right m-t-lg">
+              <div class="row">
+                <div class="col-md-3 no-padding-right">
+                  <button class="btn btn-white w-66 rightButtonRedius" (click)="changeDataWithUnit('metric')" [ngStyle]="{'font-weight': metricDisplayFont}">Metric</button>
+                  <button class="btn btn-white w-66 pull-left leftButtonRedius" (click)="changeDataWithUnit('us')" [ngStyle]="{'font-weight': usDisplayFont}">US</button>
+                </div>
+                <div class="col-md-3">
+                  <app-dropdown [optionTextName]="'filterBy'" [optionValueName]="'id'" [ngClass]="{}" name="fvcFilter" [data]="fevFvcDropdown"
+                    (change)="selectLungType()" [(ngModel)]="selectedFvc"></app-dropdown>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-xs-10">
+                      <div class="row">
+                        <div class="col-xs-2 m-t-sm text-center">
+                          <button (click)="datePrevClick()" [disabled]="isDatePrevBtnDisabled" class="btn-white fa fa-chevron-left no-border" aria-hidden="true"></button>
+                        </div>
+                        <div class="col-xs-8 no-padding">
+                          <app-dropdown [optionTextName]="'filterBy'" [optionValueName]="'id'" [setSelectedText]="selectedFilterText" [ngClass]="{}"
+                            name="dateFilter" [data]="dateDropdown" [(ngModel)]="daysOptionSelected" (ngModelChange)="daysOptionChange()"></app-dropdown>
+                        </div>
+                        <div class="col-xs-2 m-t-sm text-center">
+                          <button (click)="dateNextClick()" [disabled]="isDateNextBtnDisabled" class="btn-white fa fa-chevron-right no-border" aria-hidden="true"></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xs-2 no-padding">
+                      <!-- tooltip with dynamic html content -->
+                      <div class="patient-name-circle pull-left informationCircle cursor">
+                        <div appTooltip class="tooltip tool-tip-text" [toolipsterContent]="tooltipVal">
+                          <svg viewBox="0 0 10 10">
+                            <use xlink:href="assets/img/Question.svg#Health-Status"  />
+                          </svg>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="vitalName === 'LUNG' && tablularData.length !=0" class="m-t-lg">
+                <app-graphs [data]="graphData" [timeline]="selectedTimeline"></app-graphs>
+              </div>
+            </div>
+            <!--To display Us data-->
+            <div class="col-md-3 m-t-lg" *ngIf="selectedUnit=='us' && tablularData.length !=0">
+              <div class="m-b-sm"><span class="font-bold"># of Critical Instances:</span><br> {{graphData?.critical_instances}}
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Average Reading:</span><br> {{graphData?.average_reading_us}}
+                <span *ngIf="graphData?.average_reading_us; else avgReadUs">{{selectedLungValue ==='FEV1/FVC' ? '%' : 'fl oz'}}</span>
+                <ng-template #avgReadUs>
+                  -
+                </ng-template>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Highest Reading:</span><br> {{graphData?.highest_reading_us}}
+                <span *ngIf="graphData?.highest_reading_us; else highReadUs">{{selectedLungValue ==='FEV1/FVC' ? '%' : 'fl oz'}}</span>
+                <ng-template #highReadUs>
+                  -
+                </ng-template>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Lowest Reading:</span><br> {{graphData?.lowest_reading_Us}}
+                <span *ngIf="graphData?.lowest_reading_Us; else lowReadUs">{{selectedLungValue ==='FEV1/FVC' ? '%' : 'fl oz'}}</span>
+                <ng-template #lowReadUs>
+                  -
+                </ng-template>
+              </div>
+            </div>
+            <!--To display Metric daya-->
+            <div class="col-md-3 m-t-lg" *ngIf="selectedUnit=='metric' && tablularData.length !=0">
+              <div class="m-b-sm"><span class="font-bold"># of Critical Instances:</span><br> {{graphData?.critical_instances}}
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Average Reading:</span><br> {{graphData?.average_reading_metric}}
+                <span *ngIf="graphData?.average_reading_metric; else avgReadMet">{{selectedLungValue=== 'FEV1/FVC' ? '%' : selectedLungValue==='PEF' ? 'L/min' : 'L'}}</span>
+                <ng-template #avgReadMet>
+                  -
+                </ng-template>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Highest Reading:</span><br> {{graphData?.highest_reading_metric}}
+                <span *ngIf="graphData?.highest_reading_metric; else highReadMet">{{selectedLungValue=== 'FEV1/FVC' ? '%' : selectedLungValue==='PEF' ? 'L/min' : 'L'}}</span>
+                <ng-template #highReadMet>
+                  -
+                </ng-template>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Lowest Reading:</span><br> {{graphData?.lowest_reading_metric}}
+                <span *ngIf="graphData?.lowest_reading_metric; else lowReadMet">{{selectedLungValue=== 'FEV1/FVC' ? '%' : selectedLungValue==='PEF' ? 'L/min' : 'L'}}</span>
+                <ng-template #lowReadMet>
+                  -
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--DEVELOPMENT START-->
+        <!--filter, tooltip for Development start-->
+        <div class="p-m devider-tab-graph" *ngIf="vitalName =='DEVELOPMENT'">
+          <div class="row">
+            <div class="col-md-8 pull-left">
+              <div class="col-md-12 no-padding">
+                <strong class="xm-font">Development</strong><br>
+                <!--<strong class="xm-font" *ngIf="vitalName == 'DEVELOPMENT'">Development</strong><br>-->
+                <small>{{participantName}}</small>
+              </div>
+            </div>
+            <div class="col-md-4 pull-right text-right">
+              <button class="btn w-100 m-r-sm btn-white" *ngIf="editButton && vitalName == 'DEVELOPMENT'" [disabled]='tablularData.length==0'
+                (click)="enableEdit(true)">Edit Data</button>
+              <button class="btn w-100 m-r-sm btn-white" *ngIf="editData && vitalName == 'DEVELOPMENT'" (click)="enableEdit(false)">Cancel</button>
+              <button class="btn w-100 btn-primary" (click)="openDevelopmentModal(selectedUnit)">Add Data</button>
+            </div>
+          </div>
+          <div class="row" *ngIf="vitalName == 'DEVELOPMENT'">
+            <div class="col-md-9 border-right m-t-lg">
+              <div class="row">
+                <div class="col-md-3 no-padding-right">
+                  <button class="btn btn-white w-66 rightButtonRedius" (click)="changeDevelopmentUnit('metric')" [ngStyle]="{'font-weight': metricDisplayFont}">Metric</button>
+                  <button class="btn btn-white w-66 pull-left leftButtonRedius" (click)="changeDevelopmentUnit('us')" [ngStyle]="{'font-weight': usDisplayFont}">US</button>
+                </div>
+                <div class="col-md-3">
+                  <app-dropdown [optionTextName]="'filterBy'" [optionValueName]="'id'" [ngClass]="{}" name="fvcFilter" [data]="developmentDropdown"
+                    [(ngModel)]="selectedDevelopment" (change)="selectDevelopmentType()"></app-dropdown>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-xs-10">
+                      <div class="row">
+                        <div class="col-xs-2 m-t-sm text-center">
+                          <!--<i (click)="datePrevClick()" type="text" class="fa fa-chevron-left cursor" aria-hidden="true"></i>-->
+                          <button (click)="datePrevClick()" [disabled]="isDatePrevBtnDisabled" class="btn-white fa fa-chevron-left no-border" aria-hidden="true"></button>
+                        </div>
+                        <div class="col-xs-8 no-padding">
+                          <app-dropdown [setSelectedText]="selectedFilterText" [optionTextName]="'filterBy'" [optionValueName]="'id'" [ngClass]="{}"
+                            name="dateFilter" [data]="dateDropdown" [(ngModel)]="daysOptionSelected" (change)="daysOptionChange()"></app-dropdown>
+                        </div>
+                        <div class="col-xs-2 m-t-sm text-center">
+                          <!--<i (click)="dateNextClick()" type="text" class="fa fa-chevron-right cursor" aria-hidden="true"></i>-->
+                          <button (click)="dateNextClick()" [disabled]="isDateNextBtnDisabled" class="btn-white fa fa-chevron-right no-border" aria-hidden="true"></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xs-2 no-padding">
+                      <!-- tooltip with dynamic html content -->
+                      <div class="patient-name-circle pull-left informationCircle cursor">
+                        <div appTooltip class="tooltip tool-tip-text" [toolipsterContent]="tooltipVal">
+                          <svg viewBox="0 0 10 10">
+                            <use xlink:href="assets/img/Question.svg#Health-Status"  />
+                          </svg>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="vitalName ==='DEVELOPMENT' && tablularData.length !=0" class="m-t-lg">
+                <app-graphs [data]="graphData" [timeline]="selectedTimeline"></app-graphs>
+              </div>
+            </div>
+            <!--To display Us data-->
+            <div class="col-md-3 p-md" *ngIf="selectedUnit=='us' && tablularData.length !=0">
+              <div class="m-b-sm"><span class="font-bold">Latest Z-Score:</span><br>
+                <span *ngIf="graphData && graphData.latest_z_score === 'NA'; else other_text">{{graphData?.latest_z_score}}</span>
+                <ng-template #other_text>
+                  <span>{{graphData?.latest_z_score > 0 ? '+'+graphData?.latest_z_score : graphData?.latest_z_score}}</span>
+                </ng-template>
+              </div>
+              <div class="m-b-sm"><span class="font-bold"># of Critical Instances:</span><br> {{graphData?.critical_instances}}
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Average Reading:</span><br> {{graphData?.average_reading_us}}
+                <span *ngIf="graphData?.average_reading_us != 'NA'">{{selectedDevelopmentValue === 'WeightBMI' ? 'lbs' : '%'}}</span>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Highest Reading:</span><br> {{graphData?.highest_reading_us}}
+                <span *ngIf="graphData?.highest_reading_us != 'NA'">{{selectedDevelopmentValue === 'WeightBMI' ? 'lbs' : '%'}}</span>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Lowest Reading:</span><br> {{graphData?.lowest_reading_Us}}
+                <span *ngIf="graphData?.lowest_reading_Us != 'NA'">{{selectedDevelopmentValue === 'WeightBMI' ? 'lbs' : '%'}}</span>
+              </div>
+            </div>
+            <!--To display Metric data-->
+            <div class="col-md-3 p-md" *ngIf="selectedUnit=='metric' && tablularData.length !=0">
+              <div class="m-b-sm"><span class="font-bold">Latest Z-Score:</span><br>
+                <span *ngIf="graphData && graphData.latest_z_score === 'NA'; else other_text">{{graphData?.latest_z_score}}</span>
+                <ng-template #other_text>
+                  <span>{{graphData?.latest_z_score > 0 ? '+'+graphData?.latest_z_score : graphData?.latest_z_score}}</span>
+                </ng-template>
+              </div>
+              <div class="m-b-sm"><span class="font-bold"># of Critical Instances:</span><br> {{graphData?.critical_instances}}
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Average Reading:</span><br> {{graphData?.average_reading_metric}}
+                <span *ngIf="graphData?.average_reading_metric != 'NA'">{{selectedDevelopmentValue === 'WeightBMI' ? 'kg' : '%'}}</span>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Highest Reading:</span><br> {{graphData?.highest_reading_metric}}
+                <span *ngIf="graphData?.highest_reading_metric != 'NA'">{{selectedDevelopmentValue === 'WeightBMI' ? 'kg' : '%'}}</span>
+              </div>
+              <div class="m-b-sm"><span class="font-bold">Lowest Reading:</span><br> {{graphData?.lowest_reading_metric}}
+                <span *ngIf="graphData?.lowest_reading_metric != 'NA'">{{selectedDevelopmentValue === 'WeightBMI' ? 'kg' : '%'}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--tabular view for Development end-->
+
+        <!--card view for Development start-->
+        <div class="row card-to-table-view">
+          <div class="col-sm-12">
+            <!--Development View-->
+            <div class="feed-activity-list border-left-right border-top-bottom" *ngIf="vitalName == 'DEVELOPMENT'">
+              <div class="border-bottom" *ngFor="let vitalsData of tablularData">
+                <!--card view for us-->
+                <div class="media-body p-sm padding-row" *ngIf="usTable">
+                  <div><label>{{_dateUtilityService.getDateAsString(vitalsData.time)}}</label>&nbsp;<span>{{_dateUtilityService.getOnlyTime(vitalsData.time)}}</span>
+                    <span class="pull-right" *ngIf="editData">
+                    <button class="btn btn-white m-r-sm" (click)="editDevelopmentDetails(vitalsData,'us')"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    <button class="btn btn-white" (click)="deleteDevelopmentDetails(vitalsData)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                  </span>
+                  </div>
+                  <div><label>Reported By:</label>
+                    <div>{{vitalsData.reported_by ? vitalsData.reported_by : '-'}}</div>
+                  </div>
+                  <div><label>Weight:</label>
+                    <div>{{vitalsData.weight_us}} {{vitalsData.weight_unit_us}} | {{(vitalsData.weight_age_percentile == 'NA')
+                      ? vitalsData.weight_age_percentile : vitalsData.weight_age_percentile + '%'}} | {{vitalsData.weight_age_zscore}}</div>
+                  </div>
+                  <div><label>Height:</label>
+                    <div>{{vitalsData.height_us}} | {{(vitalsData.stature_age_percentile == 'NA') ? vitalsData.stature_age_percentile
+                      : vitalsData.stature_age_percentile + '%'}} | {{vitalsData.stature_age_zscore}}</div>
+                  </div>
+                  <div><label>BMI:</label>
+                    <div>{{vitalsData.bmi_us}} | {{(vitalsData.bmi_age_percentile == 'NA') ? vitalsData.bmi_age_percentile : vitalsData.bmi_age_percentile
+                      + '%'}} | {{vitalsData.bmi_age_zscore}}</div>
+                  </div>
+                  <!--<div *ngIf="vitalsData?.vital_status == 0"><strong>Assess:</strong></div><div class="">{{vitalsData?.vital_status}}</div>-->
+                  <div *ngIf="!editData">
+                    <label>Assess:</label>
+                    <div *ngIf="vitalsData?.vital_status == 2">
+                      <a (click)="openSymptomModal(vitalsData)">Critical</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!--card view for metric-->
+                <div class="media-body p-sm padding-row" *ngIf="matriceTable">
+                  <div><label>{{_dateUtilityService.getDateAsString(vitalsData.time)}}</label>&nbsp;<span>{{_dateUtilityService.getOnlyTime(vitalsData.time)}}</span>
+                    <span class="pull-right" *ngIf="editData">
+                        <button class="btn btn-white m-r-sm" (click)="editDevelopmentDetails(vitalsData,'metric')"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button class="btn btn-white" (click)="deleteDevelopmentDetails(vitalsData)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                    </span>
+                  </div>
+                  <div><label>Reported By:</label>
+                    <div>{{vitalsData.reported_by ? vitalsData.reported_by : '-'}}</div>
+                  </div>
+                  <div><label>Weight:</label>
+                    <div>{{vitalsData.weight_metric}} {{vitalsData.weight_unit_metric}} | {{(vitalsData.weight_age_percentile
+                      == 'NA') ? vitalsData.weight_age_percentile : vitalsData.weight_age_percentile + '%'}} | {{vitalsData.weight_age_zscore}}</div>
+                  </div>
+                  <div><label>Height:</label>
+                    <div>{{vitalsData.height_metric}} {{vitalsData.height_unit_metric}} | {{(vitalsData.stature_age_percentile
+                      == 'NA') ? vitalsData.stature_age_percentile : vitalsData.stature_age_percentile + '%'}} | {{vitalsData.stature_age_zscore}}</div>
+                  </div>
+                  <div><label>BMI:</label>
+                    <div>{{vitalsData.bmi_metric}} | {{(vitalsData.bmi_age_percentile == 'NA') ? vitalsData.bmi_age_percentile
+                      : vitalsData.bmi_age_percentile + '%'}} | {{vitalsData.bmi_age_zscore}}</div>
+                  </div>
+                  <div *ngIf="!editData">
+                    <label>Assess:</label>
+                    <div *ngIf="vitalsData?.vital_status == 2">
+                      <a (click)="openSymptomModal(vitalsData)">Critical</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Development</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--card view for Development end-->
+        <!--DEVELOPMENT END-->
+
+        <!--tabular view for vitals-->
+        <div class="p-m table-to-card-view">
+          <div class="row">
+            <div class="col-lg-12" *ngIf="showTable">
+              <ngx-datatable #vitalGrid class="material expandable" [rows]="rows" [columns]="columns" [columnMode]="'force'" [headerHeight]="40"
+                [footerHeight]="50" [rowHeight]="'auto'" [count]="count" [limit]="10" (page)="onPage($event)">
+
+                <ng-template #viewSymptom let-row="row" let-value="value">
+                  <a *ngIf="row.vital_status==2 || (vitalName=='Peak Expiratory Flow'|| vitalName=='Weight / BMI' || vitalName=='Blood Glucose' && row.vital_status==1)"
+                    (click)="openSymptomModal(row)">View Symptoms</a>
+                </ng-template>
+
+                <ng-template #BGReportColumn let-row="row" let-value="value">
+                  <span *ngIf="row.value_ext == 'before'">Before Meal</span><span *ngIf="row.value_ext == 'after'">After Meal</span>
+                </ng-template>
+
+                <ng-template #DateFormat let-row="row" let-value="value">
+                  <span *ngIf="vitalName=='Activity' || vitalName=='Fluid Intake'"><span class="font-bold">{{_dateUtilityService.getDateAsString(row.timestamp)}}</span>&nbsp;
+                  {{_dateUtilityService.getOnlyTime(row.timestamp)}}
+                  </span>
+                  <span *ngIf="vitalName!='Activity' && vitalName!='Fluid Intake'"><span class="font-bold">{{_dateUtilityService.getDateAsString(row.time)}}</span>&nbsp;
+                  {{_dateUtilityService.getOnlyTime(row.time)}}
+                  </span>
+                </ng-template>
+
+                <ng-template #editLung let-row="row" let-value="value">
+                  <span *ngIf="!editData && row.vital_status === 2"><a (click)="openSymptomModal(row)">Critical</a></span>
+                </ng-template>
+
+                <ng-template #editLungAction let-row="row" let-value="value">
+                  <div *ngIf="editData">
+                    <i (click)="editLungDetails(row)" class="fa fa-pencil fa fa-pencil m-l-sm cursor" aria-hidden="true"></i>&nbsp;
+                    <i (click)="deleteLungsDetails(row)" class="fa fa-trash-o cursor m-l-sm" aria-hidden="true"></i>
+                  </div>
+                </ng-template>
+
+                <ng-template #weightUs let-row="row" let-value="value">
+                  <div *ngIf="usTable">
+                    {{row.weight_us}} {{row.weight_unit_us}} | {{(row.weight_age_percentile == 'NA') ? row.weight_age_percentile : row.weight_age_percentile
+                    + '%'}} | {{row.weight_age_zscore}}
+                  </div>
+                  <div *ngIf="matriceTable">
+                    {{row.weight_metric}} {{row.weight_unit_metric}} | {{(row.weight_age_percentile == 'NA') ? row.weight_age_percentile : row.weight_age_percentile
+                    + '%'}} | {{row.weight_age_zscore}}
+                  </div>
+                </ng-template>
+
+                <ng-template #heightUs let-row="row" let-value="value">
+                  <div *ngIf="usTable">
+                    {{row.height_us}} | {{(row.stature_age_percentile == 'NA') ? row.stature_age_percentile : row.stature_age_percentile + '%'}}
+                    | {{row.stature_age_zscore}}
+                  </div>
+                  <div *ngIf="matriceTable">
+                    {{row.height_metric}} {{row.height_unit_metric}} | {{(row.stature_age_percentile == 'NA') ? row.stature_age_percentile :
+                    row.stature_age_percentile + '%'}} | {{row.stature_age_zscore}}
+                  </div>
+                </ng-template>
+
+                <ng-template #bmiUs let-row="row" let-value="value">
+                  <div *ngIf="usTable">
+                    {{row.bmi_us}} | {{(row.bmi_age_percentile == 'NA') ? row.bmi_age_percentile : row.bmi_age_percentile + '%'}} | {{row.bmi_age_zscore}}
+                  </div>
+                  <div *ngIf="matriceTable">
+                    {{row.bmi_metric}} | {{(row.bmi_age_percentile == 'NA') ? row.bmi_age_percentile : row.bmi_age_percentile + '%'}} | {{row.bmi_age_zscore}}
+                  </div>
+                </ng-template>
+
+                <ng-template #editDevelopment let-row="row" let-value="value">
+                  <span *ngIf="!editData && row.vital_status === 2"><a (click)="openSymptomModal(row)">Critical</a></span>
+                </ng-template>
+
+                <ng-template #editDevelopmentAction let-row="row" let-value="value">
+                  <div *ngIf="usTable && editData">
+                    <i (click)="editDevelopmentDetails(row,'us')" class="fa fa-pencil fa fa-pencil m-l-sm cursor" aria-hidden="true"></i>&nbsp;
+                    <i (click)="deleteDevelopmentDetails(row.whbmi_id)" class="fa fa-trash-o cursor m-l-sm" aria-hidden="true"></i>
+                  </div>
+                  <div *ngIf="matriceTable && editData">
+                    <i (click)="editDevelopmentDetails(row,'matric')" class="fa fa-pencil fa fa-pencil m-l-sm cursor" aria-hidden="true"></i>&nbsp;
+                    <i (click)="deleteDevelopmentDetails(row.whbmi_id)" class="fa fa-trash-o cursor m-l-sm" aria-hidden="true"></i>
+                  </div>
+                </ng-template>
+              </ngx-datatable>
+            </div>
+          </div>
+        </div>
+        <!--tabular view ended-->
+
+        <!--Card View for the Tabular Data for Mobile CONVERT TO COMPONENT-->
+        <div class="row card-to-table-view" *ngIf="vitalName != 'DEVELOPMENT'">
+          <div class="col-sm-12">
+            <!--Activity View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Activity'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.timestamp)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.timestamp)}}</div>
+                  <div><strong>Step:</strong>{{data.steps}}</div>
+                  <div><strong>Distance:</strong>{{data.distance}}&nbsp; miles</div>
+                  <div><strong>Calories Burned:</strong>{{data.calories}}&nbsp; Calories</div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Activity</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Blood Glucose View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Blood Glucose'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.time)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.time)}}</div>
+                  <div><strong>Blood Glucose:</strong><span [ngClass]="getClass(data?.vital_status)">{{data.value}}</span></div>
+                  <div><strong>Reported:</strong><span *ngIf="data.value_ext == 'before'">Before Meal</span><span *ngIf="data.value_ext == 'after'">After Meal</span></div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                  <div><strong>Associated Symptom Assessment:</strong>
+                    <a *ngIf="data?.vital_status==2 || data?.vital_status==1" (click)="openSymptomModal(data)">View Symptoms</a>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Blood Glucose</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Blood Oxygen View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Blood Oxygen'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.time)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.time)}}</div>
+                  <div><strong>Blood Oxygen:</strong><span [ngClass]="getClass(data?.vital_status)">{{data.value}}</span></div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                  <div><strong>Associated Symptom Assessment:</strong><a *ngIf="data?.vital_status==2" (click)="openSymptomModal(data)">View Symptoms</a></div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Blood Oxygen</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Blood Pressure View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Blood Pressure'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.time)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.time)}}</div>
+                  <div><strong>Blood Pressure:</strong><span [ngClass]="getClass(data?.vital_status)">{{data.value}}/{{data.value_ext}}</span></div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                  <div><strong>Associated Symptom Assessment:</strong><a *ngIf="data?.vital_status==2" (click)="openSymptomModal(data)">View Symptoms</a></div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Blood Pressure</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Fluid Intake View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Fluid Intake'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.timestamp)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.timestamp)}}</div>
+                  <div><strong>Fluid Type:</strong>{{data.fluid_type}}</div>
+                  <div><strong>Quantity:</strong>{{data.fluid_intake_quantity}}&nbsp;{{data.unit}}</div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Fluid Intake</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Heart Rate View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Heart Rate'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.time)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.time)}}</div>
+                  <div><strong>Heart Rate:</strong><span [ngClass]="getClass(data?.vital_status)">{{data.value}}</span></div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                  <div><strong>Associated Symptom Assessment:</strong><a *ngIf="data?.vital_status==2" (click)="openSymptomModal(data)">View Symptoms</a></div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Heart Rate</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Peak Expiratory Flow View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Peak Expiratory Flow'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.time)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.time)}}</div>
+                  <div><strong>Peak Expiratory Flow:</strong><span [ngClass]="getClass(data?.vital_status)">{{data.value}}</span></div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                  <div><strong>Associated Symptom Assessment:</strong>
+                    <a *ngIf="data?.vital_status==2 || data?.vital_status==1" (click)="openSymptomModal(data)">View Symptoms</a>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Peak Expiratory</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Weight / BMI View-->
+            <div class="feed-activity-list p-w-sm" *ngIf="vitalName=='Weight / BMI'">
+              <div class="feed-element" *ngFor="let data of tablularData">
+                <div class="media-body">
+                  <div><strong>{{_dateUtilityService.getDateAsString(data.time)}}</strong>&nbsp; {{_dateUtilityService.getOnlyTime(data.time)}}</div>
+                  <div><strong>Weight / BMI:</strong>{{data.weight}}&nbsp; {{data.weight_unit}}/{{data.bmi}}</div>
+                  <div><strong>Reported By:</strong>{{data.reported_by ? data.reported_by : '-'}}</div>
+                  <div><strong>Associated Symptom Assessment:</strong>
+                    <a *ngIf="data?.vital_status==2 || data?.vital_status==1" (click)="openSymptomModal(data)">View Symptoms</a>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Weight / BMI</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+            <!--Lungs table mobile view-->
+            <div class="feed-activity-list border-left-right border-top-bottom" *ngIf="vitalName=='LUNG'">
+              <div class="border-bottom" *ngFor="let data of tablularData">
+                <div class="media-body p-sm padding-row">
+                  <div><label>{{_dateUtilityService.getDateAsString(data.time)}}</label>&nbsp;<span>{{_dateUtilityService.getOnlyTime(data.time)}}</span>
+                    <span class="pull-right" *ngIf="editData">
+                      <button class="btn btn-white m-r-sm" (click)="editLungDetails(data)"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                      <button class="btn btn-white" (click)="deleteLungsDetails(data)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>                   
+                    </span>
+                  </div>
+                  <div><label>Reported By:</label>
+                    <div>{{data.reported_by}}</div>
+                  </div>
+
+                  <div><label>FEV1:</label>
+                    <div>{{data.fev1_value}}
+                      <span *ngIf="data.fev1_value">{{data.unit | capitalizeFirstLetter}}</span>
+                      <span *ngIf="!data.fev1_value">-</span>
+                    </div>
+                  </div>
+
+                  <div><label>FVC:</label>
+                    <div>{{data.fvc_value}}
+                      <span *ngIf="data.fvc_value">{{data.unit | capitalizeFirstLetter}}</span>
+                      <span *ngIf="!data.fvc_value">-</span>
+                    </div>
+                  </div>
+
+                  <div><label>FEV1/FVC:</label>
+                    <div>{{data.fev1_fvc_value}}
+                      <span *ngIf="data.fev1_fvc_value">%</span>
+                      <span *ngIf="!data.fev1_fvc_value">-</span>
+                    </div>
+                  </div>
+
+                  <div><label>PEF:</label>
+                    <div>{{data.pef_value}}
+                      <span *ngIf="data.pef_value">L/min</span>
+                      <span *ngIf="!data.pef_value">-</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!editData">
+                    <label>Assess:</label>
+                    <div *ngIf="data?.vital_status == 2">
+                      <a (click)="openSymptomModal(data)">Critical</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top p-xs" *ngIf="tablularData?.length==0">
+                <strong>Lungs</strong>
+                <div>No data available</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>

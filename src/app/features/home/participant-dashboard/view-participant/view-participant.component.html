@@ -1,0 +1,470 @@
+<div class="row" *ngIf="'viewVitalsManagement' | privilege">
+  <div class="col-lg-12">
+    <app-ibox-container>
+      <app-ibox-header [cardName]="gridIBoxTitle"></app-ibox-header>
+      <app-ibox-content>
+        <!--Top 4 components to show vitals-->
+        <app-progress-spinner [isRunning]="isDLHealthStatus"></app-progress-spinner>
+        <div class="row">
+          <div class="col-lg-12 no-padding">
+            <div class="text-center">
+              <h4>{{noVitalDataMessage}}</h4>
+            </div>
+            <div class="cursor" *ngFor="let vital of carouselData let i=index" (click)="getVitalData(vital)" [routerLink]="['participantHealthStatus/']">
+              <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 no-padding" *ngIf="i<4">
+                <div class="cards margin-media-sm">
+                  &nbsp;
+                  <small>{{vital.vital_desc | uppercase}}</small>
+                  <small *ngIf="vital[0]?.vital_desc">{{vital[0].vital_desc | uppercase}}</small>
+                  <div *ngIf="vital.vital_desc!='Activity' && vital.vitalType!='BP' && vital.vitalType!='WHBMI'" class="text-right">
+                    <h1 [ngClass]="getClass(vital.vital_status)" *ngIf="vital.vitalType!='FLUID' && vital.vitalType!='FEV1,FVC'">{{vital.value}}</h1>
+                    <h1 [ngClass]="getClass(vital.vital_status)" *ngIf="vital.vitalType=='FLUID'">{{vital.value_ltr}}</h1>
+                    <small *ngIf="vital.vitalType!='FEV1,FVC'">{{vital.unit}}</small>
+                    <h1 [ngClass]="getClass(vital[0]?.vital_status)" *ngIf="vital[0]?.vital_desc=='Lung Function'">
+                      <span *ngIf="vital; else noVital">{{vital | formatLungData:'values'}}</span>
+                      <ng-template #noVital>
+                        <span>-</span>
+                      </ng-template>
+                    </h1>
+                    <small *ngIf="vital[0]?.vital_desc=='Lung Function'">
+                      <span *ngIf="vital[0].unit; else noUnit">
+                        <span *ngIf="vital[0].value && !vital[0].value_ext && !vital[0].value_ext2; else noPefUnit">
+                          {{vital[0].pef_unit | capitalizeFirstLetter}}&nbsp;({{vital | formatLungData:'itemType'}})
+                        </span>
+                        <ng-template #noPefUnit>
+                          {{vital[0].unit | capitalizeFirstLetter}}&nbsp;({{vital | formatLungData:'itemType'}})
+                        </ng-template>
+                      </span>
+                      <ng-template #noUnit>
+                       <h1>-</h1>
+                      </ng-template>
+                    </small>
+                  </div>
+                  <div *ngIf="vital.vitalType=='DEVELOPMENT'" class="text-right">
+                    <div *ngIf="vital?.weight; else otherText">
+                      <h1 [ngClass]="getClass(vital.vital_status)">
+                        <span *ngIf="vital.weight > 0; else noWeight">
+                            {{vital.weight +'/'}}
+                        </span>
+                        <ng-template #noWeight>
+                          <span>-</span>
+                        </ng-template>
+                        <span *ngIf="vital.bmi > 0; else noBmi">
+                            {{vital.bmi}}
+                        </span>
+                        <ng-template #noBmi>
+                          <span>-</span>
+                        </ng-template>
+                        <!--{{vital.weight >= 0 && vital.bmi >= 0 ? vital.weight +'/'+ vital.bmi: ''}}-->
+                      </h1>
+                      <small>{{vital.weight_unit}}</small>
+                    </div>
+                    <ng-template #otherText>
+                      <h1>-</h1>
+                    </ng-template>
+                  </div>
+                  <div *ngIf="vital.vital_desc=='Activity'" class="text-right">
+                    <h1>{{vital.steps}}</h1>
+                    <small>Steps</small>
+                  </div>
+                  <div *ngIf="vital.vitalType=='BP'" class="text-right">
+                    <h1 [ngClass]="getClass(vital.vital_status)">{{vital.value && vital.value_ext ? vital.value +'/'+ vital.value_ext : ''}}</h1>
+                    <small>{{vital.unit}}</small>
+                  </div>
+                  <div *ngIf="vital.vitalType=='WHBMI'" class="text-right">
+                    <h1 [ngClass]="getClass(vital.vital_status)">{{vital.weight && vital.bmi ? vital.weight +'/'+ vital.bmi: ''}}</h1>
+                    <small>{{vital.weight_unit}}</small>
+                  </div>
+                  <div class="p-t-xx" *ngIf="vital.vital_desc!=='Activity'">
+                    <div><small class="pull-left text-dark-grey" *ngIf="vital.time">{{_dateUtilityService.getDateAsString(vital.time)}}</small></div>
+                    <div><small class="pull-right text-dark-grey" *ngIf="vital.time">{{_dateUtilityService.getOnlyTime(vital.time)}}</small></div>
+                  </div>
+                  <div class="p-t-xx" *ngIf="vital.vital_desc==='Activity'">
+                    <div><small class="pull-left text-dark-grey" *ngIf="vital.timestamp">{{_dateUtilityService.getDateAsString(vital.timestamp)}}</small></div>
+                    <div><small class="pull-right text-dark-grey" *ngIf="vital.timestamp">{{_dateUtilityService.getOnlyTime(vital.timestamp)}}</small></div>
+                  </div>
+                  <div class="p-t-xx" *ngIf="vital[0]?.vital_desc=='Lung Function'">
+                    <div><small class="pull-left text-dark-grey" *ngIf="vital[0]?.time">{{_dateUtilityService.getDateAsString(vital[0].time)}}</small></div>
+                    <div><small class="pull-right text-dark-grey" *ngIf="vital[0]?.time">{{_dateUtilityService.getOnlyTime(vital[0].time)}}</small></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Top 4 components to show vitals ended-->
+        <div class="row text-center m-t-md">
+          <button class="btn btn-default w-200" [routerLink]="['participantHealthStatus/']" *ngIf="!noVitalDataMessage">View More</button>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+</div>
+
+<div class="row">
+  <!-- First column start -->
+  <div class="col-lg-4">
+    <!--Medication card view component start-->
+    <app-ibox-container *ngIf="('viewMedication' | privilege)">
+      <app-ibox-header [cardName]="medicationBoxTitle"></app-ibox-header>
+      <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+        <div class="p-xs v-align progress-bar-box">
+          <div class="inline progress-width">
+            <app-progress-bar [proressPerColor]="proressPerColor" [proressTextColor]='proressTextColor' [progressBarTitle]='progressBarTitle'
+              [status]="status" [background]="statusColor" [value]="value"></app-progress-bar>
+          </div>
+          <div class="inline v-b-align m-l-xs overall_compliance_lheight">
+            <button *ngIf="'addMedication' | privilege" class="btn btn-primary btn-sm m-n" (click)="openAddMedicationModal()"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <div>
+          <app-progress-spinner [isRunning]="isDLMedication"></app-progress-spinner>
+          <div *ngIf = "isEpilepsyCarePlanFlag">
+          <div class="care-team-contant text-dark-grey">ACTION PLAN RESCUE MEDICATION</div>
+          <div class="care-team-contant" *ngFor='let data of actionPlanDetails'>
+            <span class="border-light-gray"></span>
+            <div class="row">
+              <strong class="col-xs-10 col-md-10 col-sm-10 col-lg-7 m-l-xs wordWrap">
+                <span *ngIf="data?.drug_name"></span>{{data.drug_name}}&nbsp;{{data.dosage}}mg
+              </strong>
+              <div class="col-xs-1 col-md-1 col-sm-1 col-lg-4 text-right text-left-sm m-l-xs no-padding">
+                <div class="btn btn-default btn-sm m-n actionPlan-btn-padding" (click)="editActionPlanDetails(data)">
+                  <i class="fa fa-pencil fa fa-pencil cursor" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-sm border-bottom" *ngIf="actionPlanDetails.length <= 0">No Data Available</div>
+          </div>
+          <div class="care-team-contant text-dark-grey">ACTIVE</div>
+          <div *ngFor='let data of activeMedication'>
+            <div class="care-team-contant">
+              <span *ngIf="data.medStatus== 1" class="{{data.medStatusColor}}"></span>
+              <span *ngIf="data.medStatus== 2" class="{{data.medStatusColor}}"></span>
+              <span *ngIf="data.medStatus== 0" class="{{data.medStatusColor}}"></span>
+              <div class="row">
+                <strong class="col-xs-12 col-md-9 col-sm-9 col-lg-9 m-l-xs wordWrap">{{(data?.from_fda === 2 || data?.from_fda === 3) && data?.frequency == null ? '! ':''}}{{data.drug_name}}
+                  <span *ngIf="data.active_numarator_strength && data.active_ingred_unit">{{data.active_numarator_strength+data.active_ingred_unit}}</span>
+                </strong>
+                <div *ngIf="data.medication_taken_percentage === 'N/A' else withPercentageSymbol" class="col-xs-12 col-md-2 col-sm-2 col-lg-2 text-right text-left-sm m-t-xs m-l-xs">
+                  {{data.medication_taken_percentage}}
+                </div>
+                <ng-template #withPercentageSymbol>
+                  <div class="col-xs-12 col-md-2 col-sm-2 col-lg-2 text-right text-left-sm m-t-xs m-l-xs" [ngClass]="commonUtils.getColorCodeForMedicationCompliacne(data.medication_taken_percentage)">
+                    {{data.medication_taken_percentage}}%
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+
+          </div>
+          <div class="p-sm border-bottom" *ngIf="activeMedication.length <= 0 && isDLMedication == false">No Data Available</div>
+        </div>
+        <div class="text-center p-sm">
+          <button type="button" class="btn btn-block btn-outline btn-default" (click)="openMedicationModal()" [disabled]="activeMedication.length <= 0">View All</button>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+    <!--Medication view component end-->
+
+    <!-- Care team card view component start -->
+    <app-ibox-container>
+      <app-ibox-header [cardName]="careTeamText"></app-ibox-header>
+      <app-ibox-content [styleClassForContent]="noPadClassForComponent" *ngIf="careTeamMembers">
+        <app-progress-spinner [isRunning]="isDLCareTeam"></app-progress-spinner>
+        <div *ngFor="let careMember of careTeamMembers">
+          <div class="care-team">
+            <div class="care-team-contant">
+              <div class="patient-name-circle pull-left">
+                <span class="patient-name">{{careMember.staff_name_initials}}</span>
+              </div>
+              <div class="media-body">
+                <div class="pull-right m-t-xs">
+                  <button class="btn btn-primary btn-circle-chat" type="button">
+                    <i class="fa fa-comment fa-lg" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <strong class="p-b3">{{careMember.staff_name}}</strong>
+                <div class="p-b3"><small>{{careMember.staff_role == null ?'':careMember.staff_role}} </small></div>
+                <div class="p-b3"><small>{{careMember.mobile_number}}</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-sm border-bottom" *ngIf="careTeamMembers.length==0 && isDLCareTeam == false">No Data Available</div>
+        <div class="text-center p-sm">
+          <button type="button" class="btn btn-white btn-block" [routerLink]="['patientCareTeam']" (click)="savelog('care_team')" [disabled]="careTeamMembers.length==0">View All</button>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+    <!-- Care team component end -->
+  </div>
+
+  <!-- Second column start -->
+  <div class="col-lg-4" *ngIf="'viewMedicalrecords' | privilege">
+    <!--CCD card view component start-->
+    <app-ibox-container>
+      <app-ibox-header [cardName]="ccdBoxTitle"></app-ibox-header>
+      <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+        <!--<app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>-->
+        <div class="border-bottom p-sm">
+          <!--<select class="form-control" [(ngModel)]="selectedCCD" (ngModelChange)="getSelectedCCDInfo()">
+                    <option *ngFor="let data of ccdList" value={{data.id}} (click)="ccdName(data)">
+                        {{data.filterBy}}
+                    </option>
+                  </select>-->
+
+          <app-dropdown [ngClass]="{}" name="Outreach" [optionValueName]="'id'" [optionTextName]="'filterBy'" [data]="ccdList" [(ngModel)]="selectedCCD"
+            (ngModelChange)="getSelectedCCDInfo()"></app-dropdown>
+          <app-progress-spinner [isRunning]="isDataLoading"></app-progress-spinner>
+        </div>
+        <!--Allergies view-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'allergies' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList; let i=index">
+            <div *ngIf="i<3">
+              <div class="pull-right">
+                <app-chips [chips]="ccd.allergy_type"></app-chips>
+              </div>
+              <div class="m-b-xs small"><strong>{{ccd.entity ? ccd.entity : '-'}}</strong></div>
+              <div class="m-b-xs small"> <span class="font-bold">Severity:</span> {{ccd.sevierity ? ccd.sevierity : '-'}}</div>
+              <div class="pull-left small">
+                {{_dateUtilityService.getDateAsString(ccd.onset_date)}}
+              </div>
+              <div class="pull-right text-uppercase {{ccd.statusColor}}">
+                {{ccd.status}}
+              </div>
+            </div>
+          </div>
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.length==0">No allergies were found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.length==0">View All</button>
+          </div>
+        </div>
+
+        <!--Problems view-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'problems' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList; let i=index">
+            <div *ngIf="i<3">
+              <div class="m-b-xs small"><strong>{{ccd.problem_type ? ccd.problem_type : '-'}}</strong> </div>
+              <div class="pull-left small">
+                {{_dateUtilityService.getDateAsString(ccd.onset_date)}}
+              </div>
+              <div class="pull-right text-uppercase {{ccd.statusColor}}">
+                {{ccd.status}}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.length==0">No problems were found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.length==0">View All</button>
+          </div>
+        </div>
+
+        <!--Visit Informations view-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'visit_information' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngIf="latestCCDList.admit_date && latestCCDList.discharge_date && latestCCDList.facility_name">
+            <div class="m-b-xs small"> <span class="font-bold">Admit Date: </span> {{_dateUtilityService.getDateAsString(latestCCDList.admit_date)}}
+            </div>
+            <div class="m-b-xs small"> <span class="font-bold">Discharge Date: </span> {{_dateUtilityService.getDateAsString(latestCCDList.discharge_date)}}
+            </div>
+            <div class="m-b-xs small"> <span class="font-bold">Location of Visit: </span> {{latestCCDList.facility_name}}&nbsp;{{latestCCDList.street}}&nbsp;{{latestCCDList.city}}&nbsp;
+              {{latestCCDList.state}}&nbsp;{{latestCCDList.country}}&nbsp;{{latestCCDList.postalCode}}
+            </div>
+          </div>
+          <div class="feed-element p-m-tb5 p-l-sm" *ngIf="latestCCDList.careTeam_info!=0">
+            <strong>Care Team Members</strong>
+          </div>
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList.careTeam_info let i=index">
+            <div *ngIf="i<3">
+              <div class="m-b-xs small"> <span class="font-bold"> Name: </span>{{ccd.prefix}}&nbsp;{{ccd.first_name}}&nbsp;{{ccd.last_name}}</div>
+              <div class="m-b-xs small"> <span class="font-bold">Telephone Number: </span>{{ccd.telephone_number ? ccd.telephone_number : '-'}}</div>
+              <div class="m-b-xs small"> <span class="font-bold">Function Code: </span>{{ccd.function_name ? ccd.function_name : '-'}}</div>
+            </div>
+          </div>
+
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.careTeam_info==0">No Visit Information was found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.careTeam_info==0">View All</button>
+          </div>
+        </div>
+
+        <!--Social history View-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'social_history' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList; let i=index">
+            <div *ngIf="i<3">
+              <div class="m-b-xs small"><strong>{{ccd.social_history_type}}</strong> </div>
+              <div class="m-b-xs small"><span class="font-bold">Description:</span> {{ccd.history_discription ? ccd.history_discription : '-'}} </div>
+              <div class="small">
+                {{_dateUtilityService.getDateAsString(ccd.start_date)}}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.length==0">No Social History information was found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.length==0">View All</button>
+          </div>
+        </div>
+
+        <!--impairments View-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'impairments' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList; let i=index">
+            <div *ngIf="i<3">
+              <div class="m-b-xs small"><strong>{{ccd.functionl_condition}}</strong></div>
+              <div class="m-b-xs small"><span class="font-bold">Impairment Type:</span> {{ccd.impairment_type_type ? ccd.impairment_type_type : '-'}}</div>
+              <div class="pull-left small">
+                {{_dateUtilityService.getDateAsString(ccd.start_date)}}
+              </div>
+              <div class="pull-right text-uppercase {{ccd.statusColor}}">
+                {{ccd.status}}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.length==0">No impairments were found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.length==0">View All</button>
+          </div>
+        </div>
+
+        <!--hospitalization_reason view-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'hospitalization_reason' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList; let i=index">
+            <div *ngIf="i<3">
+              {{ccd.reason}}
+            </div>
+          </div>
+
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.length==0">No hospitalization reasons were found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.length==0">View All</button>
+          </div>
+        </div>
+
+        <!--Procedures view-->
+        <div class="feed-activity-list" *ngIf="selectedCCD == 'procedures' && ccdAllList">
+          <div class="feed-element p-w-sm" *ngFor="let ccd of latestCCDList; let i=index">
+            <div *ngIf="i<3">
+              <div class="m-b-xs small"><span class="font-bold">Procedure: </span> {{ccd.procedure_name ? ccd.procedure_name : '-'}}</div>
+              <div class="small">
+                {{_dateUtilityService.getDateAsString(ccd.procedure_date)}}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-sm border-bottom" *ngIf="latestCCDList?.length==0">No Procedure information was found in the medical history</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" [routerLink]="['ccd-medical-records/', selectedCCD]"
+              (click)="savelog('medical_records')" [disabled]="latestCCDList?.length==0">View All</button>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+    <!--CCD view component end-->
+    <!-- Assessment Card Start-->
+    <app-ibox-container>
+      <app-ibox-header [cardName]="assessmentBoxTitle"></app-ibox-header>
+      <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+        <app-progress-spinner [isRunning]="isDLQuestionnaires"></app-progress-spinner>
+        <!-- assessment top 3 list-->
+        <div class="feed-activity-list">
+          <div class="feed-element p-w-sm" *ngFor="let item of assessmentList; let i=index">
+            <div *ngIf="i<3">
+              <label *ngIf="item.assessment_status == 0 && item.expiry_status == 0" class="pull-right label-warning text-center w-100 b-r-md p-xxs font-noraml">Pending</label>
+              <label *ngIf="item.assessment_status == 1 && item.expiry_status == 0" class="pull-right bg-green1 text-center w-100 b-r-md p-xxs font-noraml">Complete</label>
+              <label *ngIf="item.assessment_status == 0 && item.expiry_status == 1" class="pull-right btn-primary text-center w-100 b-r-md p-xxs font-noraml">Unanswered</label>
+              <div class="p-r10 p-t-xx text-overflow"><a (click)="openQuestionsAssessmentModal(item.assessment_id,item.participant_name, item.assessment_name)" [class.disabled]='showOpenAssessment ? true : null'>{{item.assessment_name}}</a>                </div>
+            </div>
+          </div>
+          <div class="p-sm border-bottom" *ngIf="assessmentList?.length==0 && isDLQuestionnaires == false">No Data Available</div>
+          <div class="m clear">
+            <button type="button" class="btn btn-block btn-outline btn-default m-b" routerLink="participantAssessments" [disabled]="assessmentList?.length==0">View All</button>
+          </div>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+  </div>
+  <!-- Assessment Card End-->
+
+  <!-- Third column start -->
+  <div class="col-lg-4">
+    <!--Event Log card view starts-->
+    <app-ibox-container>
+      <app-ibox-header [cardName]="eventLogBoxTitle"></app-ibox-header>
+      <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+        <app-progress-spinner [isRunning]="isDLEventLog"></app-progress-spinner>
+        <div class="care-team-contant" *ngFor="let eventLog of eventLogSnapshotDetails">
+          <div class="row m-l-xs m-r-xs">
+            <span *ngIf="eventLog.color_code== 0" class="border-normal"></span>
+            <span *ngIf="eventLog.color_code== 1" class="border-alert"></span>
+            <span *ngIf="eventLog.color_code== 2" class="border-gray"></span>
+            <span *ngIf="eventLog.color_code== 3" class="border-danger"></span>
+            <div class="text-left col-md-6 col-xs-8 no-padding">
+              <strong>{{eventLog.event_type}}</strong>
+              <div class="p-t-xx" *ngIf="eventLog.trigger_type_desc">
+                <app-chips [chips]="eventLog.trigger_type_desc"></app-chips>
+              </div>
+            </div>
+            <div class="text-right col-md-6 col-xs-4 no-padding">
+              <small class="text-overflow">{{_dateUtilityService.getStringForTodayAndYesterday(eventLog.event_date)}}</small><br>
+              <small>{{eventLog.status}}</small>
+            </div>
+          </div>
+        </div>
+        <div class="p-sm border-bottom" *ngIf="eventLogSnapshotDetails?.length==0 && isDLEventLog == false">No Data Available</div>
+        <div class="text-center p-sm">
+          <button type="button" class="btn btn-block btn-outline btn-default" [routerLink]="['eventLog']" [disabled]="eventLogSnapshotDetails.length == 0">View All</button>
+        </div>
+      </app-ibox-content>
+    </app-ibox-container>
+    <!--Event Log card view End-->
+
+    <!--Care Plan(s) card view Starts-->
+    <div *ngIf="'viewProgramOverviewCarePlanManagement' | privilege">
+      <app-ibox-container *ngIf="listOfCarePlans">
+        <app-ibox-header [cardName]="carePlanBoxTitle"></app-ibox-header>
+        <app-ibox-content [styleClassForContent]="noPadClassForComponent">
+          <app-progress-spinner [isRunning]="isDLCareplan"></app-progress-spinner>
+          <div *ngIf="listOfCarePlans.active">
+            <div class="care-team-contant text-dark-grey">ACTIVE</div>
+            <div class="care-team-contant font-bold" *ngIf="listOfCarePlans.active.length == 0 && isDLCareplan == false">
+              No Active Care Plans
+            </div>
+            <div *ngIf="listOfCarePlans.active.length > 0">
+              <div class="care-team-contant" *ngFor="let carePlan of listOfCarePlans.active">
+                <div class="pull-right">
+                  <div class="no-margins font-bold">{{carePlan.duration}}&nbsp;days</div><small class="pull-right">remaining</small></div>
+                <div class="text-overflow p-r-sm font-bold">{{carePlan.program_name}}</div>
+                <div>Start Date: {{_dateUtilityService.getDateAsString(carePlan.start_date)}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="listOfCarePlans.completed && listOfCarePlans.active.length < 3">
+            <div class="care-team-contant text-dark-grey">COMPLETED</div>
+            <div class="care-team-contant font-bold" *ngIf="listOfCarePlans.completed.length == 0">
+              No Completed Care Plans
+            </div>
+            <div *ngIf="listOfCarePlans.completed.length > 0">
+              <div class="care-team-contant" *ngFor="let carePlan of listOfCarePlans.completed">
+                <div class="text-overflow p-r-sm font-bold">{{carePlan.program_name}}</div>
+                <div>{{_dateUtilityService.getDateAsString(carePlan.start_date)}} - {{_dateUtilityService.getDateAsString(carePlan.end_date)}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center p-sm">
+            <button type="button" class="btn btn-block btn-outline btn-default" [routerLink]="['patientCarePlan']" (click)="savelog('care_plans')"
+              [disabled]="listOfCarePlans.active.length == 0 && listOfCarePlans.completed.length == 0">View All</button>
+          </div>
+        </app-ibox-content>
+      </app-ibox-container>
+    </div>
+    <!--Care Plan(s) card view end-->
+  </div>
+</div>

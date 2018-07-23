@@ -1,0 +1,22 @@
+a.disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+/* Responsive Tables*/
+.table-to-card-view {
+    display: block;
+}
+
+.card-to-table-view {
+    display: none;
+}
+
+@media (max-width:491px) {
+    .table-to-card-view {
+        display: none;
+    }
+    .card-to-table-view {
+        display: block;
+    }
+}

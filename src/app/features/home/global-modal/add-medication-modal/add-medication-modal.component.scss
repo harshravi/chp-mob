@@ -1,0 +1,90 @@
+@import '~assets/scss/_variables.scss';
+@import '~assets/scss/_mixins.scss';
+
+.cursor:hover{
+    background-color: $medi-gray;
+}
+
+.modal-body {
+   height: 75vh;
+}
+
+.heighlight-row{
+    background-color: $medi-gray;
+}
+
+.heighlight-searched-row{
+    background-color: #18a689!important;
+    color: $white;
+    @include margin-all(3px,3px,3px,3px);
+    @include radius-all-equal($count-box-border-radius);
+    @include padding-all(6px,6px,6px,6px);   
+}
+
+.confirm-msg{
+    position: absolute;
+    top: 35%;
+    bottom: 0px;
+    right: 20%;
+    left: 20%;
+    font-size: 15px;
+} 
+
+.medi-list-height{	
+    max-height: 45vh;
+    overflow-y:auto;
+    margin-bottom:0px;
+}
+
+.remove-border-left{
+    border-left:none;
+}
+
+.progress-width{
+    width: calc(100% - 40px);
+}
+
+.time-width{
+    width: calc(100% - 145px);
+}
+
+.full-height{
+    height: auto;  
+}
+
+.medication-min-height{
+    min-height: 23vh;
+}
+
+.set-inactive-link, .set-inactive-link:hover, .set-inactive-link:active, 
+.set-inactive-link:visited{
+    color: #C72536;
+}
+
+.inactive-msg-top{
+    font-size: 15px;
+    text-align: center;
+}
+
+.inactive-msg-top > .inactive-msg-2-line{
+    font-weight: bold;
+}
+
+.inactive-msg-top{
+    .inactive-msg-btn{
+        .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+        .btn-primary.active, .btn-primary:active:focus, .btn-primary:active:hover, 
+        .btn-primary.active:hover, .btn-primary.active:focus{
+            background-color: #C72536;
+            border-color: #C72536;
+            color: #fff;
+        }
+    }
+}
+
+
+@media (max-width: 991px) {
+    .full-height{
+        height: auto;
+    }
+}

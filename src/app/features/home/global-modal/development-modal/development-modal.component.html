@@ -1,0 +1,134 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close p-b-sm"></a>
+      <div class="row">
+        <div class="col-lg-8 col-md-8 col-xs-11 text-left">
+          <h1 class="modal-title">Health Status</h1>
+          <h4 class="font-noraml">{{participantName}}</h4>
+          <!--<h4 class="font-noraml"></h4>-->
+        </div>
+        <div class="col-lg-4 col-md-4 col-xs-12 text-right modal-content-DL">
+          <div class="col-md-12 no-padding" *ngIf="!showConfermationBox">
+            <button class="btn w-100 btn-default m-r-sm" (click)="closeModal()">Cancel</button>
+            <button class="btn w-100 btn-primary" (click)="saveDevelopment()" [appDisabled]='disableBtn' type="submit">{{this.context.btnText}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="full-height">
+        <div class="col-lg-12 no-padding full-height">
+          <div class="col-lg-6 col-md-6 p-w-md border-right full-height medication-min-height">
+            <div class="white-bg m-t-md">
+              <div class="develop-modal-contant text-dark-grey p-l-xs"><small>CATEGORY</small></div>
+              <div class="develop-modal-contant taskListBackground category-padd-title"><strong class="m-l-smx">Development</strong></div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 p-w-md full-height medication-min-height">
+            <form [formGroup]="form" name="form" class="m-t" *ngIf="!showConfermationBox">
+              <!--checkbox method require to change-->
+              <app-check-box [hidden]="true" class="margin: 0px !important;">
+              </app-check-box>
+
+              <div class="col-md-12 no-padding m-b-sm">
+                <div class="btn-group btn-group-sm">
+                  <button class="btn w-70 btn-white" type="button" (click)="usUnitDisplay()" [disabled]='checkUnitUs' [style.font-weight]="uSDisplayColor">US</button>
+                  <button class="btn w-70 btn-white" type="button" (click)="metriceUnitDisplay()" [disabled]='checkUnitMatric' [style.font-weight]="metriceDisplayColor">Metric</button>
+                </div>
+              </div>
+              <div class="form-group" *ngIf="metriceDisplay == true">
+                <label>Height</label>
+                <!--<small class="m-l-xs" *ngIf="uSDisplay == true">ft' in"</small>-->
+                <small class="m-l-xs" *ngIf="metriceDisplay == true">cm</small>
+                <input type="text" formControlName="height_cms" (keyup)="desableSubmitBtn()" placeholder="" class="form-control">
+                <div class="form-element-left m-l-25">
+                  <error-messages [control]="form.controls.height_cms"></error-messages>
+                </div>
+              </div>
+              <div class="row" *ngIf="uSDisplay == true">
+                <div class="col-md-6 col-sm-12">
+                  <div class="form-group">
+                    <label>Height</label><small class="m-l-xs"> feet </small>
+                    <input type="text" formControlName="height_feet" (keyup)="desableSubmitBtn()" placeholder="" class="form-control" maxlength="1">
+                    <div class="form-element-left m-l-25">
+                      <error-messages [control]="form.controls.height_feet"></error-messages>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                  <div class="form-group">
+                    <label>Height</label><small class="m-l-xs"> inches</small>
+                    <input type="text" formControlName="height_inches" placeholder="" (keyup)="desableSubmitBtn()" class="form-control" maxlength="2">
+                    <div class="form-element-left m-l-25">
+                      <error-messages [control]="form.controls.height_inches"></error-messages>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="form-group" *ngIf="uSDisplay == true">
+                <label>Weight</label>
+                <small class="m-l-xs">lbs</small>
+                <small class="m-l-xs" *ngIf="metriceDisplay == true">kg</small>
+                <input type="text" formControlName="weight" (keyup)="desableSubmitBtn()" placeholder="" class="form-control" maxlength="6">
+                <div class="form-element-left m-l-25">
+                  <error-messages [control]="form.controls.weight"></error-messages>
+                </div>
+              </div>
+              <div class="form-group" *ngIf="metriceDisplay == true">
+                <label>Weight</label>
+                <small class="m-l-xs">kg</small>
+                <!--<input type="text" formControlName="weight_kg" placeholder="" class="form-control">
+                <div class="form-element-left m-l-25">-->
+                <input type="text" formControlName="weight_kg" (keyup)="desableSubmitBtn()" placeholder="" class="form-control">
+                <div class="form-element-left m-l-25">
+                  <error-messages [control]="form.controls.weight_kg"></error-messages>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group inline">
+                    <label>Date</label>
+                    <app-datepicker [minDate]="minDate" [maxDate]="maxDate" [disabled]="context.editable" [currentDate]="form.controls.date"
+                      formControlName="date" format="MM/DD/YYYY">
+                    </app-datepicker>
+                  </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                  <div class="inline">
+                    <div class="form-group">
+                      <label class="block">Time</label>
+                      <div class="inline col-md-6 col-sm-6 col-xs-6 no-padding-left m-b-xs">
+                        <input [appDisabled]="context.editable" [textMask]="{mask: timeMask}" #timeFrequency (keyup)="checkStringLength($event)"
+                          (keyup)="desableSubmitBtn()" (blur)="checkFrequencyTime($event.target.value,timeFrequency)" class="form-control"
+                          formControlName="time" type="text" placeholder="00:00" />
+                      </div>
+                      <div class=" inline col-md-6 col-sm-4 col-xs-6 no-padding-left m-b-xs no-padding-right">
+                        <!--<select #selectedCategory class="form-control" (change)="timeSuffixSelection(selectedCategory.value)">
+                              <option value="AM">AM</option>
+                              <option value="PM">PM</option>
+                        </select>-->
+                        <app-dropdown [setSelectedText]="dateAMPMSelectedText" [disabled]="context.editable" name="dayFilter" [isSimpleData]="true"
+                          [data]="dateSeletorOption" formControlName="selectedAMPM" (change)="timeSuffixSelection()"></app-dropdown>
+                      </div>
+                      <label class="pull-left error" *ngIf="timeErrorFlag">Please enter time between 1 to 12</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div *ngIf="showConfermationBox">
+              <div class="confirm-msg text-center m-t">
+                <div class="p-b f-15">The data point has not been added yet. Are you sure you want to close the window?</div>
+                <button type="button" class="btn w-150 btn-default m-r-xs" (click)="confemationClick(false)">Cancel</button>
+                <button type="button" class="btn w-150 btn-danger m-l-xs" (click)="confemationClick(true)">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

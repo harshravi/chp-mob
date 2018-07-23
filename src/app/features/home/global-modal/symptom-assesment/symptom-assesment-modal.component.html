@@ -1,0 +1,35 @@
+<div class="inmodal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <a class="close p-b-sm">
+            </a>
+            <h1 class="modal-title text-left">Symptom Assessment</h1>
+            <p class="text-left">{{participantName}}&nbsp; <span *ngIf="symptomAssesmentData?.vital_reading_time">{{_dateUtilityService.getDateAsString(symptomAssesmentData.vital_reading_time)}}</span><span *ngIf="symptomAssesmentData?.vital_reading_time">&nbsp; {{_dateUtilityService.getOnlyTime(symptomAssesmentData.vital_reading_time)}}</span></p>
+        </div>
+        <div class="modal-body">
+            <table class="table white-bg no-margins" *ngIf="symptomAssesmentData?.symptoms?.length">
+                <thead>
+                    <tr>
+                        <th>{{symptomAssesmentData.vitalName}}: {{symptomAssesmentData.value}}</th>
+                    </tr>
+                    <tr>
+                        <th>Symptom</th>
+                        <th class="text-right">Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of symptomAssesmentData.symptoms">
+                        <td [ngClass]="getClass(data.answer_text)">{{data.symptom}}</td>
+                        <td class="text-right">{{data.answer_text}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center" *ngIf="symptomAssesmentData.symptoms==null && symptomAssesmentData.assessment_pending_msg!=null">{{symptomAssesmentData?.assessment_pending_msg}}</div>
+            <div class="text-center" *ngIf="symptomAssesmentData.symptoms==null && symptomAssesmentData.assessment_expired_msg!=null">{{symptomAssesmentData?.assessment_expired_msg}}</div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white btn-w-s" (click)="closeSymptomModal()">Close</button>
+        </div>
+    </div>
+</div>

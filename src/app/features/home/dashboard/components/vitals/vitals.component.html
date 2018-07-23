@@ -1,0 +1,49 @@
+<div class="col-lg-4 col-md-4 col-sm-4">
+  <div [ngClass]="vitalClass" *ngIf="participantStatus !== -1">
+    <span class="vital-bg cricle"></span>
+    <span class="vital-heading-size">{{vitalValue.vital_type}}</span>
+    <div class="vital-body-size">
+      {{getVitalValue(vitalValue)}}
+
+      <span class="no-padding" *ngIf="vitalValue.vital_type=='Lung Function'">
+        <span *ngIf="vitalValue.unit">
+          <span *ngIf="vitalValue.value && !vitalValue.value_ext && !vitalValue.value_ext2; else noPefUnit">
+            {{vitalValue.pef_unit}}
+          </span>
+          <ng-template #noPefUnit>
+            {{vitalValue.unit}}
+          </ng-template>
+        </span>
+      <span *ngIf="vitalValue.vital_desc">({{getVitalValueForLung(vitalValue)}})</span></span>
+    </div>
+    <div class="small text-right p-t-xx no-padding" *ngIf="vitalValue.received_date">{{_dateUtilityService.getStringForTodayAndYesterday(vitalValue.received_date)}}</div>
+    <div *ngIf="!vitalValue.received_date"></div>
+  </div>
+  <div class="vital-gray" *ngIf="participantStatus == -1">
+    <span class="vital-bg cricle text-dnr" *ngIf="vitalValue.vital_status == -1"></span>
+    <span class="vital-bg cricle text-navy" *ngIf="vitalValue.vital_status == 0"></span>
+    <span class="vital-bg cricle text-warning" *ngIf="vitalValue.vital_status == 1"></span>
+    <span class="vital-bg cricle text-danger" *ngIf="vitalValue.vital_status == 2"></span>
+    <span class="vital-heading-size">{{vitalValue.vital_type}}</span>
+    <div class="vital-body-size">
+      {{getVitalValue(vitalValue)}}
+
+      <span class="no-padding" *ngIf="vitalValue.vital_type=='Lung Function'">
+        <span *ngIf="vitalValue.unit">
+          <span *ngIf="vitalValue.value && !vitalValue.value_ext && !vitalValue.value_ext2; else noPefUnit">
+            {{vitalValue.pef_unit}}
+          </span>
+      <ng-template #noPefUnit>
+        {{vitalValue.unit}}
+      </ng-template>
+      </span>
+      <!--<ng-template #noUnit>
+          <h1>-</h1>
+        </ng-template>-->
+      <span *ngIf="vitalValue.vital_desc">({{getVitalValueForLung(vitalValue)}})</span>
+      </span>
+    </div>
+    <div class="small text-right p-t-xx no-padding" *ngIf="vitalValue.received_date">{{_dateUtilityService.getStringForTodayAndYesterday(vitalValue.received_date)}}</div>
+    <div *ngIf="!vitalValue.received_date"></div>
+  </div>
+</div>

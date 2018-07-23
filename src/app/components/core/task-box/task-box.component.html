@@ -1,0 +1,66 @@
+<div class="urgent-card flipInY" [ngClass]="getPaddingClass()" *ngIf="taskDetails">
+  <!--<div class="time"><small>{{taskDetails.timestamp | date:"MMM dd yyyy hh:mm a"}}</small></div>-->
+  <div class="card-element" [ngClass]="taskDetails.read_flag | readFlag">
+    <div>
+      <div class="pull-left">
+        <div class="patient-name-circle">
+          <span class="patient-name">{{displayName}}</span>
+        </div>
+      </div>
+
+      <div class="name-body">
+        <div class="info-font text-overflow"><a [routerLink]="['participant-dashboard', taskDetails.participant_id,taskDetails.participant_name,'ParticipantProflie']">{{taskDetails.participant_name}}</a></div>
+        <div class="small">{{taskDetails.phone_number}}</div>
+      </div>
+      <div class="pull-right text-right">
+        <div class="small">{{taskDetails.timestamp | date:"MMM dd yyyy"}}</div>
+        <div class="small">{{_dateUtilityService.getOnlyTime(taskDetails.timestamp)}}</div>
+      </div>
+      <div class="m-t" *ngIf="taskDetails.is_emergency_action_plan === false">
+        <div class="inline info-font" *ngIf="'viewVitalsManagement' | privilege">Take Action: &nbsp;
+          <a *ngIf="taskDetails.overall_seizure_counts == 0" (click)="viewDetail(taskDetails)">Vitals ({{taskDetails.vital_count}})</a>
+          <a *ngIf="taskDetails.overall_seizure_counts == 1" (click)="viewDetail(taskDetails)"> Seizure ({{taskDetails.overall_seizure_counts}})</a>
+          <a *ngIf="taskDetails.overall_seizure_counts > 1" (click)="viewDetail(taskDetails)"> Seizures ({{taskDetails.overall_seizure_counts}})</a>
+        </div>
+        <div class="pull-right btn-circle">
+          <i class="fa fa-comment-o green fa-lg" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div *ngIf="taskDetails.is_emergency_action_plan === true" class="m-t">
+        <div class="inline info-font"><a (click)="viewDetail(taskDetails)">Complete Emergency Action Plan</a></div>
+        <div class="cursor">
+          <small class="info-font">
+        <a [ngClass]="notActive" (click)="patientSelectionBox(true)">{{reassignText}}</a>
+        <!--<span [(ngModel)]="reassign+indexNo">{{reassign+indexNo}}</span>-->
+        </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showReassignTextbox && (current === indexNo)" class="m-l-sm m-r-sm m-b-sm">
+    <div class="searchBox">
+      <input type="text" class="form-control" [(ngModel)]="selectedName" (keyup)="patientName($event,taskDetails)">
+      <div *ngIf="selectedName" class="inline pull-right clearText">
+        <a class="close" (click)="clearTextBox()"><span aria-hidden="true">×</span></a>
+      </div>
+    </div>
+    <div class="reassign-box">
+      <ul class="no-padding medi-list-height border-bottom">
+        <li *ngFor="let data of textBoxDetails?.care_team let i = index;" (click)="toggleHighlightSearch(i);" [ngClass]="{'heighlight-searched-row': highlightedSearchedRow === i}"
+          (click)="selectedParticipantDetails(data,taskDetails)" class="list-group-item cursor no-borders searchBoxLi">{{data.staff_name}}</li>
+      </ul>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center no-padding">
+        <button type="button" class="btn btn-default w-100" (click)="patientSelectionBox(false)">Cancel</button>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center no-padding">
+        <button type="button" [disabled]="dissableReassignBtn" (click)="reassignActionPlan()" class="btn btn-primary w-100">Reassign</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="taskDetails.is_emergency_action_plan === false" class="vital-info" [ngClass]="taskDetails.read_flag | readFlag">
+    <div class="inline" *ngIf="taskDetails.overall_seizure_counts == 0">
+      <app-chips [chips]="taskDetails.vital_desc"></app-chips>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,109 @@
+<div class="inmodal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close p-b-sm"></a>
+      <div class="row">
+        <div class="col-lg-6 col-md-6 text-left">
+          <h1 class="modal-title">{{heading}}</h1>
+          <p class="font-noraml">{{participantName}}</p>
+        </div>
+        <div class="col-lg-6 col-md-6 text-right font-noraml m-t-md modal-content-right">
+          <span class="small">{{_dateUtilityService.getOnlyDate(this.eventDate)}}&nbsp; -&nbsp; {{_dateUtilityService.getOnlyTime(this.eventDate)}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body" *ngIf="showAssessmentData">
+      <div *ngIf="eventLogData">
+        <div class="m-b-md" *ngIf="eventLogData?.assessment_name">
+          <strong>Type:</strong>
+          <p>{{eventLogData.assessment_name}}</p>
+        </div>
+        <div class="m-b-md" *ngIf="eventLogDetails.data_type === 'SQ'">
+          <strong>Type:</strong>
+          <p>{{eventLogData.heading}}</p>
+        </div>
+        <!--<div class="m-b-md" *ngIf="eventLogDetails.data_type === 'SQ'">
+          <strong>Trigger:</strong>
+          <p>{{eventLogData.trigger_type_desc}}</p>
+        </div>-->
+        <div class="m-b-md" *ngIf="eventLogData?.trigger_type_desc || eventLogDetails.data_type === 'SQ'">
+          <strong>Trigger:</strong>
+          <p>{{eventLogData.trigger_type_desc}}</p>
+        </div>
+        <div class="m-b-md" *ngIf="eventLogDetails.data_type === 'SIE'">
+          <strong>Is good example:</strong>
+          <p>
+            <span *ngIf=" eventLogData?.is_good_example === 1; else notTrue">Yes</span>
+            <ng-template #notTrue>
+              <span>No</span>
+            </ng-template>
+          </p>
+        </div>
+        <div class="m-b-md" *ngIf="eventLogData?.description">
+          <strong>Description:</strong>
+          <p>{{eventLogData.description}}</p>
+        </div>
+        <div class="m-t-md" *ngIf="eventLogData?.compliance_name">
+          <strong>Compliance Details:</strong>
+          <div>{{eventLogData.compliance_name}}</div>
+          <p>{{eventLogData.compliance_value}}%</p>
+        </div>
+        <div class="m-t-md m-b-md" *ngIf="interventionDetails?.selected_intervention_types">
+          <strong>Intervention Type:</strong>
+          <div *ngFor='let data of interventionDetails.selected_intervention_types'>{{data.intervention_type_desc}}</div>
+        </div>
+        <div class="m-b-md" *ngIf="interventionDetails?.selected_outreach_type_desc">
+          <strong>Outreach:</strong>
+          <p>{{interventionDetails.selected_outreach_type_desc}}</p>
+        </div>
+        <div class="m-b-md" *ngIf="interventionDetails?.intervention_notes">
+          <strong>Note:</strong>
+          <p>{{interventionDetails.intervention_notes}}</p>
+        </div>
+        <div class="m-b-md" *ngIf="interventionDetails?.selected_outcome_types">
+          <strong>Outcome:</strong>
+          <div *ngFor='let data of interventionDetails.selected_outcome_types'>{{data.outcome_type_desc}}</div>
+        </div>
+        <div class="m-b-md" *ngIf="eventLogData?.trigerFormat">
+          <strong>Vital Details:</strong>
+          <div *ngIf="eventLogData?.vital_type === 'LUNG'; otherData">
+            <p *ngIf="eventLogData.value">PEF : {{eventLogData.value}}&nbsp;{{eventLogData.pef_unit}}</p>
+            <p *ngIf="eventLogData.value_ext">FEV1 : {{eventLogData.value_ext}}&nbsp;{{eventLogData.unit}}</p>
+            <p *ngIf="eventLogData.value_ext2">FVC : {{eventLogData.value_ext2}}&nbsp;{{eventLogData.unit}}</p>
+          </div>
+          <ng-template #otherData>
+            <p>{{eventLogData.trigger_type_desc}}: {{eventLogData.trigerFormat}}</p>
+          </ng-template>
+          <div *ngIf="eventLogData?.vital_type === 'WHBMI'; otherDataDevelopment">
+            <p *ngIf="eventLogData.value && eventLogData.value_ext">{{eventLogData.value}}/&nbsp;{{eventLogData.value_ext}}&nbsp;{{eventLogData.unit}},BMI</p>
+          </div>
+          <ng-template #otherDataDevelopment>
+            <p>{{eventLogData.trigger_type_desc}}: {{eventLogData.trigerFormat}}</p>
+          </ng-template>
+        </div>
+        <div class="m-b-md" *ngIf="scheduledAssessmentAnswer || eventLogDetails.data_type === 'SQ'">
+          <strong>Answers:</strong>
+          <p><a (click)="opentest()">Click here to view answers</a></p>
+          <!--<p><a target="_blank" [routerLink]="['assessment', eventLogId]">Click here to view assessment answers</a></p>-->
+        </div>
+        <div class="m-b-md" *ngIf="eventLogStatus == 'Completed' && (reviewQuestionnaireAnswer || eventLogDetails.data_type === 'ARE')">
+          <strong>Answers:</strong>
+          <p><a (click)="opentest()">Click here to view answers</a></p>
+          <!--<p><a target="_blank" [routerLink]="['assessment', eventLogId]">Click here to view assessment answers</a></p>-->
+        </div>
+        <div class="m-b-md" *ngIf="symptomAssessmentDetails?.assessment_expired_msg === null && symptomAssessmentDetails?.assessment_pending_msg === null">
+          <strong>Answers:</strong>
+          <p><a (click)="opentest()">Click here to view answers</a></p>
+          <!--<p><a target="_blank" [routerLink]="['assessment', eventLogId]">Click here to view assessment answers</a></p>-->
+        </div>
+        <div class="m-b-md" *ngIf="eventLogData?.reported_by || eventLogDetails.data_type === 'SQ'">
+          <strong>Reported by:</strong>
+          <p>{{eventLogData.reported_by}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-white btn-w-s" (click)="closeSymptomModal()">Close</button>
+    </div>
+  </div>
+</div>

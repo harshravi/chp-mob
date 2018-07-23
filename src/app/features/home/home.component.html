@@ -1,0 +1,10 @@
+<app-loading-bar [color]="'#EC4850'" [height]="'3px'"></app-loading-bar>
+<app-side-nav></app-side-nav>
+<toaster-container></toaster-container>
+<app-header>
+    <app-dashboard-header [participantData]="participantDetails" [userName]="fullName" dashboard-header-locator>   
+        <p-breadcrumb breadcrumb-locator [model]="breadcrumbItems"></p-breadcrumb>
+    </app-dashboard-header>
+    <router-outlet dashboard-body-locator></router-outlet>
+</app-header>
+<span defaultOverlayTarget></span>

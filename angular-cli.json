@@ -1,0 +1,89 @@
+{
+  "project": {
+    "version": "1.0.0-beta.26",
+    "name": "admin-ui"
+  },
+  "apps": [
+    {
+      "root": "src",
+      "outDir": "dist",
+      "assets": [
+        "assets",
+        "favicon.png",
+        ".htaccess"
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "test": "test.ts",
+      "tsconfig": "tsconfig.json",
+      "prefix": "app",
+      "mobile": false,
+      "styles": [
+        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "../node_modules/@swimlane/ngx-datatable/release/assets/icons.css",
+        "../node_modules/pikaday/scss/pikaday.scss",
+        "../node_modules/metismenu/dist/metisMenu.min.css",
+        "../node_modules/font-awesome/css/font-awesome.min.css",
+        "../node_modules/animate.css/animate.css",
+        "assets/css/semantic/dropdown.min.css",
+        "assets/css/semantic/transition.min.css",
+        "assets/css/tooltip/tooltipster.bundle.min.css",
+        "assets/scss/style.scss",
+        "assets/css/material.scss",
+        "assets/css/primeng.scss"
+      ],
+      "scripts": [
+        "../node_modules/underscore/underscore-min.js",
+        "../node_modules/jquery/dist/jquery.min.js",
+        "assets/js/tooltip/tooltipster.bundle.min.js",
+        "../node_modules/metismenu/dist/metisMenu.min.js",
+        "assets/js/inspinia.js",
+        "assets/js/siema.min.js",
+        "../node_modules/moment/min/moment.min.js",
+        "../node_modules/moment-timezone/builds/moment-timezone.min.js",
+        "../node_modules/moment-timezone/builds/moment-timezone-with-data-2012-2022.min.js",
+        "../node_modules/moment-timezone/builds/moment-timezone-with-data.min.js",
+        "assets/js/tigerconnect-sdk-web.min.js",
+        "../node_modules/pikaday/pikaday.js",
+        "assets/js/semantic/dropdown.min.js",
+        "assets/js/semantic/transition.min.js",
+        "assets/js/bootstrap-native.min.js",
+        "assets/js/custom-util.js"
+      ],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "source": "environments/environment.ts",
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts",
+        "mch-dev": "environments/environment.mch-dev.ts",
+        "non-mch-dev": "environments/environment.non-mch-dev.ts"
+      }
+    }
+  ],
+  "e2e": {
+    "protractor": {
+      "config": "./protractor.conf.js"
+    }
+  },
+  "test": {
+    "karma": {
+      "config": "./karma.conf.js"
+    }
+  },
+  "defaults": {
+    "styleExt": "scss",
+    "prefixInterfaces": false,
+    "inline": {
+      "style": false,
+      "template": false
+    },
+    "spec": {
+      "class": false,
+      "component": true,
+      "directive": true,
+      "module": false,
+      "pipe": true,
+      "service": true
+    }
+  }
+}
